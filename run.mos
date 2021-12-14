@@ -1,0 +1,18 @@
+loadModel(Modelica);
+getErrorString();
+
+loadModel(drone.mo);
+getErrorString();
+
+loadModel(randgen.mo);
+getErrorString();
+
+loadModel(system.mo);
+getErrorString();
+
+simulate(System, stopTime=20);
+getErrorString();
+
+plot({drone.x,drone.y,drone.z,drone.Fx,drone.Fy,drone.Fz},externalWindow=true);
+getErrorString();
+
