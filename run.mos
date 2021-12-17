@@ -4,13 +4,16 @@ getErrorString();
 loadFile("Connectors.mo");
 getErrorString();
 
+loadFile("constants.mo");
+getErrorString();
+
 loadFile("drone.mo");
 getErrorString();
 
-loadFile("functions.mo");
+loadFile("setPoint.mo");
 getErrorString();
 
-loadFile("randgen.mo");
+loadFile("controller.mo");
 getErrorString();
 
 loadFile("system.mo");
@@ -19,8 +22,12 @@ getErrorString();
 simulate(System, stopTime=60);
 getErrorString();
 
-plot({d.x,d.y,d.z,d.Fx,d.Fy,d.Fz},externalWindow=true);
-getErrorString();
+plot({drone.x[1], drone.y[1], drone.z[1], drone.x[2], drone.y[2], drone.z[2],
+      drone.Trustx[1], drone.Trusty[1], drone.Trustz[1],
+      drone.Trustx[2], drone.Trusty[2], drone.Trustz[2]}, externalWindow=true);
 
+
+
+//plotParametric(drone.y[1], drone.z[1], externalWindow=true);
 
 

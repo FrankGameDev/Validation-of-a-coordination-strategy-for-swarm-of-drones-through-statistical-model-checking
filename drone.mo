@@ -52,42 +52,55 @@ block Drone
 
 //Parametri volo
 
+
+	InputReal Trustx[K.N];
+	InputReal Trusty[K.N];
+	InputReal Trustz[K.N];
 	//Posizione sull'asse x
-	OutputReal x;
+	OutputReal x[K.N];
 
 	//Posizione sull'asse y
-	OutputReal y;
+	OutputReal y[K.N];
 	
 	//Posizione sull'asse z
-	OutputReal z;
+	OutputReal z[K.N];
 	
 	//Forza su x
-	OutputReal Fx;
+	OutputReal Fx[K.N];
 	
 	//Forza su y
-	OutputReal Fy;
+	OutputReal Fy[K.N];
 
 	//Forza su z
-	OutputReal Fz;
+	OutputReal Fz[K.N];
 	
 	//Velocità su x
-	OutputReal Vx;
+	OutputReal Vx[K.N];
 
 	//Velocità su y
-	OutputReal Vy;
+	OutputReal Vy[K.N];
 
 	//Velocità su z
-	OutputReal Vz;
+	OutputReal Vz[K.N];
+
+	//peso drone in output
+	//OutputReal outWeight;
 
 initial equation
+	
+	for i in 1:K.N loop
+		x[i] = 0;
+		y[i] = 0;
+		z[i]= 5+i;
+	end for;
+	
+	for i in 1:K.N loop
+		Vx[i] = 0;
+		Vy[i] = 0;
+		Vz[i] = 0;
+	end for;
 
-	x=10;
-	y=10;
-	z=10;
-
-	Fx=1;
-	Fy=1;
-	Fz=1;
+	//outWeight = weight;
 
 equation
 	/*
@@ -96,73 +109,27 @@ equation
 	* v = der(x)
 	*/
 
-	der(x) = Vx;
-	der(Vx) = Fx/weight; 
-	when (Vx > 15.0) then 
-		reinit(Vx,15.0);
-	end when;	
-	
-	der(y) = Vy;
-	der(Vy) = Fy/weight;
-	when (Vy > 6.0) then 
-		reinit(Vy,6.0);
-	end when;	
+	for i in 1:K.N loop 
+		Fx[i] = Trustx[i];	
+		Fy[i] = Trusty[i];
+		Fz[i] = Trustz[i] - weight * K.g;	
+	end for;
 
-	der(z) = Vz;
-	der(Vz) = Fz/weight;
-	when (Vz > 6.0) then 
-		reinit(Vz,15.0);
-	end when;	
-	
-	
-algorithm
-	
-	when sample(0,T) then
-		/*if(time < 1.6) then
-			Fy := startDrone(pre(Fy));
-		else*/
-			Fx := (myrandom())*pre(Fx);
-			Fy := (1-2*myrandom())*pre(Fy);
-			Fz := (1-2*myrandom())*pre(Fz);
-		//end if;	
-	end when;
-	
 
+	for i in 1:K.N loop
+
+		der(x[i]) = Vx[i];
+		der(Vx[i]) = Fx[i]/weight; 
+		
+		
+		der(y[i]) = Vy[i];
+		der(Vy[i]) = Fy[i]/weight;
+	
+		der(z[i]) = Vz[i];
+		der(Vz[i]) = Fz[i]/weight;
+		
+	
+	end for;
+	
 end Drone;
-
-/*
-block StartDroneController
-	//Porta il drone ad alzarsi 10 metri da terra
-	//LA velocità massima in salita è di 6 m/s, ma l'accellerazione deve essere un iperbole
-
-	InputReal Fy;
-
-	InputReal y;
-
-	algorithm
-		if(y <= 10) then
-			Fy := (1-2*myrandom())*pre(Fy);
-		end if;
-
-end StartDroneController;
-
-
-
-block FlyingController
-
-	parameter Real T = 1;
-	
-	InputReal Fx;
-	InputReal Fy;
-	InputReal Fz;
-
-	algorithm
-		when sample(0, T) then
-			Fx := (1-2*myrandom())*pre(Fx);
-			Fy := (1-2*myrandom())*pre(Fy);
-			Fz := (1-2*myrandom())*pre(Fz);
-		end when;
-
-end FlyingController;
-*/
 
