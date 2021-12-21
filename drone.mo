@@ -127,9 +127,10 @@ equation
 	
 		der(z[i]) = Vz[i];
 		der(Vz[i]) = Fz[i]/weight;
-		
 	
 	end for;
+
+
 	
 end Drone;
 
