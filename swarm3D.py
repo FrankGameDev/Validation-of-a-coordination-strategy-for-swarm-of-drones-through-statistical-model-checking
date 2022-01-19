@@ -14,7 +14,7 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d') #creo il grafico
 
-cs.sweep(5) #converto il file mat in json
+cs.sweep(2) #converto il file mat in json
 
 with open("simulation.json", "r") as f: #Apro il file json e estraggo il dizionario
 	data = json.load(f)

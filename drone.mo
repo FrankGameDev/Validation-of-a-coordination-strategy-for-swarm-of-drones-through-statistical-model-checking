@@ -1,5 +1,5 @@
 block Drone
-
+	
 	parameter Real T = 1.0;
 	
 //PARAMETRI DRONE 
@@ -25,12 +25,6 @@ block Drone
 	//Distanza massima percorribile(Km)
 	parameter Integer maxFlightDistance = 30;
 	
-	//Denota se il drone è il leader della formazione a triangolo
-	//bool isMaster;
-	
-	//Istanza del drone leader della formazione a triangolo
-	//leadingDrone masterDrone;
-
 //PARAMETRI SISTEMA DI VISIONE(ODD = orizontal detection distance, IDD  = infrared detection distance}
  	
 	parameter Real horizontalODD[2] = {0.7,40};
@@ -56,6 +50,7 @@ block Drone
 	InputReal Trustx[K.N];
 	InputReal Trusty[K.N];
 	InputReal Trustz[K.N];
+
 	//Posizione sull'asse x
 	OutputReal x[K.N];
 
@@ -83,8 +78,16 @@ block Drone
 	//Velocità su z
 	OutputReal Vz[K.N];
 
+	//output Vector3D position[K.N];
+
 	//peso drone in output
 	//OutputReal outWeight;
+
+
+	//Real sterring[3];
+
+	//Real tmpSterring[3];
+
 
 initial equation
 	
@@ -92,6 +95,7 @@ initial equation
 		x[i] = 0;
 		y[i] = 0;
 		z[i]= 5+i;
+		//position[i](x = 0, y = 0, z = 5+i);
 	end for;
 	
 	for i in 1:K.N loop
@@ -101,6 +105,7 @@ initial equation
 	end for;
 
 	//outWeight = weight;
+
 
 equation
 	/*
@@ -119,15 +124,17 @@ equation
 	for i in 1:K.N loop
 
 		der(x[i]) = Vx[i];
+		//der(position[i].x) = Vx[i];
 		der(Vx[i]) = Fx[i]/weight; 
 		
-		
 		der(y[i]) = Vy[i];
+		//der(position[i].y) = Vy[i];
 		der(Vy[i]) = Fy[i]/weight;
 	
 		der(z[i]) = Vz[i];
+		//der(position[i].z) = Vz[i];
 		der(Vz[i]) = Fz[i]/weight;
-	
+		
 	end for;
 
 

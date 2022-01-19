@@ -14,7 +14,6 @@ InputReal setx[K.N];
 InputReal sety[K.N];
 InputReal setz[K.N];
 
-//InputReal droneWeight;
 
 InputReal x[K.N];
 InputReal y[K.N];

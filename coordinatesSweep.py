@@ -10,19 +10,20 @@ import DyMat as dm
 import json
 
 #n_drones = numero droni
-def sweep(n_drones):
+def sweep(n):
 	#Importa il file .mat e estrapola i dati richiesti
 	d = dm.DyMatFile('System_res.mat')
-
+	
+	# da implementare: n_drones = d.data("K.N").item();
 
 
 	drones=dict()
 
 
-	for i in range(n_drones):
+	for i in range(n):
 		drones["drone"+str(i+1)] = {}
 
-	for i in range(n_drones):
+	for i in range(n):
 		
 		x = d.data("drone.x["+str(i+1)+"]") #Estraggo le coordinate del drone i-esimo
 		y = d.data("drone.y["+str(i+1)+"]")
