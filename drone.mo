@@ -46,10 +46,28 @@ block Drone
 
 //Parametri volo
 
-
+	//forza di movimento del drone
 	InputReal Trustx[K.N];
 	InputReal Trusty[K.N];
-	InputReal Trustz[K.N];
+	InputReal Trustz[K.N];	
+
+	//Valori restituiti dal collision avoidance module
+	InputReal alignX[K.N];
+	InputReal alignY[K.N];
+	InputReal alignZ[K.N];
+
+	InputReal cohesionX[K.N];
+	InputReal cohesionY[K.N];
+	InputReal cohesionZ[K.N];
+	
+	InputReal separateX[K.N];
+	InputReal separateY[K.N];
+	InputReal separateZ[K.N];
+	
+	//direzione da prendere in aggiunta alla velocità, generata dal PSO
+	InputReal headingX[K.N];
+	InputReal headingY[K.N];
+	InputReal headingZ[K.N];
 
 	//Posizione sull'asse x
 	OutputReal x[K.N];
@@ -59,7 +77,8 @@ block Drone
 	
 	//Posizione sull'asse z
 	OutputReal z[K.N];
-	
+
+
 	//Forza su x
 	OutputReal Fx[K.N];
 	
@@ -78,15 +97,7 @@ block Drone
 	//Velocità su z
 	OutputReal Vz[K.N];
 
-	//output Vector3D position[K.N];
-
-	//peso drone in output
-	//OutputReal outWeight;
-
-
-	//Real sterring[3];
-
-	//Real tmpSterring[3];
+	
 
 
 initial equation
@@ -95,15 +106,17 @@ initial equation
 		x[i] = 0;
 		y[i] = 0;
 		z[i]= 5+i;
-		//position[i](x = 0, y = 0, z = 5+i);
 	end for;
-	
+
+
 	for i in 1:K.N loop
 		Vx[i] = 0;
 		Vy[i] = 0;
 		Vz[i] = 0;
 	end for;
 
+
+	
 	//outWeight = weight;
 
 
@@ -124,17 +137,18 @@ equation
 	for i in 1:K.N loop
 
 		der(x[i]) = Vx[i];
-		//der(position[i].x) = Vx[i];
-		der(Vx[i]) = Fx[i]/weight; 
-		
+
+		der(Vx[i]) = (Fx[i]/weight) + (alignX[i] + cohesionX[i] + separateX[i] + headingX[i]); 
+		//der(Vx[i]) = (Fx[i]/weight);
+
 		der(y[i]) = Vy[i];
-		//der(position[i].y) = Vy[i];
-		der(Vy[i]) = Fy[i]/weight;
-	
-		der(z[i]) = Vz[i];
-		//der(position[i].z) = Vz[i];
-		der(Vz[i]) = Fz[i]/weight;
+
+		der(Vy[i]) = (Fy[i]/weight) + (alignY[i] + cohesionY[i] + separateY[i] + headingY[i]);
+		//der(Vy[i]) = (Fy[i]/weight);
 		
+		der(z[i]) = Vz[i];
+		der(Vz[i]) = (Fz[i]/weight) + (alignZ[i] + cohesionZ[i] + separateZ[i] + headingZ[i]);
+		//der(Vz[i]) = (Fz[i]/weight);
 	end for;
 
 

@@ -10,6 +10,8 @@ MonitorCollision col;
 
 CollisionAvoidance cad;
 
+PSO pso;
+
 equation 
 
 
@@ -25,30 +27,53 @@ equation
 		connect(ctr.x[i],drone.x[i]);
 		connect(ctr.y[i],drone.y[i]);
 		connect(ctr.z[i],drone.z[i]);
-/*
+
 		connect(ctr.Vx[i],drone.Vx[i]);
 		connect(ctr.Vy[i],drone.Vy[i]);
 		connect(ctr.Vz[i],drone.Vz[i]);
-*/
+
 		//connection tra info drone e modulo collision avoidance		
 		connect(cad.Vx[i],drone.Vx[i]);
 		connect(cad.Vy[i],drone.Vy[i]);
 		connect(cad.Vz[i],drone.Vz[i]);
-		connect(cad.x[i], ctr.x[i]);
-		connect(cad.y[i], ctr.y[i]);
-		connect(cad.z[i], ctr.z[i]);
+		connect(cad.x[i], drone.x[i]);
+		connect(cad.y[i], drone.y[i]);
+		connect(cad.z[i], drone.z[i]);
 		connect(cad.collision, col.outCollision);
 		
-		//passo la velocità del drone (previa verifica del modulo di collission avoidance) al controller
-		connect(ctr.Vx[i],cad.newVx[i]);
-		connect(ctr.Vy[i],cad.newVy[i]);
-		connect(ctr.Vz[i],cad.newVz[i]);
+		//connection tra pso e valori drone + posizione di arrivo
+		connect(pso.Vx[i],drone.Vx[i]);
+		connect(pso.Vy[i],drone.Vy[i]);
+		connect(pso.Vz[i],drone.Vz[i]);
+		connect(pso.x[i], drone.x[i]);
+		connect(pso.y[i], drone.y[i]);
+		connect(pso.z[i], drone.z[i]);
+		connect(pso.destX[i],p.setx[i]);
+		connect(pso.destY[i],p.sety[i]);
+		connect(pso.destZ[i],p.setz[i]);			
 
-			
+		//trasferisco la forza dal controller al drone
 		connect(drone.Trustx[i], ctr.Trustx[i]);
 		connect(drone.Trusty[i], ctr.Trusty[i]);
 		connect(drone.Trustz[i], ctr.Trustz[i]);
+
+		//Trasferisco la velocità calcolata dal monitor di flocking al drone
+		connect(drone.alignX[i], cad.alignX[i]);
+		connect(drone.alignY[i], cad.alignY[i]);
+		connect(drone.alignZ[i], cad.alignZ[i]);
+
+		connect(drone.separateX[i], cad.separateX[i]);
+		connect(drone.separateY[i], cad.separateY[i]);
+		connect(drone.separateZ[i], cad.separateZ[i]);
+
+		connect(drone.cohesionX[i], cad.cohesionX[i]);
+		connect(drone.cohesionY[i], cad.cohesionY[i]);
+		connect(drone.cohesionZ[i], cad.cohesionZ[i]);
 		
+		connect(drone.headingX[i], pso.velocityX[i]);
+		connect(drone.headingY[i], pso.velocityY[i]);
+		connect(drone.headingZ[i], pso.velocityZ[i]);
+
 		connect(col.x[i], drone.x[i]);
 		connect(col.y[i], drone.y[i]);
 		connect(col.z[i], drone.z[i]);

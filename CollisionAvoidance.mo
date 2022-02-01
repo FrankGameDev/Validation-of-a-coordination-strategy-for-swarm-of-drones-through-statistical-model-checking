@@ -3,7 +3,7 @@ QUESTO BLOCCO MODELLA L'ALGORITMO DI COLLISION AVOIDANCE BASATO SU UN ALGORITMO 
 */
 block CollisionAvoidance 
 	
-	parameter Real T = 0.5 "Timer controllo droni vicini";
+	parameter Real T = 1.0 "Timer controllo droni vicini";
 
 	InputReal x[K.N];
 	InputReal y[K.N];
@@ -15,38 +15,48 @@ block CollisionAvoidance
 
 	InputBool collision "Output del monitor che controlla le collisioni";
 
-	OutputReal newVx[K.N];
-	OutputReal newVy[K.N];
-	OutputReal newVz[K.N];
+	OutputReal alignX[K.N];
+	OutputReal alignY[K.N];
+	OutputReal alignZ[K.N];
 
-
-	Real alignX[K.N];
-	Real alignY[K.N];
-	Real alignZ[K.N];
-
-	Real cohesionX[K.N];
-	Real cohesionY[K.N];
-	Real cohesionZ[K.N];
+	OutputReal cohesionX[K.N];
+	OutputReal cohesionY[K.N];
+	OutputReal cohesionZ[K.N];
 	
-	Real separateX[K.N];
-	Real separateY[K.N];
-	Real separateZ[K.N];
+	OutputReal separateX[K.N];
+	OutputReal separateY[K.N];
+	OutputReal separateZ[K.N];
 	
 
 
-equation
 
-(alignX,alignY,alignZ) = align(x,y,z,Vx,Vy,Vz);
-(cohesionX,cohesionY,cohesionZ) = cohesion(x,y,z,Vx,Vy,Vz);
-(separateX,separateY,separateZ) = separate(x,y,z,Vx,Vy,Vz);
 
-for i in 1:K.N loop	
-	newVx[i] = Vx[i] + alignX[i] + cohesionX[i] + separateX[i];
-	newVy[i] = Vy[i] + alignY[i] + cohesionY[i] + separateY[i];
-	newVz[i] = Vz[i] + alignZ[i] + cohesionZ[i] + separateZ[i];
-end for;
+
+algorithm
+
+when initial() then
+
+alignX := fill(0.0,K.N);
+alignY := fill(0.0,K.N);
+alignZ := fill(0.0,K.N);
+
+cohesionX := fill(0.0,K.N);
+cohesionY := fill(0.0,K.N);
+cohesionZ := fill(0.0,K.N);
+
+separateX := fill(0.0,K.N);
+separateY := fill(0.0,K.N);
+separateZ := fill(0.0,K.N);
+end when;
+
+when sample(0,T) then
+
+	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz);
+	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz);
+	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz);
+
 	
-
+end when;
 
 end CollisionAvoidance;
 
@@ -91,7 +101,7 @@ sterring := zeros(K.N,3);
 				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
 				if(distance < distanzaDesiderata and distance > 0) then
 					diff := {x[i],y[i],z[i]} - {x[j],y[j],z[j]};
-					(diff[0],diff[1],diff[2]) := norm(diff[0],diff[1],diff[2]);
+					(diff[1],diff[2],diff[3]) := norm(diff[1],diff[2],diff[3]);
 					diff := diff / distance;
 					sterring[i] := sterring[i] + diff; 
 					total := total + 1;		
@@ -100,12 +110,12 @@ sterring := zeros(K.N,3);
 		end for;
 
 		if (total > 0) then
-			sterring[i] := div(sterring[i],total);
+			sterring[i] := sterring[i]/total;
 			
 		end if;
 		
-		if (magnitude(sterring[i,0],sterring[i,1], sterring[i,2]) > 0) then
-			(sterring[i,0],sterring[i,1],sterring[i,2]) := norm(sterring[i,0],sterring[i,1], sterring[i,2]);
+		if (magnitude(sterring[i,1],sterring[i,2], sterring[i,3]) > 0) then
+			(sterring[i,1],sterring[i,2],sterring[i,3]) := norm(sterring[i,1],sterring[i,2], sterring[i,3]);
 			sterring[i] := sterring[i] * K.maxSpeed;
 			sterring[i] := sterring[i] - {Vx[i],Vy[i],Vz[i]};
 			//Limita lo sterzo alla forza massima
@@ -113,9 +123,9 @@ sterring := zeros(K.N,3);
 	end for;
 
 for i in 1:K.N loop
-	outAx[i] := sterring[i,0];		
-	outAy[i] := sterring[i,1];	
-	outAz[i] := sterring[i,2];	
+	outAx[i] := sterring[i,1];		
+	outAy[i] := sterring[i,2];	
+	outAz[i] := sterring[i,3];	
 end for;
 
 end separate;
@@ -175,9 +185,9 @@ sterring := zeros(K.N,3);
 		end for;
 
 		if (total > 0) then
-			avg_velocity := div(avg_velocity,total);
+			avg_velocity := avg_velocity/total;
 			
-			(avg_velocity[0],avg_velocity[1],avg_velocity[2]) := norm(avg_velocity[0] , avg_velocity[1] , avg_velocity[2]);
+			(avg_velocity[1],avg_velocity[2],avg_velocity[3]) := norm(avg_velocity[1] , avg_velocity[2] , avg_velocity[3]);
 		
 			avg_velocity := avg_velocity * K.maxSpeed;
 
@@ -188,9 +198,9 @@ sterring := zeros(K.N,3);
 	end for;
 	
 for i in 1:K.N loop
-	outAx[i] := sterring[i,0];		
-	outAy[i] := sterring[i,1];	
-	outAz[i] := sterring[i,2];	
+	outAx[i] := sterring[i,1];		
+	outAy[i] := sterring[i,2];	
+	outAz[i] := sterring[i,3];	
 end for;
 
 end align;
@@ -246,7 +256,7 @@ for i in 1:K.N loop
 	if (total > 0) then
 		center := center / total;
 		vecToCom := center - {x[i],y[i],z[i]};
-		(vecToCom[0],vecToCom[1],vecToCom[2]) := norm(vecToCom[0],vecToCom[1],vecToCom[2]);
+		(vecToCom[1],vecToCom[2],vecToCom[3]) := norm(vecToCom[1],vecToCom[2],vecToCom[3]);
 		vecToCom := vecToCom * K.maxSpeed;
 		sterring[i] := vecToCom - {Vx[i],Vy[i],Vz[i]};
 		//limita la sterzata in base alla forza massima 	
@@ -254,9 +264,9 @@ for i in 1:K.N loop
 end for;
 
 for i in 1:K.N loop
-	outAx[i] := sterring[i,0];		
-	outAy[i] := sterring[i,1];	
-	outAz[i] := sterring[i,2];	
+	outAx[i] := sterring[i,1];		
+	outAy[i] := sterring[i,2];	
+	outAz[i] := sterring[i,3];	
 end for;
 
 end cohesion;	
@@ -295,9 +305,9 @@ algorithm
 	
 	magn := magnitude(Vx,Vy,Vz);
 	if(magn > 0) then
-	xNorm := div(Vx,magn);
-	yNorm := div(Vy,magn);
-	zNorm := div(Vz,magn); 
+	xNorm := Vx/magn;
+	yNorm := Vy/magn;
+	zNorm := Vz/magn; 
 	end if;
 
 end norm;

@@ -7,7 +7,16 @@ getErrorString();
 loadFile("constants.mo");
 getErrorString();
 
+loadFile("randgen.mo");
+getErrorString();
+
 loadFile("euclideanDistance.mo");
+getErrorString();
+
+loadFile("extFunction.mo");
+getErrorString();
+
+loadFile("fitnessFunction.mo");
 getErrorString();
 
 loadFile("drone.mo");
@@ -19,6 +28,9 @@ getErrorString();
 loadFile("CollisionAvoidance.mo");
 getErrorString();
 
+loadFile("psoController.mo");
+getErrorString();
+
 loadFile("setPoint.mo");
 getErrorString();
 
@@ -28,7 +40,7 @@ getErrorString();
 loadFile("system.mo");
 getErrorString();
 
-setCommandLineOptions("-d=initialization");
+setCommandLineOptions("-d=initialization,showEquationSource --showErrorMessages");
 getErrorString();
 
 simulate(System, stopTime=20);

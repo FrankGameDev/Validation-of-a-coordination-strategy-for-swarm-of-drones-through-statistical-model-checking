@@ -15,9 +15,9 @@ block MonitorCollision
 	OutputBool outCollision;
 
 
-initial equation
-	distEucl = 0.0;
-	outCollision = false;
+initial algorithm
+	distEucl := 0.0;
+	outCollision := false;
 
 algorithm
 
