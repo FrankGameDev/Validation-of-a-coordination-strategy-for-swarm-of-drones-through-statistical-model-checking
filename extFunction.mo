@@ -14,17 +14,17 @@ algorithm
 	VyCap := Vy;
 	VzCap := Vz;
 
-	if (Vx > maxSpeed) then 
+	if (Vx > K.maxSpeed) then 
 		if(Vx > 0) then VxCap := K.maxSpeed;
 		else VxCap := -K.maxSpeed;
 		end if;	
 	end if;
-	if (Vy > maxSpeed) then 
+	if (Vy > K.maxSpeed) then 
 		if(Vy > 0) then VyCap := K.maxSpeed;
 		else VyCap := -K.maxSpeed;
 		end if;	
 	end if;
-	if (Vz > maxSpeed) then 
+	if (Vz > K.maxSpeed) then 
 		if(Vz > 0) then VzCap := K.maxSpeed;
 		else VzCap := -K.maxSpeed;	
 		end if;	
