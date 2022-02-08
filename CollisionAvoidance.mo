@@ -36,17 +36,18 @@ algorithm
 
 when initial() then
 
-alignX := fill(0.0,K.N);
-alignY := fill(0.0,K.N);
-alignZ := fill(0.0,K.N);
+alignX := zeros(K.N);
+alignY := zeros(K.N);
+alignZ := zeros(K.N);
 
-cohesionX := fill(0.0,K.N);
-cohesionY := fill(0.0,K.N);
-cohesionZ := fill(0.0,K.N);
+cohesionX := zeros(K.N);
+cohesionY := zeros(K.N);
+cohesionZ := zeros(K.N);
 
-separateX := fill(0.0,K.N);
-separateY := fill(0.0,K.N);
-separateZ := fill(0.0,K.N);
+separateX := zeros(K.N);
+separateY := zeros(K.N);
+separateZ := zeros(K.N);
+
 end when;
 
 when sample(0,T) then
@@ -96,28 +97,41 @@ algorithm
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
 		total := 0;
+		//print("separate i = " + String(i)+ "\n");
 		for j in 1:K.N loop
 			if(i <> j) then
 				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
-				if(distance < distanzaDesiderata and distance > 0) then
-					diff := {x[i],y[i],z[i]} - {x[j],y[j],z[j]};
+				if(distance < K.dDistance and distance > 0) then
+					diff[1] := x[i] - x[j];
+					diff[2] := y[i] - y[j];
+					diff[3] := z[i] - z[j];
 					(diff[1],diff[2],diff[3]) := norm(diff[1],diff[2],diff[3]);
 					diff := diff / distance;
-					sterring[i] := sterring[i] + diff; 
-					total := total + 1;		
+					sterring[i,1] := sterring[i,1] + diff[1];
+					sterring[i,2] := sterring[i,2] + diff[2];
+					sterring[i,3] := sterring[i,3] + diff[3]; 
+					total := total + 1;	
+					//print("cohesion i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");		
 				end if;
 			end if;
 		end for;
 
 		if (total > 0) then
-			sterring[i] := sterring[i]/total;
+			sterring[i,1] := sterring[i,1]/total;
+			sterring[i,2] := sterring[i,2]/total;
+			sterring[i,3] := sterring[i,3]/total;
 			
 		end if;
 		
 		if (magnitude(sterring[i,1],sterring[i,2], sterring[i,3]) > 0) then
 			(sterring[i,1],sterring[i,2],sterring[i,3]) := norm(sterring[i,1],sterring[i,2], sterring[i,3]);
-			sterring[i] := sterring[i] * K.maxSpeed;
-			sterring[i] := sterring[i] - {Vx[i],Vy[i],Vz[i]};
+			sterring[i,1] := sterring[i,1] * K.maxSpeed;
+			sterring[i,2] := sterring[i,2] * K.maxSpeed;
+			sterring[i,3] := sterring[i,3] * K.maxSpeed;
+			//print("moltiplicato sterring per max speed");
+			sterring[i,1] := sterring[i,1] - Vx[i];
+			sterring[i,2] := sterring[i,2] - Vy[i];
+			sterring[i,3] := sterring[i,3] - Vz[i];
 			//Limita lo sterzo alla forza massima
 		end if;
 	end for;
@@ -161,7 +175,7 @@ function align "Calcola, per tutti i droni, la direzione da seguire per mantener
 	//Distanza tra 2 drone	 
 	 Real tmpMagn;
 
-	 Real distanzaDesiderata = 10.0 ; //Distanza desiderata da droni vicini
+	 Real distance; //Distanza desiderata da droni vicini
 
 
 	
@@ -177,22 +191,23 @@ sterring := zeros(K.N,3);
 				Calcolo la magnitudine del vettore e lo normalizzo. Se la lunghezza è minore della distanza 
 				desiderata da ciascun altro drone, aggiungo il drone seguente al totale e calcolo la velocità media
 				*/
-				if(euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]) < distanzaDesiderata) then 
+				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
+				if(distance < K.dDistance and distance > 0) then 
 					avg_velocity := avg_velocity + {Vx[j],Vy[j],Vz[j]};
 					total:= total + 1;
-				end if;				
+				end if;	
+			//print("align i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");	
 			end if;
 		end for;
-
+		//print("align i = " + String(i) + "\n");
 		if (total > 0) then
 			avg_velocity := avg_velocity/total;
-			
 			(avg_velocity[1],avg_velocity[2],avg_velocity[3]) := norm(avg_velocity[1] , avg_velocity[2] , avg_velocity[3]);
-		
 			avg_velocity := avg_velocity * K.maxSpeed;
 
-			sterring[i] := avg_velocity - {Vx[i],Vy[i],Vz[i]};
-			
+			sterring[i,1] := avg_velocity[1] - Vx[i];
+			sterring[i,2] := avg_velocity[2] - Vy[i];
+			sterring[i,3] := avg_velocity[3] - Vz[i];
 			//limitare lo sterzo in base alla massima forza applicabile
 		end if;
 	end for;
@@ -236,6 +251,8 @@ function cohesion "Permette di calcolare la direzione che ogni singolo drone dev
 		Real vecToCom[3];
 
 		Real tmpVect[3];
+		
+		Real distance;
 
 algorithm
 
@@ -246,19 +263,24 @@ for i in 1:K.N loop
 	total := 0;
 	for j in 1:K.N loop
 		if(i <> j) then	
-			if(euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]) < 10) then 	
+			distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]); 
+			if(distance < K.dDistance and distance > 0) then 	
 				center := center + {x[j], y[j], z[j]};		
 				total := total + 1;	
 			end if;
 		end if;
 	end for;
-	
+	//print("cohesion i = " + String(i)+ "\n");	
 	if (total > 0) then
 		center := center / total;
 		vecToCom := center - {x[i],y[i],z[i]};
 		(vecToCom[1],vecToCom[2],vecToCom[3]) := norm(vecToCom[1],vecToCom[2],vecToCom[3]);
 		vecToCom := vecToCom * K.maxSpeed;
-		sterring[i] := vecToCom - {Vx[i],Vy[i],Vz[i]};
+		//print("ho calcolato avg \n");
+		sterring[i,1] := vecToCom[1] - Vx[i];
+		sterring[i,2] := vecToCom[2] - Vy[i];
+		sterring[i,3] := vecToCom[3] - Vz[i];
+		//print("ho calcolato sterring\n");
 		//limita la sterzata in base alla forza massima 	
 	end if;	
 end for;

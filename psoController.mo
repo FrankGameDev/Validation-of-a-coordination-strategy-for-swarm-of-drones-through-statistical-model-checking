@@ -52,7 +52,7 @@ OutputReal velocityZ[K.N];
 algorithm
 
 when initial() then
-	globFitness := 1000000000.0;
+	globFitness := 1000000.0;
 	swarmFitness := allFitness(x,y,z,destX,destY,destZ);
 	best_droneFit := swarmFitness;
 	
@@ -68,7 +68,6 @@ when initial() then
 		bestPos[i,1] := x[i];
 		bestPos[i,2] := y[i];
 		bestPos[i,3] := z[i];
-		
 	end for;
 	velocityX := zeros(K.N);
 	velocityY := zeros(K.N);
@@ -86,11 +85,9 @@ when sample(0.5,T) then
 		//r1 := myrandom();
 		//r2 := myrandom();
 		
-
 		velocityX[i] := ((w*Vx[i]) + (c1*r1* (bestPos[i,1] - x[i])) + (c2*r2* (bestSwarmPos[i,1] - x[i])));
 		velocityY[i] := ((w*Vy[i]) + (c1*r1* (bestPos[i,2] - y[i])) + (c2*r2* (bestSwarmPos[i,2] - y[i])));
 		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (bestPos[i,3] - z[i])) + (c2*r2* (bestSwarmPos[i,3] - z[i])));
-
 		// velocity cap
 		//(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i]);
 		
@@ -104,8 +101,8 @@ when sample(0.5,T) then
 				bestPos[j,2] := y[i];
 				bestPos[j,3] := z[i];
 			end for;
+
 		end if;
-		
 		//Se la nuova posizione è la migliore del gruppo(gbest), allora modifico
 		if (swarmFitness[i] < globFitness) then
 			globFitness := swarmFitness[i];

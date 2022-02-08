@@ -18,7 +18,7 @@ equation
 	for i in 1:K.N loop
 		
 		//Punto di arrivo
-
+		
 		connect(ctr.setx[i],p.setx[i]);
 		connect(ctr.sety[i],p.sety[i]);
 		connect(ctr.setz[i],p.setz[i]);

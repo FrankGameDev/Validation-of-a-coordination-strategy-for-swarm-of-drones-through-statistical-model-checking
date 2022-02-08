@@ -10,12 +10,20 @@ import DyMat as dm
 import json
 
 #n_drones = numero droni
-def sweep(n):
+def sweep():
 	#Importa il file .mat e estrapola i dati richiesti
 	d = dm.DyMatFile('System_res.mat')
 	
 	# da implementare: n_drones = d.data("K.N").item();
-
+	n = 0
+	with open("constants.mo","r") as f:
+		line = f.readlines()
+		for x in line:
+			i = x.find("constant Integer N")
+			if (i > -1):
+				n = int(x.split(";")[0][-1])
+				print(n)
+			
 
 	drones=dict()
 

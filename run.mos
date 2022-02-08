@@ -13,9 +13,6 @@ getErrorString();
 loadFile("euclideanDistance.mo");
 getErrorString();
 
-loadFile("extFunction.mo");
-getErrorString();
-
 loadFile("fitnessFunction.mo");
 getErrorString();
 
@@ -40,7 +37,7 @@ getErrorString();
 loadFile("system.mo");
 getErrorString();
 
-setCommandLineOptions("-d=initialization,showEquationSource --showErrorMessages");
+setCommandLineOptions("-d=initialization");
 getErrorString();
 
 simulate(System, stopTime=20);

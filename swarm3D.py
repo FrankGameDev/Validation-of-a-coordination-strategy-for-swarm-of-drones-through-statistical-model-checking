@@ -14,7 +14,7 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d') #creo il grafico
 
-cs.sweep(2) #converto il file mat in json
+cs.sweep() #converto il file mat in json
 
 with open("simulation.json", "r") as f: #Apro il file json e estraggo il dizionario
 	data = json.load(f)
@@ -23,8 +23,10 @@ with open("simulation.json", "r") as f: #Apro il file json e estraggo il diziona
 
 
 #Per ogni drone disegno la sua traiettoria
-for k in data:		
-	ax.plot(data[k]["x"],data[k]["y"],data[k]["z"])
+for k in data:	
+	for i in range(0,len(data[k]["x"]),5):
+		ax.scatter(data[k]["x"][i],data[k]["y"][i],data[k]["z"][i])
+
 
 plt.show()
 
