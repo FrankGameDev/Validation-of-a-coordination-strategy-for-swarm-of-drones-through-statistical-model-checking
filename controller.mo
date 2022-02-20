@@ -28,13 +28,22 @@ OutputReal Trustx[K.N];
 OutputReal Trusty[K.N];
 OutputReal Trustz[K.N];
 
+OutputBool travelState;
 
 algorithm
 
+when initial() then
+	travelState := false;
+end when;
+
 for i in 1:K.N loop
-    Trustx[i] := K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
-    Trusty[i] := K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
-    Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
+	Trustx[i] := K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
+	Trusty[i] := K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
+    	Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
+
+	if(euclideanDistance(x[i],y[i],z[i],setx[i],sety[i],setz[i]) == 0) then travelState := true;
+	else travelState := false;	
+	end if;
 end for;
 
 

@@ -21,7 +21,8 @@ def sweep():
 		for x in line:
 			i = x.find("constant Integer N")
 			if (i > -1):
-				n = int(x.split(";")[0][-1])
+				print(x.split(";")[0].split("=")[1])
+				n = int(x.split(";")[0].split("=")[1])
 				print(n)
 			
 

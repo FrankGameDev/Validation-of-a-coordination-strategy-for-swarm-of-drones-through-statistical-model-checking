@@ -69,6 +69,9 @@ block Drone
 	InputReal headingY[K.N];
 	InputReal headingZ[K.N];
 
+	//Stato del volo dei droni. Se arrivati a destinazione diventa true, altrimenti false
+	InputBool travelState;
+
 	//Posizione sull'asse x
 	OutputReal x[K.N];
 
@@ -97,8 +100,15 @@ block Drone
 	//Velocità su z
 	OutputReal Vz[K.N];
 
-	
+//Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
+//La somma dei vari pesi degli attributi deve essere uguale a 1.
+	parameter Real cohesionWeight = 1;	
+	parameter Real alignWeight = 6;
+	parameter Real separateWeight = 6;
+	parameter Real headingWeight = 10;
+	parameter Real vWeight = 5;
+	//Real inertiaWeight;
 
 initial equation
 	
@@ -115,10 +125,7 @@ initial equation
 		Vz[i] = 0;
 	end for;
 
-
 	
-	//outWeight = weight;
-
 
 equation
 	/*
@@ -135,20 +142,21 @@ equation
 
 
 	for i in 1:K.N loop
+		
 
 		der(x[i]) = Vx[i];
 
-		der(Vx[i]) = (Fx[i]/weight) + (alignX[i] + cohesionX[i] + separateX[i] + headingX[i]); 
-		//der(Vx[i]) = (Fx[i]/weight);
+		der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+		//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
 
 		der(y[i]) = Vy[i];
 
-		der(Vy[i]) = (Fy[i]/weight) + (alignY[i] + cohesionY[i] + separateY[i] + headingY[i]);
-		//der(Vy[i]) = (Fy[i]/weight);
+		der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+		//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
 		
 		der(z[i]) = Vz[i];
-		der(Vz[i]) = (Fz[i]/weight) + (alignZ[i] + cohesionZ[i] + separateZ[i] + headingZ[i]);
-		//der(Vz[i]) = (Fz[i]/weight);
+		der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+		//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
 	end for;
 
 
