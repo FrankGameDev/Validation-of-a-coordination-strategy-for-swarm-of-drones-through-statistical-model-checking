@@ -1,7 +1,7 @@
 block PSO
 	
 //tempo di aggiornamento del pso
-parameter Real T = 1;
+parameter Real T = 2.5;
 
 //tendenza dei droni di rimanere alla velocità del precedente timestamp
 parameter Real w = 0.6;
@@ -73,23 +73,20 @@ when initial() then
 	velocityY := zeros(K.N);
 	velocityZ := zeros(K.N);
 
-	r1 := 0.5;
-	r2 := 0.4;
-
 end when;
 
 
 when sample(0.5,T) then
 	for i in 1:K.N loop
 		
-		//r1 := myrandom();
-		//r2 := myrandom();
+		r1 := myrandom();
+		r2 := myrandom();
 		
 		velocityX[i] := ((w*Vx[i]) + (c1*r1* (bestPos[i,1] - x[i])) + (c2*r2* (bestSwarmPos[i,1] - x[i])));
 		velocityY[i] := ((w*Vy[i]) + (c1*r1* (bestPos[i,2] - y[i])) + (c2*r2* (bestSwarmPos[i,2] - y[i])));
 		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (bestPos[i,3] - z[i])) + (c2*r2* (bestSwarmPos[i,3] - z[i])));
-		// velocity cap
-		//(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i]);
+		//velocity cap
+		(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i]);
 		
 		swarmFitness[i] := fitness(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
 
@@ -116,6 +113,51 @@ when sample(0.5,T) then
 end when;
 
 end PSO;
+
+//Valuta il valore di fitness del singolo drone
+function fitness
+//posizione droni
+InputReal x;
+InputReal y;
+InputReal z;
+
+//posizione destinazione
+InputReal destX;
+InputReal destY;
+InputReal destZ;
+
+OutputReal fitvalue;
+
+algorithm
+	fitvalue := euclideanDistance(x,y,z,destX,destY,destZ);
+	
+end fitness;
+
+//Valuta, in base alla distanza con il punto di arrivo, un punteggio per migliorare l'ottimizzazione del pso
+//più è basso, più è ottimizzato
+
+//Possibile migliorarlo aggiungendo una penalità se il percorso è ostruito da ostacoli
+function allFitness
+
+//posizione droni
+InputReal x[K.N];
+InputReal y[K.N];
+InputReal z[K.N];
+
+//posizione destinazione
+InputReal destX[K.N];
+InputReal destY[K.N];
+InputReal destZ[K.N];
+
+OutputReal fitValue[K.N];
+
+algorithm 
+	
+	for i in 1:K.N loop
+		fitValue[i] := euclideanDistance(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
+	end for;
+
+end allFitness;
 
 
 

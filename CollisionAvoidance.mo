@@ -3,7 +3,7 @@ QUESTO BLOCCO MODELLA L'ALGORITMO DI COLLISION AVOIDANCE BASATO SU UN ALGORITMO 
 */
 block CollisionAvoidance 
 	
-	parameter Real T = 1.0 "Timer controllo droni vicini";
+	parameter Real T = 0.5 "Timer controllo droni vicini";
 
 	InputReal x[K.N];
 	InputReal y[K.N];

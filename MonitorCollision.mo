@@ -27,7 +27,7 @@ when sample(0,T) then
 				distEucl := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);		
 				//distEucl := euclideanDistance(drones[i].x,drones[i].y,drones[i].z,drones[j].x,drones[j].y,drones[j].z);		
 				//Se la distanza tra 2 droni è minore della distanza massima dell'IDD, collision diventa true
-				outCollision := (distEucl < K.dDistance); 
+				outCollision := (distEucl < 1.5); 
 			end if;
 		end for;
 	end for;

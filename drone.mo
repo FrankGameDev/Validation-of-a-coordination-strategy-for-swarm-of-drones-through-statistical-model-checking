@@ -146,17 +146,20 @@ equation
 
 		der(x[i]) = Vx[i];
 
-		der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+		der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight); 
 		//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
 
 		der(y[i]) = Vy[i];
 
-		der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+		der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight);
 		//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
 		
 		der(z[i]) = Vz[i];
-		der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+		der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight);
 		//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
+		
+
+//		print("Vx = " + String(Vx[i]) + " Vy = "+ String(Vy[i]) + " Vz = " + String(Vz[i]) +"\n");
 	end for;
 
 

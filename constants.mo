@@ -10,6 +10,6 @@ constant Real m = 0.895;
 constant Real maxSpeed = 15.0;
 
 //Distanza da mantenere tra ogni drone
-constant Real dDistance = 5; 
+constant Real dDistance = 1.5; 
 
 end K;

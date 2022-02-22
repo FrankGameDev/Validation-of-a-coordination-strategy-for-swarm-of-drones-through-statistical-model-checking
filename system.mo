@@ -61,18 +61,33 @@ equation
 		connect(drone.alignX[i], cad.alignX[i]);
 		connect(drone.alignY[i], cad.alignY[i]);
 		connect(drone.alignZ[i], cad.alignZ[i]);
-
+		/*print("align x = " + String(cad.alignX[i]) + "\n");
+		print("align y = " + String(cad.alignY[i])+ "\n");	
+		print("align z = " + String(cad.alignZ[i])+ "\n");
+*/
 		connect(drone.separateX[i], cad.separateX[i]);
 		connect(drone.separateY[i], cad.separateY[i]);
 		connect(drone.separateZ[i], cad.separateZ[i]);
-
+		/*print("separate x = " + String(cad.separateX[i])+ "\n");
+		print("separate y = " + String(cad.separateY[i])+ "\n");
+		print("separate Z = " + String(cad.separateZ[i])+ "\n");
+		*/	
 		connect(drone.cohesionX[i], cad.cohesionX[i]);
 		connect(drone.cohesionY[i], cad.cohesionY[i]);
 		connect(drone.cohesionZ[i], cad.cohesionZ[i]);
-		
+		/*print("cohesion x = " + String(cad.cohesionX[i])+ "\n");
+		print("cohesion y = " + String(cad.cohesionY[i])+ "\n");
+		print("cohesion Z = " + String(cad.cohesionZ[i])+ "\n");
+*/		
 		connect(drone.headingX[i], pso.velocityX[i]);
 		connect(drone.headingY[i], pso.velocityY[i]);
 		connect(drone.headingZ[i], pso.velocityZ[i]);
+		/*print("heading x = " + String(pso.velocityX[i])+ "\n");
+		print("heading y = " + String(pso.velocityY[i])+ "\n");
+		print("heading Z = " + String(pso.velocityZ[i])+ "\n");
+*/
+
+		connect(drone.travelState, ctr.travelState);		
 
 		connect(col.x[i], drone.x[i]);
 		connect(col.y[i], drone.y[i]);
