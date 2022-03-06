@@ -12,12 +12,14 @@ CollisionAvoidance cad;
 
 PSO pso;
 
+Communication com;
+
 equation 
 
 
 	for i in 1:K.N loop
 		
-		//Punto di arrivo
+		//Connection Controller
 		
 		connect(ctr.setx[i],p.setx[i]);
 		connect(ctr.sety[i],p.sety[i]);
@@ -40,7 +42,10 @@ equation
 		connect(cad.y[i], drone.y[i]);
 		connect(cad.z[i], drone.z[i]);
 		connect(cad.collision, col.outCollision);
-		
+		for j in 1:K.N loop
+			connect(cad.neighbours[i,j], drone.neighbours[i,j]);
+		end for;
+
 		//connection tra pso e valori drone + posizione di arrivo
 		connect(pso.Vx[i],drone.Vx[i]);
 		connect(pso.Vy[i],drone.Vy[i]);
@@ -50,7 +55,20 @@ equation
 		connect(pso.z[i], drone.z[i]);
 		connect(pso.destX[i],p.setx[i]);
 		connect(pso.destY[i],p.sety[i]);
-		connect(pso.destZ[i],p.setz[i]);			
+		connect(pso.destZ[i],p.setz[i]);
+	
+		
+
+		//connection tra modulo di comunicazione e PSO
+		connect(com.gBestFit[i], pso.globFitness[i]);
+		connect(com.gBestPos[i], pso.gBestPos[i]);
+		connect(com.tmpFit[i], pso.tmpFit[i]);
+		for j in 1:K.N loop
+			connect(com.neighbours[i,j], drone.neighbours[i,j]);
+		end for;
+
+		connect(pso.InglobFitness[i], com.outGbestFit[i]);
+		connect(pso.IngBestPos[i], com.outGbestPos[i]);
 
 		//trasferisco la forza dal controller al drone
 		connect(drone.Trustx[i], ctr.Trustx[i]);
@@ -87,7 +105,7 @@ equation
 		print("heading Z = " + String(pso.velocityZ[i])+ "\n");
 */
 
-		connect(drone.travelState, ctr.travelState);		
+		//Connect monitor collisione
 
 		connect(col.x[i], drone.x[i]);
 		connect(col.y[i], drone.y[i]);

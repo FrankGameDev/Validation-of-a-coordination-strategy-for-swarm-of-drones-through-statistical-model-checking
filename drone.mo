@@ -69,8 +69,7 @@ block Drone
 	InputReal headingY[K.N];
 	InputReal headingZ[K.N];
 
-	//Stato del volo dei droni. Se arrivati a destinazione diventa true, altrimenti false
-	InputBool travelState;
+	
 
 	//Posizione sull'asse x
 	OutputReal x[K.N];
@@ -100,6 +99,9 @@ block Drone
 	//Velocità su z
 	OutputReal Vz[K.N];
 
+	//Array contenente informazioni sui vicini al drone i-esimo
+	OutputBool neighbours[K.N,K.N];
+
 //Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
 //La somma dei vari pesi degli attributi deve essere uguale a 1.
@@ -115,7 +117,7 @@ initial equation
 	for i in 1:K.N loop
 		x[i] = 0;
 		y[i] = 0;
-		z[i]= 5+i;
+		z[i]= 5+i+K.dDistance;
 	end for;
 
 
@@ -123,9 +125,7 @@ initial equation
 		Vx[i] = 0;
 		Vy[i] = 0;
 		Vz[i] = 0;
-	end for;
-
-	
+	end for;	
 
 equation
 	/*
@@ -133,7 +133,8 @@ equation
 	* f= m der(v)
 	* v = der(x)
 	*/
-
+	
+	
 	for i in 1:K.N loop 
 		Fx[i] = Trustx[i];	
 		Fy[i] = Trusty[i];
@@ -163,6 +164,26 @@ equation
 	end for;
 
 
+
+algorithm
+when initial() then
+	for i in 1:K.N loop
+		neighbours[i] := fill(true, K.N);
+		for j in 1:K.N loop
+			print("drone " + String(i) + "," + String(j) + ": " + String(neighbours[i,j])+"\n"); 		
+		end for;
+	end for;
+end when;
+
+when sample(0,T) then
+	for i in 1:K.N loop
+		neighbours[i] := findNearDrones(x[i], y[i], z[i], x,y,z);
+	end for;
+end when;
+	
 	
 end Drone;
+
+
+
 

@@ -1,7 +1,7 @@
-block PSO
+block PSO "Modulo di controllo dell'algoritmo di pathfinding"
 	
 //tempo di aggiornamento del pso
-parameter Real T = 2.5;
+parameter Real T = 5;
 
 //tendenza dei droni di rimanere alla velocità del precedente timestamp
 parameter Real w = 0.6;
@@ -25,24 +25,37 @@ InputReal Vx[K.N];
 InputReal Vy[K.N];
 InputReal Vz[K.N];
 
+//global fitness e global position sono calcolate tramite il modulo di comunicazione
+
+//Global fitnessValue. La gBest fit è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
+InputReal InglobFitness[K.N];
+
+//Migliore posizione globale.La gBest pos è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
+InputReal IngBestPos[K.N,3];
+
+
+//CAMPI DI OUTPUT
+
 //Migliore posizione individuale
-Real bestPos[K.N,3];
+Real pBestPos[K.N,3];
 
-//Migliore posizione globale
-Real bestSwarmPos[K.N,3];
-
-//drones fitness value
-Real swarmFitness[K.N];
+//Migliore posizione globale.La gBest pos è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
+OutputReal gBestPos[K.N,3];
 
 //migliore fitness value personale
-Real best_droneFit[K.N];
+Real pBestFit[K.N];
 
-//Global fitnessValue
-Real globFitness;
+//Global fitnessValue. La gBest fit è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
+OutputReal globFitness[K.N];
+
+//Variabile temporanea per il calcolo e confronto della fitness value
+OutputReal tmpFit[K.N];
 
 //valori random per calcolare velocità
 Real r1;
 Real r2;
+
+
 
 OutputReal velocityX[K.N];
 OutputReal velocityY[K.N];
@@ -52,64 +65,66 @@ OutputReal velocityZ[K.N];
 algorithm
 
 when initial() then
-	globFitness := 1000000.0;
-	swarmFitness := allFitness(x,y,z,destX,destY,destZ);
-	best_droneFit := swarmFitness;
+	globFitness := fill(1000000.0,K.N);
+	pBestFit := fill(1000000.0, K.N);
+	pBestPos := zeros(K.N,3);
+	gBestPos := zeros(K.N,3);
 	
+	tmpFit := allFitness(x,y,z,destX,destY,destZ);	
+
 	for i in 1:K.N loop
-		if (swarmFitness[i] < globFitness) then
-			globFitness := swarmFitness[i];
-			for j in 1:K.N loop
-				bestSwarmPos[j,1] := x[i];
-				bestSwarmPos[j,2] := y[i];
-				bestSwarmPos[j,3] := z[i];
-			end for;
+		
+		//Confronto e setup Pbest
+
+		if(pBestFit[i] > tmpFit[i]) then
+			pBestFit[i] := tmpFit[i];
+			pBestPos[i] := {x[i],y[i],z[i]};
 		end if;
-		bestPos[i,1] := x[i];
-		bestPos[i,2] := y[i];
-		bestPos[i,3] := z[i];
+	
+		//Aggiornamento gBests da inviare al modulo di comunicazione
+		if(globFitness[i] > tmpFit[i]) then
+			globFitness[i] := tmpFit[i];
+			gBestPos[i] := {x[i],y[i],z[i]};
+		end if;
+	
 	end for;
 	velocityX := zeros(K.N);
 	velocityY := zeros(K.N);
 	velocityZ := zeros(K.N);
 
+
 end when;
 
 
-when sample(0.5,T) then
-	for i in 1:K.N loop
-		
-		r1 := myrandom();
-		r2 := myrandom();
-		
-		velocityX[i] := ((w*Vx[i]) + (c1*r1* (bestPos[i,1] - x[i])) + (c2*r2* (bestSwarmPos[i,1] - x[i])));
-		velocityY[i] := ((w*Vy[i]) + (c1*r1* (bestPos[i,2] - y[i])) + (c2*r2* (bestSwarmPos[i,2] - y[i])));
-		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (bestPos[i,3] - z[i])) + (c2*r2* (bestSwarmPos[i,3] - z[i])));
-		//velocity cap
-		(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i]);
-		
-		swarmFitness[i] := fitness(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
+when sample(0,T) then
 
-		//Se la nuova posizione è la migliore(pbest) per tutti i droni, allora sostituiscila
-		if (swarmFitness[i] < best_droneFit[i]) then
-			best_droneFit[i] := swarmFitness[i];
-			for j in 1:K.N loop
-				bestPos[j,1] := x[i];
-				bestPos[j,2] := y[i];
-				bestPos[j,3] := z[i];
-			end for;
+tmpFit := allFitness(x,y,z,destX,destY,destZ);	
+for i in 1:K.N loop
 
-		end if;
-		//Se la nuova posizione è la migliore del gruppo(gbest), allora modifico
-		if (swarmFitness[i] < globFitness) then
-			globFitness := swarmFitness[i];
-			for j in 1:K.N loop
-				bestSwarmPos[j,1] := x[i];
-				bestSwarmPos[j,2] := y[i];
-				bestSwarmPos[j,3] := z[i];
-			end for;
-		end if;	
-	end for;
+	//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
+	if(pBestFit[i] > tmpFit[i]) then
+		pBestFit[i] := tmpFit[i];
+		pBestPos[i] := {x[i],y[i],z[i]};
+	end if;
+
+	//Aggiornamento gBests da inviare al modulo di comunicazione
+	if(globFitness[i] > tmpFit[i]) then
+		globFitness[i] := tmpFit[i];
+		gBestPos[i] := {x[i],y[i],z[i]};
+	end if;
+
+	r1 := myrandom();
+	r2 := myrandom();
+	
+	velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (IngBestPos[i,1] - x[i])));
+	velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (IngBestPos[i,2] - y[i])));
+	velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (IngBestPos[i,3] - z[i])));
+	//velocity cap
+	(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i]);
+	
+end for;
+	
+
 end when;
 
 end PSO;
@@ -154,10 +169,11 @@ OutputReal fitValue[K.N];
 algorithm 
 	
 	for i in 1:K.N loop
-		fitValue[i] := euclideanDistance(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
+		fitValue[i] := fitness(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
 	end for;
 
 end allFitness;
+
 
 
 

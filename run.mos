@@ -10,9 +10,6 @@ getErrorString();
 loadFile("randgen.mo");
 getErrorString();
 
-loadFile("euclideanDistance.mo");
-getErrorString();
-
 loadFile("extFunction.mo");
 getErrorString();
 
@@ -23,6 +20,9 @@ loadFile("MonitorCollision.mo");
 getErrorString();
 
 loadFile("CollisionAvoidance.mo");
+getErrorString();
+
+loadFile("communication.mo");
 getErrorString();
 
 loadFile("psoController.mo");

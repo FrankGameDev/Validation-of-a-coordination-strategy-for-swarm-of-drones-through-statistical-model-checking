@@ -2,9 +2,9 @@ block SetPoint
 	
 	parameter Real T = 15 "tempo di aggiornamento del punto di arrivo";
 
-	Real height = 50.0;
-	Real lenght = 50.0;	
-	Real profondity = 50.0;	
+	Real height = 100.0;
+	Real lenght = 100.0;	
+	Real profondity = 100.0;	
 		
 	Real rand;
 
@@ -29,15 +29,30 @@ algorithm
 	end for;
 */
 
+
+//posizione di arrivo totalmente random
 when sample(0,T) then
 	rand := myrandom();
 	for i in 1:K.N loop
-		setx[i] := rand * lenght + K.dDistance + i;
-		sety[i] := rand * profondity + K.dDistance + i;	
-		setz[i] := rand * height + K.dDistance + i;
+		setx[i] := myrandom() * lenght + K.dDistance*i;
+		sety[i] := myrandom() * profondity + K.dDistance*i;	
+		setz[i] := myrandom() * height + K.dDistance*i;
 	end for;
 	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
 end when;
-	
+
+
+/*
+//arrivo in fila
+when sample(0,T) then
+	rand := myrandom();
+	for i in 1:K.N loop
+		setx[i] := rand * lenght + K.dDistance*i;
+		sety[i] := rand * profondity + K.dDistance*i;	
+		setz[i] := rand * height + K.dDistance*i;
+	end for;
+	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
+end when;
+	*/
 
 end SetPoint;

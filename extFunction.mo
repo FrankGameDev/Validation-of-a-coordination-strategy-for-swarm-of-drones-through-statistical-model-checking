@@ -70,3 +70,51 @@ algorithm
 	end if;
 
 end norm;
+
+function findNearDrones "Restituisce una lista contenente tutti i droni vicini data una distanza prestabilita"
+	
+	InputReal x;
+	InputReal y;
+	InputReal z;
+
+	InputReal x2[K.N];
+	InputReal y2[K.N];
+	InputReal z2[K.N];
+
+	OutputBool neighbours[K.N];
+
+	protected
+		Real euclDist;
+
+algorithm
+	
+	for i in 1:K.N loop
+		euclDist := euclideanDistance(x,y,z,x2[i],y2[i],z2[i]);
+		if(euclDist <= K.IDD and euclDist > 0) then
+			neighbours[i] := true;
+		else neighbours[i] := false;
+		end if;	
+	end for; 
+
+end findNearDrones;
+
+function euclideanDistance
+	
+	//Drone 1
+	InputReal x1;
+	InputReal y1;
+	InputReal z1;
+	
+	//Drone 2
+	InputReal x2;
+	InputReal y2;
+	InputReal z2;
+
+	OutputReal dist; 
+
+algorithm
+	
+	dist := sqrt((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2);	
+	
+
+end euclideanDistance;
