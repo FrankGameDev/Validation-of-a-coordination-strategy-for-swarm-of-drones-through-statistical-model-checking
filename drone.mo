@@ -65,11 +65,25 @@ block Drone
 	InputReal separateZ[K.N];
 	
 	//direzione da prendere in aggiunta alla velocità, generata dal PSO
+/*
 	InputReal headingX[K.N];
 	InputReal headingY[K.N];
 	InputReal headingZ[K.N];
-
+*/
 	
+
+	//Campi di fault
+
+	//Stato del drone. 1 = funzionante; 2 = errore sensoristica; 3 = errore di manovra; 4 = errore comunicazioni;
+	InputInt droneState[K.N];
+	
+	
+	//Campi posizione intrusi
+
+	InputReal intrX[K.nIntr];
+	InputReal intrY[K.nIntr];
+	InputReal intrZ[K.nIntr];
+
 
 	//Posizione sull'asse x
 	OutputReal x[K.N];
@@ -102,12 +116,15 @@ block Drone
 	//Array contenente informazioni sui vicini al drone i-esimo
 	OutputBool neighbours[K.N,K.N];
 
+	//Vettore contenente informazioni sugli intrusi vicini
+	OutputBool nearIntr[K.N, K.nIntr];
+
 //Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
 //La somma dei vari pesi degli attributi deve essere uguale a 1.
 	parameter Real cohesionWeight = 1;	
-	parameter Real alignWeight = 6;
-	parameter Real separateWeight = 6;
+	parameter Real alignWeight = 3.5;
+	parameter Real separateWeight = 3.5;
 	parameter Real headingWeight = 10;
 	parameter Real vWeight = 5;
 	//Real inertiaWeight;
@@ -117,7 +134,7 @@ initial equation
 	for i in 1:K.N loop
 		x[i] = 0;
 		y[i] = 0;
-		z[i]= 5+i+K.dDistance;
+		z[i]= 5+i*K.dDistance;
 	end for;
 
 
@@ -143,24 +160,37 @@ equation
 
 
 	for i in 1:K.N loop
+	
+		if(not droneState[i] == 3) then	
 		
+			der(x[i]) = Vx[i];
 
-		der(x[i]) = Vx[i];
+			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight); 
+			//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
 
-		der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight); 
-		//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
+			der(y[i]) = Vy[i];
 
-		der(y[i]) = Vy[i];
-
-		der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight);
-		//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
+			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight);
+			//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
+			
+			der(z[i]) = Vz[i];
+			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight);
+			//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
 		
-		der(z[i]) = Vz[i];
-		der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight);
-		//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
-		
-
-//		print("Vx = " + String(Vx[i]) + " Vy = "+ String(Vy[i]) + " Vz = " + String(Vz[i]) +"\n");
+		else
+			if(z[i] <= 0) then 
+				der(Vz[i]) = 0;
+				der(Vy[i]) = 0;
+				der(Vx[i]) = 0; 
+			else
+				der(Vy[i]) = 0;
+				der(Vx[i]) = 0; 	
+				der(Vz[i]) = -K.g*vWeight;
+			end if;
+			der(x[i]) = Vx[i];
+			der(y[i]) = Vy[i];
+			der(z[i]) = Vz[i];
+		end if;
 	end for;
 
 
@@ -169,16 +199,20 @@ algorithm
 when initial() then
 	for i in 1:K.N loop
 		neighbours[i] := fill(true, K.N);
-		for j in 1:K.N loop
-			print("drone " + String(i) + "," + String(j) + ": " + String(neighbours[i,j])+"\n"); 		
-		end for;
 	end for;
 end when;
 
 when sample(0,T) then
 	for i in 1:K.N loop
-		neighbours[i] := findNearDrones(x[i], y[i], z[i], x,y,z);
+		//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
+		if(droneState[i] <> 2 and droneState[i] <> 3) then
+			(neighbours[i], nearIntr[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ);
+		else
+			neighbours[i] := fill(false, K.N);	
+			nearIntr[i] := fill(false, K.nIntr);
+		end if;
 	end for;
+
 end when;
 	
 	

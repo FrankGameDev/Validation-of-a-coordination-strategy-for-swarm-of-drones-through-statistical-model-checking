@@ -3,6 +3,7 @@ function velocityCap
 	InputReal Vx;
 	InputReal Vy;
 	InputReal Vz;
+	InputReal velCap;
 
 	OutputReal VxCap;
 	OutputReal VyCap;
@@ -14,23 +15,22 @@ algorithm
 	VyCap := Vy;
 	VzCap := Vz;
 
-	if (Vx > K.maxSpeed) then 
-		if(Vx > 0) then VxCap := K.maxSpeed;
-		else VxCap := -K.maxSpeed;
+	if (Vx > velCap) then 
+		if(Vx > 0) then VxCap := velCap;
+		else VxCap := -velCap;
 		end if;	
 	end if;
-	if (Vy > K.maxSpeed) then 
-		if(Vy > 0) then VyCap := K.maxSpeed;
-		else VyCap := -K.maxSpeed;
+	if (Vy > velCap) then 
+		if(Vy > 0) then VyCap := velCap;
+		else VyCap := -velCap;
 		end if;	
 	end if;
-	if (Vz > K.maxSpeed) then 
-		if(Vz > 0) then VzCap := K.maxSpeed;
-		else VzCap := -K.maxSpeed;	
+	if (Vz > velCap) then 
+		if(Vz > 0) then VzCap := velCap;
+		else VzCap := -velCap;	
 		end if;	
 	end if;
 end velocityCap;
-
 
 function magnitude "Restituisce la magnitudine di un vettore"
 
@@ -71,7 +71,7 @@ algorithm
 
 end norm;
 
-function findNearDrones "Restituisce una lista contenente tutti i droni vicini data una distanza prestabilita"
+function findNearObject "Restituisce una lista contenente tutti gli oggetti vicini utilizzando gli infrarossi"
 	
 	InputReal x;
 	InputReal y;
@@ -81,7 +81,12 @@ function findNearDrones "Restituisce una lista contenente tutti i droni vicini d
 	InputReal y2[K.N];
 	InputReal z2[K.N];
 
+	InputReal intrX[K.nIntr];
+	InputReal intrY[K.nIntr];
+	InputReal intrZ[K.nIntr];
+
 	OutputBool neighbours[K.N];
+	OutputBool nearIntr[K.nIntr];
 
 	protected
 		Real euclDist;
@@ -95,8 +100,21 @@ algorithm
 		else neighbours[i] := false;
 		end if;	
 	end for; 
+	
+	for i in 1:K.nIntr loop
+		euclDist := euclideanDistance(x,y,z,intrX[i], intrY[i], intrZ[i]);
+		if(euclDist <= K.IDD and euclDist > 0) then
+			nearIntr[i] := true;
+		else nearIntr[i] := false;
+		end if;	
+	end for; 
 
-end findNearDrones;
+end findNearObject;
+
+function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilevati dal sistema video del drone"
+
+
+end seeNearObject;
 
 function euclideanDistance
 	

@@ -10,13 +10,18 @@ MonitorCollision col;
 
 CollisionAvoidance cad;
 
+faultSys fault;
+
 PSO pso;
 
-Communication com;
+Intruders intruder;
+
+IntrudersPoint intrP;
+IntrController intrCtr;
 
 equation 
 
-
+	//Connection per i droni
 	for i in 1:K.N loop
 		
 		//Connection Controller
@@ -45,6 +50,7 @@ equation
 		for j in 1:K.N loop
 			connect(cad.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
+		connect(cad.droneState[i], fault.state[i]);
 
 		//connection tra pso e valori drone + posizione di arrivo
 		connect(pso.Vx[i],drone.Vx[i]);
@@ -56,20 +62,12 @@ equation
 		connect(pso.destX[i],p.setx[i]);
 		connect(pso.destY[i],p.sety[i]);
 		connect(pso.destZ[i],p.setz[i]);
-	
-		
-
-		//connection tra modulo di comunicazione e PSO
-		connect(com.gBestFit[i], pso.globFitness[i]);
-		connect(com.gBestPos[i], pso.gBestPos[i]);
-		connect(com.tmpFit[i], pso.tmpFit[i]);
 		for j in 1:K.N loop
-			connect(com.neighbours[i,j], drone.neighbours[i,j]);
+			connect(pso.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
-
-		connect(pso.InglobFitness[i], com.outGbestFit[i]);
-		connect(pso.IngBestPos[i], com.outGbestPos[i]);
-
+		for j in 1:K.N loop
+			connect(pso.nearIntr[j], drone.nearIntr[j]);
+		end for;
 		//trasferisco la forza dal controller al drone
 		connect(drone.Trustx[i], ctr.Trustx[i]);
 		connect(drone.Trusty[i], ctr.Trusty[i]);
@@ -96,14 +94,11 @@ equation
 		/*print("cohesion x = " + String(cad.cohesionX[i])+ "\n");
 		print("cohesion y = " + String(cad.cohesionY[i])+ "\n");
 		print("cohesion Z = " + String(cad.cohesionZ[i])+ "\n");
-*/		
+
 		connect(drone.headingX[i], pso.velocityX[i]);
 		connect(drone.headingY[i], pso.velocityY[i]);
 		connect(drone.headingZ[i], pso.velocityZ[i]);
-		/*print("heading x = " + String(pso.velocityX[i])+ "\n");
-		print("heading y = " + String(pso.velocityY[i])+ "\n");
-		print("heading Z = " + String(pso.velocityZ[i])+ "\n");
-*/
+*/			
 
 		//Connect monitor collisione
 
@@ -111,7 +106,41 @@ equation
 		connect(col.y[i], drone.y[i]);
 		connect(col.z[i], drone.z[i]);
 
-	end for;
+		connect(drone.droneState[i], fault.state[i]);
+		connect(pso.droneState[i], fault.state[i]);
+	
 
+	end for;
+	
+	//Connection per gli intruders
+	for z in 1:K.nIntr loop
+		connect(intrCtr.setx[z],intrP.setx[z]);
+		connect(intrCtr.sety[z],intrP.sety[z]);
+		connect(intrCtr.setz[z],intrP.setz[z]);
+
+		connect(intrCtr.x[z],intruder.x[z]);
+		connect(intrCtr.y[z],intruder.y[z]);
+		connect(intrCtr.z[z],intruder.z[z]);
+
+		connect(intrCtr.Vx[z],intruder.Vx[z]);
+		connect(intrCtr.Vy[z],intruder.Vy[z]);
+		connect(intrCtr.Vz[z],intruder.Vz[z]);
+
+		connect(intruder.Trustx[z], intrCtr.Trustx[z]);
+		connect(intruder.Trusty[z], intrCtr.Trusty[z]);
+		connect(intruder.Trustz[z], intrCtr.Trustz[z]);
+
+		connect(drone.intrX[z], intruder.x[z]);
+		connect(drone.intrY[z], intruder.y[z]);
+		connect(drone.intrZ[z], intruder.z[z]);
+
+		connect(pso.intrX[z], intruder.x[z]);
+		connect(pso.intrY[z], intruder.y[z]);
+		connect(pso.intrZ[z], intruder.z[z]);
+
+		connect(col.intrX[z], intruder.x[z]);
+		connect(col.intrY[z], intruder.y[z]);
+		connect(col.intrZ[z], intruder.z[z]);
+	end for;
 
 end System;

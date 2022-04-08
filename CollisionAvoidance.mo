@@ -15,6 +15,8 @@ block CollisionAvoidance
 
 	InputBool neighbours[K.N,K.N];
 
+	InputInt droneState[K.N];
+
 	InputBool collision "Output del monitor che controlla le collisioni";
 
 	OutputReal alignX[K.N];
@@ -29,10 +31,6 @@ block CollisionAvoidance
 	OutputReal separateY[K.N];
 	OutputReal separateZ[K.N];
 	
-
-
-
-
 
 algorithm
 
@@ -54,9 +52,9 @@ end when;
 
 when sample(0,T) then
 
-	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz, neighbours);
-	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, neighbours);
-	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz,neighbours);			
+	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz, droneState, neighbours);
+	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, droneState, neighbours);
+	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState,neighbours);			
 
 end when;
 
@@ -75,6 +73,8 @@ function separate "Calcola la velocità di sterzata per separare ogni drone dai 
 	InputReal Vy[K.N];
 	InputReal Vz[K.N];
 	
+	InputInt droneState[K.N];
+
 	//Informazioni sui droni vicini
 	InputBool neighbours[K.N,K.N];	
 
@@ -99,44 +99,46 @@ algorithm
 
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		total := 0;
-		//print("separate i = " + String(i)+ "\n");
-		for j in 1:K.N loop
-			if(neighbours[i,j]) then
-				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
-				if(distance < K.dDistance and distance > 0) then
-					diff[1] := x[i] - x[j];
-					diff[2] := y[i] - y[j];
-					diff[3] := z[i] - z[j];
-					(diff[1],diff[2],diff[3]) := norm(diff[1],diff[2],diff[3]);
-					diff := diff / distance;
-					sterring[i,1] := sterring[i,1] + diff[1];
-					sterring[i,2] := sterring[i,2] + diff[2];
-					sterring[i,3] := sterring[i,3] + diff[3]; 
-					total := total + 1;	
-					//print("cohesion i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");		
+		if(not droneState[i] == 3 and not droneState[i] == 2) then 
+			total := 0;
+			//print("separate i = " + String(i)+ "\n");
+			for j in 1:K.N loop
+				if(neighbours[i,j]) then
+					distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
+					if(distance < K.dDistance and distance > 0) then
+						diff[1] := x[i] - x[j];
+						diff[2] := y[i] - y[j];
+						diff[3] := z[i] - z[j];
+						(diff[1],diff[2],diff[3]) := norm(diff[1],diff[2],diff[3]);
+						diff := diff / distance;
+						sterring[i,1] := sterring[i,1] + diff[1];
+						sterring[i,2] := sterring[i,2] + diff[2];
+						sterring[i,3] := sterring[i,3] + diff[3]; 
+						total := total + 1;	
+						//print("cohesion i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");		
+					end if;
 				end if;
-			end if;
-		end for;
+			end for;
 
-		if (total > 0) then
-			sterring[i,1] := sterring[i,1]/total;
-			sterring[i,2] := sterring[i,2]/total;
-			sterring[i,3] := sterring[i,3]/total;
+			if (total > 0) then
+				sterring[i,1] := sterring[i,1]/total;
+				sterring[i,2] := sterring[i,2]/total;
+				sterring[i,3] := sterring[i,3]/total;
+				
+			end if;
 			
-		end if;
-		
-		if (magnitude(sterring[i,1],sterring[i,2], sterring[i,3]) > 0) then
-			(sterring[i,1],sterring[i,2],sterring[i,3]) := norm(sterring[i,1],sterring[i,2], sterring[i,3]);
-			sterring[i,1] := sterring[i,1] * K.maxSpeed;
-			sterring[i,2] := sterring[i,2] * K.maxSpeed;
-			sterring[i,3] := sterring[i,3] * K.maxSpeed;
-			//print("moltiplicato sterring per max speed");
-			sterring[i,1] := sterring[i,1] - Vx[i];
-			sterring[i,2] := sterring[i,2] - Vy[i];
-			sterring[i,3] := sterring[i,3] - Vz[i];
-			(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3]);
-			//Limita lo sterzo alla forza massima
+			if (magnitude(sterring[i,1],sterring[i,2], sterring[i,3]) > 0) then
+				(sterring[i,1],sterring[i,2],sterring[i,3]) := norm(sterring[i,1],sterring[i,2], sterring[i,3]);
+				sterring[i,1] := sterring[i,1] * K.maxSpeed;
+				sterring[i,2] := sterring[i,2] * K.maxSpeed;
+				sterring[i,3] := sterring[i,3] * K.maxSpeed;
+				//print("moltiplicato sterring per max speed");
+				sterring[i,1] := sterring[i,1] - Vx[i];
+				sterring[i,2] := sterring[i,2] - Vy[i];
+				sterring[i,3] := sterring[i,3] - Vz[i];
+				(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3],K.maxSpeed);
+				//Limita lo sterzo alla forza massima
+			end if;
 		end if;
 	end for;
 
@@ -161,6 +163,8 @@ function align "Calcola, per tutti i droni, la direzione da seguire per mantener
 	InputReal Vy[K.N];
 	InputReal Vz[K.N];
 	
+	InputInt droneState[K.N];
+
 	//Informazioni sui droni vicini
 	InputBool neighbours[K.N,K.N];	
 
@@ -189,33 +193,35 @@ algorithm
 
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		total := 0;
-		avg_velocity := zeros(3);
-		for j in 1:K.N loop
-			if(neighbours[i,j]) then
-				/*
-				Calcolo la magnitudine del vettore e lo normalizzo. Se la lunghezza è minore della distanza 
-				desiderata da ciascun altro drone, aggiungo il drone seguente al totale e calcolo la velocità media
-				*/
-				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
-				if(distance < K.dDistance and distance > 0) then 
-					avg_velocity := avg_velocity + {Vx[j],Vy[j],Vz[j]};
-					total:= total + 1;
-				end if;	
-			//print("align i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");	
-			end if;
-		end for;
-		//print("align i = " + String(i) + "\n");
-		if (total > 0) then
-			avg_velocity := avg_velocity/total;
-			(avg_velocity[1],avg_velocity[2],avg_velocity[3]) := norm(avg_velocity[1] , avg_velocity[2] , avg_velocity[3]);
-			avg_velocity := avg_velocity * K.maxSpeed;
+		if(not droneState[i] == 3 and not droneState[i] == 2) then 
+			total := 0;
+			avg_velocity := zeros(3);
+			for j in 1:K.N loop
+				if(neighbours[i,j]) then
+					/*
+					Calcolo la magnitudine del vettore e lo normalizzo. Se la lunghezza è minore della distanza 
+					desiderata da ciascun altro drone, aggiungo il drone seguente al totale e calcolo la velocità media
+					*/
+					distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
+					if(distance < K.dDistance and distance > 0) then 
+						avg_velocity := avg_velocity + {Vx[j],Vy[j],Vz[j]};
+						total:= total + 1;
+					end if;	
+				//print("align i = " + String(i) + " j = " +String(j)+ " total = "+ String(total) +"\n");	
+				end if;
+			end for;
+			//print("align i = " + String(i) + "\n");
+			if (total > 0) then
+				avg_velocity := avg_velocity/total;
+				(avg_velocity[1],avg_velocity[2],avg_velocity[3]) := norm(avg_velocity[1] , avg_velocity[2] , avg_velocity[3]);
+				avg_velocity := avg_velocity * K.maxSpeed;
 
-			sterring[i,1] := avg_velocity[1] - Vx[i];
-			sterring[i,2] := avg_velocity[2] - Vy[i];
-			sterring[i,3] := avg_velocity[3] - Vz[i];
-			(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3]);
-			//limitare lo sterzo in base alla massima forza applicabile
+				sterring[i,1] := avg_velocity[1] - Vx[i];
+				sterring[i,2] := avg_velocity[2] - Vy[i];
+				sterring[i,3] := avg_velocity[3] - Vz[i];
+				(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3],K.maxSpeed);
+				//limitare lo sterzo in base alla massima forza applicabile
+			end if;
 		end if;
 	end for;
 	
@@ -242,6 +248,8 @@ function cohesion "Permette di calcolare la direzione che ogni singolo drone dev
 	InputReal Vy[K.N];
 	InputReal Vz[K.N];
 	
+	InputInt droneState[K.N];
+
 	//Informazioni sui droni vicini
 	InputBool neighbours[K.N,K.N];		
 
@@ -268,31 +276,33 @@ algorithm
 sterring := zeros(K.N,3);
 
 for i in 1:K.N loop
-	center := zeros(3);
-	total := 0;
-	for j in 1:K.N loop
-		if(neighbours[i,j]) then	
-			distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]); 
-			if(distance < K.dDistance and distance > 0) then 	
-				center := center + {x[j], y[j], z[j]};		
-				total := total + 1;	
+	if(not droneState[i] == 3 and not droneState[i] == 2) then 
+		center := zeros(3);
+		total := 0;
+		for j in 1:K.N loop
+			if(neighbours[i,j]) then	
+				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]); 
+				if(distance < K.dDistance and distance > 0) then 	
+					center := center + {x[j], y[j], z[j]};		
+					total := total + 1;	
+				end if;
 			end if;
-		end if;
-	end for;
-	//print("cohesion i = " + String(i)+ "\n");	
-	if (total > 0) then
-		center := center / total;
-		vecToCom := center - {x[i],y[i],z[i]};
-		(vecToCom[1],vecToCom[2],vecToCom[3]) := norm(vecToCom[1],vecToCom[2],vecToCom[3]);
-		vecToCom := vecToCom * K.maxSpeed;
-		//print("ho calcolato avg \n");
-		sterring[i,1] := vecToCom[1] - Vx[i];
-		sterring[i,2] := vecToCom[2] - Vy[i];
-		sterring[i,3] := vecToCom[3] - Vz[i];
-		//print("ho calcolato sterring\n");
-		(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3]);
-		//limita la sterzata in base alla forza massima 	
-	end if;	
+		end for;
+		//print("cohesion i = " + String(i)+ "\n");	
+		if (total > 0) then
+			center := center / total;
+			vecToCom := center - {x[i],y[i],z[i]};
+			(vecToCom[1],vecToCom[2],vecToCom[3]) := norm(vecToCom[1],vecToCom[2],vecToCom[3]);
+			vecToCom := vecToCom * K.maxSpeed;
+			//print("ho calcolato avg \n");
+			sterring[i,1] := vecToCom[1] - Vx[i];
+			sterring[i,2] := vecToCom[2] - Vy[i];
+			sterring[i,3] := vecToCom[3] - Vz[i];
+			//print("ho calcolato sterring\n");
+			(sterring[i,1],sterring[i,2],sterring[i,3]) := velocityCap(sterring[i,1], sterring[i,2], sterring[i,3],K.maxSpeed);
+			//limita la sterzata in base alla forza massima 	
+		end if;	
+	end if;
 end for;
 
 for i in 1:K.N loop

@@ -22,9 +22,6 @@ getErrorString();
 loadFile("CollisionAvoidance.mo");
 getErrorString();
 
-loadFile("communication.mo");
-getErrorString();
-
 loadFile("psoController.mo");
 getErrorString();
 
@@ -34,18 +31,33 @@ getErrorString();
 loadFile("controller.mo");
 getErrorString();
 
+loadFile("faultSystem.mo");
+getErrorString();
+
+loadFile("intruders.mo");
+getErrorString();
+
+loadFile("intrudersPoint.mo");
+getErrorString();
+
+loadFile("intrudersController.mo");
+getErrorString();
+
 loadFile("system.mo");
 getErrorString();
 
 setCommandLineOptions("-d=initialization");
 getErrorString();
 
-simulate(System, stopTime=59);
+simulate(System, stopTime=120);
 getErrorString();
 
 plot({drone.x[1], drone.y[1], drone.z[1], drone.x[2], drone.y[2], drone.z[2], ctr.setx[1], ctr.sety[1], ctr.setz[1], ctr.setx[2], ctr.sety[2], ctr.setz[2],
       col.outCollision}, externalWindow=true);
 
+plot({intruder.x[1],intruder.x[2], intruder.y[1],intruder.y[2],intruder.z[1],intruder.z[2]}, externalWindow = true);
+
+//plot({drone.droneState[1], drone.droneState[2]}, externalWindow=true);
 
 //plotParametric(drone.y[1], drone.z[1], externalWindow=true);
 

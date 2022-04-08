@@ -1,4 +1,4 @@
-block MonitorCollision
+block MonitorCollision"Controlla se i droni collidono con oggetti nell'area di volo"
 	
 	parameter Real T = 0.5; //Refresh controllo collisione
 
@@ -7,6 +7,10 @@ block MonitorCollision
 	InputReal x[K.N];
 	InputReal y[K.N];
 	InputReal z[K.N];
+
+	InputReal intrX[K.nIntr];
+	InputReal intrY[K.nIntr];
+	InputReal intrZ[K.nIntr];
 
 	Real distEucl;
 
@@ -25,10 +29,16 @@ when sample(0,T) then
 		for j in 1:K.N loop //droni nelle vicinanze 		
 			if(i <> j) then 			
 				distEucl := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);		
-				//distEucl := euclideanDistance(drones[i].x,drones[i].y,drones[i].z,drones[j].x,drones[j].y,drones[j].z);		
-				//Se la distanza tra 2 droni è minore della distanza massima dell'IDD, collision diventa true
+				//se 2 droni si trovano nella stessa posizione oppure troppo vicini, collision diventa true
 				outCollision := (distEucl < 1.5); 
+				print("Distanza tra droni: " + String(distEucl) + "\n");
 			end if;
+		end for;
+		
+		for j in 1:K.nIntr loop//Controlla le collisioni con gli intrusi
+			distEucl := euclideanDistance(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j]);		
+			outCollision := (distEucl < 1.5); 
+			print("Distanza tra droni e ostacoli: " + String(distEucl) + "\n");
 		end for;
 	end for;
 
