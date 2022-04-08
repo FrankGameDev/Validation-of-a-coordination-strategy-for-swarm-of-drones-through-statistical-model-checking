@@ -65,11 +65,11 @@ block Drone
 	InputReal separateZ[K.N];
 	
 	//direzione da prendere in aggiunta alla velocità, generata dal PSO
-/*
+
 	InputReal headingX[K.N];
 	InputReal headingY[K.N];
 	InputReal headingZ[K.N];
-*/
+
 	
 
 	//Campi di fault
@@ -125,7 +125,7 @@ block Drone
 	parameter Real cohesionWeight = 1;	
 	parameter Real alignWeight = 3.5;
 	parameter Real separateWeight = 3.5;
-	parameter Real headingWeight = 10;
+	parameter Real headingWeight = 1;
 	parameter Real vWeight = 5;
 	//Real inertiaWeight;
 
@@ -165,16 +165,16 @@ equation
 		
 			der(x[i]) = Vx[i];
 
-			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight); 
+			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight+ headingX[i]*headingWeight); 
 			//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
 
 			der(y[i]) = Vy[i];
 
-			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight);
+			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight+ headingY[i]*headingWeight);
 			//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
 			
 			der(z[i]) = Vz[i];
-			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight);
+			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight+ headingZ[i]*headingWeight);
 			//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
 		
 		else

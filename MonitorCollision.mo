@@ -31,14 +31,14 @@ when sample(0,T) then
 				distEucl := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);		
 				//se 2 droni si trovano nella stessa posizione oppure troppo vicini, collision diventa true
 				outCollision := (distEucl < 1.5); 
-				print("Distanza tra droni: " + String(distEucl) + "\n");
+				//print("Distanza tra droni: " + String(distEucl) + "\n");
 			end if;
 		end for;
 		
 		for j in 1:K.nIntr loop//Controlla le collisioni con gli intrusi
 			distEucl := euclideanDistance(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j]);		
 			outCollision := (distEucl < 1.5); 
-			print("Distanza tra droni e ostacoli: " + String(distEucl) + "\n");
+			//print("Distanza tra droni e ostacoli: " + String(distEucl) + "\n");
 		end for;
 	end for;
 

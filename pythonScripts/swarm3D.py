@@ -83,7 +83,7 @@ def intrAnimation(num, dataSet, lines):
 
 
 
-drone_anim = animation.FuncAnimation(fig, droneAnimation, frames = numDataPoints, fargs = (data, dronePoint), interval = 5, repeat = False) 
+drone_anim = animation.FuncAnimation(fig, droneAnimation, frames = numDataPoints, fargs = (data, dronePoint), interval = 100, blit = True, repeat = False) 
 #intr_anim = animation.FuncAnimation(fig, intrAnimation, frames = nIntruders, fargs = (intruders, intrPoint), interval = 5, repeat = False) 
 plt.show()
 

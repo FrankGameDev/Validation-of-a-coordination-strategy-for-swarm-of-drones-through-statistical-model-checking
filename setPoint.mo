@@ -45,12 +45,12 @@ end when;
 when sample(0,T) then
 	rand := myrandom();
 	for i in 1:K.N loop
-		setx[i] := rand * lenght + K.dDistance*i;
-		sety[i] := rand * profondity + K.dDistance*i;	
-		setz[i] := rand * height + K.dDistance*i;
+		setx[i] := rand * K.flyZone[1] + K.dDistance*i;
+		sety[i] := rand * K.flyZone[2] + K.dDistance*i;	
+		setz[i] := rand * K.flyZone[3] + K.dDistance*i;
 	end for;
 	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
 end when;
-*/	
+*/
 
 end SetPoint;
