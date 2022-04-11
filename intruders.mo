@@ -1,6 +1,5 @@
 block Intruders "modella gli oggetti in movimento che ostacolano i droni"
 	
-	parameter Real T = 0.001;
 	
 //PARAMETRI intrusi
 

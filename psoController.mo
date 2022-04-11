@@ -4,7 +4,7 @@ block PSO "Modulo di controllo dell'algoritmo di pathfinding"
 parameter Real T = 5;
 
 //tendenza dei droni di rimanere alla velocità del precedente timestamp
-parameter Real w = 0.6;
+parameter Real w = 0.4;
 
 //tendenza dei droni di esplorare l'area circostante
 parameter Real c1 = 2;
@@ -40,124 +40,152 @@ InputBool nearIntr[K.N, K.nIntr];
 //CAMPI DI OUTPUT
 
 //Migliore posizione individuale
-Real pBestPos[K.N,3];
+Real pBestPos[K.N,3](each fixed = false);
 
 //Migliore posizione globale.La gBest pos è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
-OutputReal gBestPos[K.N,3];
+Real gBestPos[K.N,3](each fixed =  false);
 
 //migliore fitness value personale
-Real pBestFit[K.N];
+Real pBestFit[K.N](each fixed =  false);
 
 //Global fitnessValue. La gBest fit è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni.
 //La fitness value è un valore che identifica il livello di ottimizzazione del sistema simulato
-OutputReal globFitness[K.N];
+Real globFitness[K.N](each fixed =  false);
 
 //Variabile temporanea per il calcolo e confronto della fitness value
-OutputReal tmpFit[K.N];
+Real tmpFit[K.N](each fixed =  false);
 
 //valori random per calcolare velocità
 Real r1;
 Real r2;
 
 //Variabili temporanee per salvataggio dati risultanti dal modulo di comunicazione
-Real tmpGPos[K.N,3];
-Real tmpGFit[K.N];
+Real tmpGPos[K.N,3](each fixed =  false);
+Real tmpGFit[K.N](each fixed =  false);
 
 OutputReal velocityX[K.N];
 OutputReal velocityY[K.N];
 OutputReal velocityZ[K.N];
 
-initial algorithm 
-	globFitness := zeros(K.N);
-	pBestFit := zeros(K.N);
+algorithm
+
+when initial() then
+
+	globFitness := fill(10000000.0, K.N);
+	pBestFit := fill(10000000.0, K.N);
 	pBestPos := zeros(K.N,3);
 	gBestPos := zeros(K.N,3);
 	
-	tmpFit := allFitness(x,y,z,intrX,intrY,intrZ, nearIntr);	
+	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr);	
 
 	for i in 1:K.N loop
 		
 		//Confronto e setup Pbest
-
-		if(pBestFit[i] > tmpFit[i]) then
+		if(tmpFit[i] < pBestFit[i]) then
 			pBestFit[i] := tmpFit[i];
 			pBestPos[i] := {x[i],y[i],z[i]};
 		end if;
 	
 		//Aggiornamento gBests da inviare al modulo di comunicazione
-		if(globFitness[i] > tmpFit[i]) then
+		if(tmpFit[i] < globFitness[i]) then
 			globFitness[i] := tmpFit[i];
 			gBestPos[i] := {x[i],y[i],z[i]};
 		end if;
-	
 	end for;
 	velocityX := zeros(K.N);
 	velocityY := zeros(K.N);
 	velocityZ := zeros(K.N);
 
-	tmpGFit := globFitness;
-	tmpGPos := gBestPos;
-
-	r1 := 0;
-	r2 := 0;
-
-algorithm
-
-when sample(0,T) then
-tmpFit := allFitness(x,y,z,intrX,intrY,intrZ, nearIntr);	
-for i in 1:K.N loop
-
-	//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
-	if(pBestFit[i] < tmpFit[i]) then
-		pBestFit[i] := tmpFit[i];
-		pBestPos[i] := {x[i],y[i],z[i]};
-	end if;
-
-	//Aggiornamento gBests da inviare al modulo di comunicazione
-	if(globFitness[i] < tmpFit[i]) then
-		globFitness[i] := tmpFit[i];
-		gBestPos[i] := {x[i],y[i],z[i]};
-	end if;
-	
-	
-	r1 := myrandom();
-	r2 := myrandom();
-	
-	velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (gBestPos[i,1] - x[i])));
-	velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (gBestPos[i,2] - y[i])));
-	velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
-	//velocity cap
-	//(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
-	
-end for;
 	(tmpGPos, tmpGFit) := talking(globFitness, gBestPos, neighbours, droneState);
 	globFitness := tmpGFit;
 	gBestPos := tmpGPos;
 
-for i in 1:K.N loop
-print(" i = " + String(i) + " --> Fit: " + String(globFitness[i])+ " x: " + String(gBestPos[i,1]) + " y: " + String(gBestPos[i,2]) + " z: " + String(gBestPos[i,3])+"\n"); 
-end for;
+
+	print("inizializzazione Global values\n");
+	for i in 1:K.N loop
+	print(" i = " + String(i) + " --> Fit: " + String(globFitness[i])+ " x: " + String(gBestPos[i,1]) + " y: " + String(gBestPos[i,2]) + " z: " + String(gBestPos[i,3])+"\n"); 
+	end for;
+
+	r1 := 0;
+	r2 := 0;
+
+end when;
+
+when sample(0,T) then
+	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr);	
+	for i in 1:K.N loop
+		print("\ntemporary fitvalue di "+ String(i) + " = " + String(tmpFit[i])+"\n");
+		print(" i = " + String(i) + " --> Fit: " + String(globFitness[i])+ " x: " + String(gBestPos[i,1]) + " y: " + String(gBestPos[i,2]) + " z: " + String(gBestPos[i,3])+"\n");
+		//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
+		if(tmpFit[i] < pBestFit[i]) then
+			pBestFit[i] := tmpFit[i];
+			pBestPos[i] := {x[i],y[i],z[i]};
+		end if;
+
+		//Aggiornamento gBests da inviare al modulo di comunicazione
+		if(tmpFit[i] < globFitness[i]) then
+			globFitness[i] := tmpFit[i];
+			gBestPos[i] := {x[i],y[i],z[i]};
+		end if;
+		
+		
+		r1 := myrandom();
+		r2 := myrandom();
+		
+		velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (gBestPos[i,1] - x[i])));
+		velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (gBestPos[i,2] - y[i])));
+		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
+		//velocity cap
+		//(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
+		
+	end for;
+		(tmpGPos, tmpGFit) := talking(globFitness, gBestPos, neighbours, droneState);
+		globFitness := tmpGFit;
+		gBestPos := tmpGPos;
+
+	print("\n");
+	for i in 1:K.N loop
+	print(" i = " + String(i) + " --> Fit: " + String(globFitness[i])+ " x: " + String(gBestPos[i,1]) + " y: " + String(gBestPos[i,2]) + " z: " + String(gBestPos[i,3])+"\n"); 
+	end for;
+
 end when;
 
 end PSO;
 
+
+
+
 //Valuta il valore di fitness del singolo drone
-function fitness
+function fitness "La fitness value non è altro che la magnitudine tra il drone e la sua destinazione. Se nel percorso si presenta un ostacolo, allora si divide la magnitudine con l'angolo definito tra i 2 vettori"
 //posizione droni
 InputReal x;
 InputReal y;
 InputReal z;
 
+InputReal destX, destY, destZ;
+
 //posizione destinazione
-InputReal intrX;
-InputReal intrY;
-InputReal intrZ;
+InputReal intrX,intrY,intrZ;
 
 OutputReal fitvalue;
 
+	protected 
+		Real alpha "Angolo tra i 2 vettori";
+		Real dotProd "Prodotto tra 2 punti";
+		Real dVector[3] "Vettore tra drone e arrivo";
+		Real intrVector[3] "Vettore tra intruso e drone";
+		Real fromDtoT "Magnitudine vettore drone-arrivo";
+		Real fromDtoIntr "Magnitudine vettore drone-ostacolo";
+
 algorithm
-	fitvalue := euclideanDistance(x,y,z,intrX,intrY,intrZ);
-	
+	//Per prima cosa, calcolo l'angolo tra il drone e l'intruso, se presente
+	dVector := {destX - x, destY - y, destZ - z};
+	intrVector := {intrX - x, intrY-y, intrZ-z};
+	dotProd := (dVector[1] * intrVector[1]) + (dVector[2] * intrVector[2]) + (dVector[3] * intrVector[3]); 
+	fromDtoT := magnitude(dVector[1], dVector[2], dVector[3]);
+	fromDtoIntr := magnitude(intrVector[1],intrVector[2],intrVector[3]);
+	alpha := acos(dotProd / (fromDtoT * fromDtoIntr)); 
+	fitvalue := magnitude((destX-x),(destY-y), (destZ-z)) / alpha;
 end fitness;
 
 //La fitness value di un drone viene calcolata basandosi sulla distanza con un ostacolo in movimento (drone nemico, missile, ecc...)
@@ -168,6 +196,8 @@ InputReal x[K.N];
 InputReal y[K.N];
 InputReal z[K.N];
 
+InputReal destX[K.N], destY[K.N], destZ[K.N];
+
 //posizione destinazione
 InputReal intrX[K.nIntr];
 InputReal intrY[K.nIntr];
@@ -176,12 +206,24 @@ InputBool nearIntr[K.N, K.nIntr];
 
 OutputReal fitValue[K.N];
 
+	protected 
+		Real tmpFit[K.nIntr];
+
 algorithm 
-	
+	fitValue := fill(10000000.0,K.N);
 	for i in 1:K.N loop
+		tmpFit := zeros(K.nIntr);	
 		for j in 1:K.nIntr loop
 			if (nearIntr[i,j]) then
-				fitValue[i] := fitness(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j]);
+				tmpFit[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
+			else 
+				tmpFit[j] := magnitude((destX[i]-x[i]),(destY[i]-y[i]), (destZ[i]-z[i]));
+			end if;
+		end for;
+		
+		for j in 1:K.nIntr loop
+			if (tmpFit[j] < fitValue[i]) then
+				fitValue[i] := tmpFit[j];
 			end if;
 		end for;
 	end for;
@@ -215,16 +257,16 @@ for i in 1:K.N loop
 		for j in 1:K.N loop
 			if(neighbours[i,j] and i <> j) then
 				if(acknowledgment(droneState[i],droneState[j])) then
-					if(psoComm(gBestFit[i], gBestFit[j])) then //Il drone j ha risposto con valori migliori
-						outGbestFit[j] := outGbestFit[i];
-						outGbestPos[j,1] := outGbestPos[i,1];
-						outGbestPos[j,2] := outGbestPos[i,2];
-						outGbestPos[j,3] := outGbestPos[i,3];
-					else
+					if(psoComm(gBestFit[i], gBestFit[j])) then //Il drone i ha risposto con valori migliori
 						outGbestFit[i] := outGbestFit[j];
 						outGbestPos[i,1] := outGbestPos[j,1];
 						outGbestPos[i,2] := outGbestPos[j,2];
-						outGbestPos[i,3] := outGbestPos[j,3];	
+						outGbestPos[i,3] := outGbestPos[j,3];
+					else
+						outGbestFit[j] := outGbestFit[i];
+						outGbestPos[j,1] := outGbestPos[i,1];
+						outGbestPos[j,2] := outGbestPos[i,2];
+						outGbestPos[j,3] := outGbestPos[i,3];	
 					end if;
 				end if;
 			end if;
@@ -272,7 +314,7 @@ OutputBool gOK;
 algorithm
 
 //Se la global fitness del drone 1 è migliore di quella del drone 2, il drone 2 si aggiorna. Altrimenti, il drone 2 manda al drone 1 i suoi valori e il drone 1 deve ripetere la procedura 
-gOK := gBestFit_1 >= gBestFit_2;
+gOK := gBestFit_1 <= gBestFit_2;
 
 end psoComm;
 

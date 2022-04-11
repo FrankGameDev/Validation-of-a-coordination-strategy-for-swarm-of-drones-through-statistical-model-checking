@@ -1,6 +1,6 @@
 block IntrController
 
-parameter Real T = 0.001;   //seconds
+parameter Real T = 0.1;   //seconds
 
 parameter Real p = -1;
 parameter Real kz1 = -(p^2);   

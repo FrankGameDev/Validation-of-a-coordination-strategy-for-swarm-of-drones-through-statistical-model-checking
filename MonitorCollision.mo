@@ -1,6 +1,6 @@
 block MonitorCollision"Controlla se i droni collidono con oggetti nell'area di volo"
 	
-	parameter Real T = 0.5; //Refresh controllo collisione
+	parameter Real T = 1; //Refresh controllo collisione
 
 	//input Vector3D drones[K.N];
 

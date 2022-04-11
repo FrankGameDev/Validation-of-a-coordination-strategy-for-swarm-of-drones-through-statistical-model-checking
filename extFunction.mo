@@ -132,7 +132,7 @@ function euclideanDistance
 
 algorithm
 	
-	dist := sqrt((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2);	
+	dist := sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2);	
 	
 
 end euclideanDistance;
