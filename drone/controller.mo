@@ -36,7 +36,7 @@ algorithm
 for i in 1:K.N loop
 	Trustx[i] := K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
 	Trusty[i] := K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
-    	Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
+    Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
 end for;
 
 

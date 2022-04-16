@@ -1,7 +1,7 @@
 block PSO "Modulo di controllo dell'algoritmo di pathfinding"
 	
 //tempo di aggiornamento del pso
-parameter Real T = 2;
+parameter Real T = 0.5;
 
 //tendenza dei droni di rimanere alla velocità del precedente timestamp
 parameter Real w = 0.6;
@@ -88,6 +88,7 @@ initial equation
 		globFitness[i] = 100000;
 		gBestPos[i] = {x[i],y[i],z[i]};
 	end for;
+
 	velocityX = zeros(K.N);
 	velocityY = zeros(K.N);
 	velocityZ = zeros(K.N);
@@ -100,11 +101,12 @@ initial equation
 	tmpGPos = zeros(K.N,3);
 	tmpGFit = zeros(K.N);
 	tmpFit = zeros(K.N);
+
 algorithm
 
 when sample(0,T) then
 	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr);
-	if(timer < 3) then
+	if(timer < 2) then
 		timer := pre(timer) + 1;
 	else 
 		timer := 0;
@@ -112,7 +114,6 @@ when sample(0,T) then
 		globFitness := fill(100000.0, K.N);
 	end if;
 
-	
 	for i in 1:K.N loop
 
 		//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
@@ -127,16 +128,16 @@ when sample(0,T) then
 			gBestPos[i] := {x[i],y[i],z[i]};
 		end if;
 		
-		
 		r1 := myrandom();
 		r2 := myrandom();
 		
 		velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (gBestPos[i,1] - x[i])));
 		velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (gBestPos[i,2] - y[i])));
 		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
+
 		//velocity cap
-		//(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
-		
+		(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
+		print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
 	end for;
 
 	(tmpGPos, tmpGFit, battery) := talking(globFitness, gBestPos, neighbours, droneState);
@@ -216,7 +217,7 @@ algorithm
 			if (nearIntr[i,j]) then
 				tmpFit[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
 			else 
-				tmpFit[j] := magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+				tmpFit[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
 			end if;
 		end for;
 		
@@ -265,15 +266,15 @@ for i in 1:K.N loop
 				if(acknowledgment(droneState[i],droneState[j])) then
 					tmpBatt[j] := tmpBatt[j] + 1;
 					if(psoComm(gBestFit[i], gBestFit[j])) then //Il drone i ha risposto con valori migliori
+						outGbestFit[j] := outGbestFit[j];
+						outGbestPos[j,1] := outGbestPos[i,1];
+						outGbestPos[j,2] := outGbestPos[i,2];
+						outGbestPos[j,3] := outGbestPos[i,3];
+					else
 						outGbestFit[i] := outGbestFit[j];
 						outGbestPos[i,1] := outGbestPos[j,1];
 						outGbestPos[i,2] := outGbestPos[j,2];
-						outGbestPos[i,3] := outGbestPos[j,3];
-					else
-						outGbestFit[j] := outGbestFit[i];
-						outGbestPos[j,1] := outGbestPos[i,1];
-						outGbestPos[j,2] := outGbestPos[i,2];
-						outGbestPos[j,3] := outGbestPos[i,3];	
+						outGbestPos[i,3] := outGbestPos[j,3];	
 					end if;
 				end if;
 			end if;

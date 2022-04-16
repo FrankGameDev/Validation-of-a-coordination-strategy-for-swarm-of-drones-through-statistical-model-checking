@@ -34,10 +34,9 @@ OutputReal Trustz[K.nIntr];
 algorithm
 
 for i in 1:K.nIntr loop
-	Trustx[i] := K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
-	Trusty[i] := K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
-    	Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
-	//(Trustx[i], Trusty[i], Trustz[i]) := velocityCap(Trustx[i], Trusty[i], Trustz[i], maxSpeed);
+	Trustx[i] := 0;//K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
+	Trusty[i] := 0;//K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
+	Trustz[i] := 0;//K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
 end for;
 
 

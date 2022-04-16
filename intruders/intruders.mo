@@ -45,6 +45,7 @@ initial algorithm
 		x[i] := myrandom() * K.flyZone[1];
 		y[i] := myrandom() * K.flyZone[2];
 		z[i] := myrandom() * K.flyZone[3]; 
+		print("Intruso: (" + String(x[i]) + ", " + String(y[i]) + ", " + String(z[i]) + ");\n");
 	end for;
 
 

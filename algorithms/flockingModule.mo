@@ -1,7 +1,7 @@
 /*
-QUESTO BLOCCO MODELLA L'ALGORITMO DI COLLISION AVOIDANCE BASATO SU UN ALGORITMO DI FLOCKING. Si attiva solo se il monitor di collision segnala una collisione imminente"
+QUESTO BLOCCO MODELLA L'ALGORITMO DI FLOCKING"
 */
-block CollisionAvoidance 
+block flockingModule 
 	
 	parameter Real T = 0.5 "Timer controllo droni vicini";
 
@@ -54,11 +54,15 @@ when sample(0,T) then
 
 	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz, droneState, neighbours);
 	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, droneState, neighbours);
-	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState,neighbours);			
+	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState,neighbours);	
+
+	print("Align (" + String(alignX[1]) + ", " + String(alignY[1]) + ", " + String(alignZ[1]) + ")\n");		
+	print("Cohesion (" + String(cohesionX[1]) + ", " + String(cohesionY[1]) + ", " + String(cohesionZ[1]) + ")\n");		
+	print("Separate (" + String(separateX[1]) + ", " + String(separateY[1]) + ", " + String(separateZ[1]) + ")\n\n");		
 
 end when;
 
-end CollisionAvoidance;
+end flockingModule;
 
 
 function separate "Calcola la velocità di sterzata per separare ogni drone dai suoi vicini"
@@ -82,9 +86,7 @@ function separate "Calcola la velocità di sterzata per separare ogni drone dai 
 	OutputReal outAy[K.N];
 	OutputReal outAz[K.N];		
 	
-	protected
-	 Real distanzaDesiderata = 10.0 ; //Distanza desiderata da droni vicini
-	
+	protected	
 	//Velocità si allineamento di ogni drone con i suoi vicini. i 3 elementi indicano la velocità su x,y,z
 	 Real sterring[K.N,3];
 

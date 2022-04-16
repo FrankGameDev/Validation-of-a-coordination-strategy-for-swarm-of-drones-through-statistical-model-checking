@@ -28,7 +28,7 @@ algorithm
 			setz[i] := 3*i + 5*i*cos((2*3.14/2)*time);
 		end if;
 	end for;
-
+*/
 
 /*
 //posizione di arrivo totalmente random

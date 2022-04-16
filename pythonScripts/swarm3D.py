@@ -66,7 +66,7 @@ def droneAnimation(num, dataSet, lines):
 			z = dataSet[k]["z"]
 			line.set_data(x[num],y[num])
 			line.set_3d_properties(z[num])
-			line.set_color("blue");
+			line.set_color("blue")
 	return lines
 
 def intrAnimation(num, dataSet, lines):

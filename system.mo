@@ -8,7 +8,7 @@ SetPoint p;
 
 MonitorCollision col;
 
-CollisionAvoidance cad;
+flockingModule cad;
 
 faultSys fault;
 

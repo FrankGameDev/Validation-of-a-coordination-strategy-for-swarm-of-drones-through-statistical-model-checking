@@ -134,7 +134,7 @@ block Drone
 	parameter Real cohesionWeight = 1;	
 	parameter Real alignWeight = 1.5;
 	parameter Real separateWeight = 1.5;
-	parameter Real headingWeight = 2;
+	parameter Real headingWeight = 1;
 	parameter Real vWeight = 5;
 
 initial equation
@@ -171,20 +171,14 @@ equation
 	for i in 1:K.N loop
 	
 		if(not droneState[i] == 3) then	
-		
-			der(x[i]) = Vx[i];
-
-			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
-			//der(Vx[i]) = (Fx[i]/weight)*vWeight + headingX[i]*headingWeight;
-
-			der(y[i]) = Vy[i];
-
-			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight+ headingY[i]*headingWeight);
-			//der(Vy[i]) = (Fy[i]/weight)*vWeight + headingY[i]*headingWeight;
 			
+			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+
+			der(x[i]) = Vx[i];
+			der(y[i]) = Vy[i];
 			der(z[i]) = Vz[i];
-			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight+ headingZ[i]*headingWeight);
-			//der(Vz[i]) = (Fz[i]/weight)*vWeight + headingZ[i]*headingWeight;
 		
 		else
 			if(z[i] <= 0) then 
@@ -211,6 +205,7 @@ when initial() then
 		startPos[i,1] := x[i];
 		startPos[i,2] := y[i];
 		startPos[i,3] := z[i];
+		nearIntr := fill(false, K.N, K.nIntr);
 	end for;
 end when;
 
@@ -257,5 +252,45 @@ algorithm
 	end if;
 end batteryMonitor;
 
+/*
+function move "Calcola la nuova posizione di un drone"
+
+	InputReal Vx, Vy, Vz;
+	InputReal vCap;
+
+	OutputReal x,y,z;
+
+algorithm
+	if(abs((Vx)) > K.maxSpeed) then
+		if((Vx) >= 0) then
+			(x) := K.maxSpeed;
+		else 
+			(x) := -K.maxSpeed;
+		end if;
+	else 
+		(x) := Vx;
+	end if;
+
+	if(abs((Vy)) > K.maxSpeed) then
+		if((Vy) >= 0) then
+			(y) := K.maxSpeed;
+		else 
+			(y) := -K.maxSpeed;
+		end if;
+	else
+		(y) := Vy;
+	end if;
+
+	if(abs((Vz)) > K.maxSpeed) then
+		if((Vz) >= 0) then
+			(z) := K.maxSpeed;
+		else 
+			(z) := -K.maxSpeed;
+		end if;
+	else
+		(z) := Vz;
+	end if;
+end move;
 
 
+*/

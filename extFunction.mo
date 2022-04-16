@@ -15,17 +15,17 @@ algorithm
 	VyCap := Vy;
 	VzCap := Vz;
 
-	if (Vx > velCap) then 
-		if(Vx > 0) then VxCap := velCap;
+	if (abs(Vx) > velCap) then 
+		if(Vx >= 0) then VxCap := velCap;
 		else VxCap := -velCap;
 		end if;	
 	end if;
-	if (Vy > velCap) then 
+	if (abs(Vy) > velCap) then 
 		if(Vy > 0) then VyCap := velCap;
 		else VyCap := -velCap;
 		end if;	
 	end if;
-	if (Vz > velCap) then 
+	if (abs(Vz) > velCap) then 
 		if(Vz > 0) then VzCap := velCap;
 		else VzCap := -velCap;	
 		end if;	
@@ -92,7 +92,6 @@ function findNearObject "Restituisce una lista contenente tutti gli oggetti vici
 		Real euclDist;
 
 algorithm
-	
 	for i in 1:K.N loop
 		euclDist := euclideanDistance(x,y,z,x2[i],y2[i],z2[i]);
 		if(euclDist <= K.IDD and euclDist > 0) then
