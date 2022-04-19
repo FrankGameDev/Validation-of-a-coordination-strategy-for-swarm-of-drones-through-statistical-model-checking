@@ -12,13 +12,14 @@ block MonitorCollision"Controlla se i droni collidono con oggetti nell'area di v
 	InputReal intrY[K.nIntr];
 	InputReal intrZ[K.nIntr];
 
-	Real distEucl;
+	Real distEucl,t;
 
 	OutputBool outCollision;
 
 
 initial algorithm
 	distEucl := 0.0;
+	t := 0;
 	outCollision := false;
 
 algorithm
@@ -33,6 +34,10 @@ when sample(0,T) then
 				if(not outCollision) then
 					outCollision := (distEucl < 1.5);
 				end if; 
+				if(outCollision and t < 1) then
+					t := t+1;
+					print("Collisione tra droni");
+				end if;
 			end if;
 		end for;
 		
@@ -41,6 +46,10 @@ when sample(0,T) then
 			if(not outCollision) then	
 				outCollision := (distEucl < 1.5);
 			end if; 
+			if(outCollision and t < 1) then
+				t := t+1;
+				print("Collisione tra drone e ostacolo");
+			end if;
 		end for;
 	end for;
 

@@ -30,7 +30,7 @@ algorithm
 	end for;
 */
 
-/*
+
 //posizione di arrivo totalmente random
 when sample(0,T) then
 	rand := myrandom();
@@ -46,9 +46,9 @@ when sample(0,T) then
 		end if;	
 	end for;
 end when;
-*/
 
 
+/*
 //arrivo in fila
 when sample(0,T) then
 	rand := myrandom();
@@ -65,6 +65,6 @@ when sample(0,T) then
 	end for;
 	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
 end when;
-
+*/
 
 end SetPoint;

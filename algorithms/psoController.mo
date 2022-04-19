@@ -137,7 +137,7 @@ when sample(0,T) then
 
 		//velocity cap
 		(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
-		print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
+		//print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
 	end for;
 
 	(tmpGPos, tmpGFit, battery) := talking(globFitness, gBestPos, neighbours, droneState);

@@ -32,7 +32,7 @@ algorithm
 	end if;
 end velocityCap;
 
-function magnitude "Restituisce la magnitudine di un vettore"
+function magnitude "Restituisce la magnitudine di un vettore 3D"
 
 	InputReal Vx;
 	InputReal Vy;
@@ -45,6 +45,19 @@ algorithm
 	res := sqrt(Vx^2 + Vy^2 + Vz^2);
 
 end magnitude;
+
+function magnitude2D "Restituisce la magnitudine di un vettore 2D"
+
+	InputReal Vx;
+	InputReal Vy;
+
+	OutputReal res;
+
+algorithm
+		
+	res := sqrt(Vx^2 + Vy^2);
+
+end magnitude2D;
 
 function norm "Normalizza un vettore"
 
@@ -135,3 +148,86 @@ algorithm
 	
 
 end euclideanDistance;
+
+function euclideanDistance2D
+	//Drone 1
+	InputReal x1;
+	InputReal y1;
+	
+	//Drone 2
+	InputReal x2;
+	InputReal y2;
+
+	OutputReal dist; 
+
+algorithm
+	
+	dist := sqrt((x2-x1)^2 + (y2-y1)^2);	
+
+end euclideanDistance2D;
+
+
+function vectorAngle2D "calcola l'angolo tra 2 vettori 2D"
+
+//INPUT
+
+//Drone
+InputReal x;
+InputReal y;
+//intruso
+InputReal x2;
+InputReal y2;
+
+//OUTPUT
+
+//Angolo 
+OutputReal gamma; 
+
+
+protected
+    Real dotProd; //Prodotto tra 2 vettori
+    Real magnProd; //Prodotto tra la magnitudine di 2 vettori
+
+algorithm
+
+    //Prima parte: calcolo theta
+    dotProd := (x*x2) + (y*y2); 
+    magnProd := magnitude2D(x,y) * magnitude2D(x2,y2);
+	if(magnProd == 0) then 
+		gamma := acos(0) * (180/K.pi);
+	else
+    	gamma := acos(dotProd/magnProd) * (180/K.pi);
+	end if;
+
+end vectorAngle2D;
+
+function vectorAngle3D "calcola l'angolo tra 2 vettori 3D"
+
+//INPUT
+
+//Drone
+InputReal x;
+InputReal y;
+InputReal z;
+//intruso
+InputReal x2;
+InputReal y2;
+InputReal z2;
+
+//OUTPUT
+
+//Angolo XYZ
+OutputReal gamma; 
+
+protected
+    Real dotProd; //Prodotto tra 2 vettori
+    Real magnProd; //Prodotto tra la magnitudine di 2 vettori
+
+algorithm
+
+    //Prima parte: calcolo gamma
+    dotProd := (x*x2) + (y*y2) + (z*z2); 
+    magnProd := magnitude(x,y,z) * magnitude(x2,y2,z2);
+    gamma := acos(dotProd/magnProd) * (180/K.pi);
+
+end vectorAngle3D;

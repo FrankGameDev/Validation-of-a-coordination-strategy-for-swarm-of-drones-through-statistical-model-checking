@@ -56,10 +56,11 @@ when sample(0,T) then
 	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, droneState, neighbours);
 	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState,neighbours);	
 
+	/*
 	print("Align (" + String(alignX[1]) + ", " + String(alignY[1]) + ", " + String(alignZ[1]) + ")\n");		
 	print("Cohesion (" + String(cohesionX[1]) + ", " + String(cohesionY[1]) + ", " + String(cohesionZ[1]) + ")\n");		
 	print("Separate (" + String(separateX[1]) + ", " + String(separateY[1]) + ", " + String(separateZ[1]) + ")\n\n");		
-
+	*/
 end when;
 
 end flockingModule;

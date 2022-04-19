@@ -1,29 +1,7 @@
 block Drone
 	
 	parameter Real T = 1.0;
-	
-//PARAMETRI DRONE 
 
-	//Peso del drone
-	parameter Real weight = 0.895;
-
-	//Velocità massima in salita (m/s)
-	parameter Real maxUpSpeed = 6.0;
-
-	//Velocità massima in discesa (m/s)
-	parameter Real maxDownSpeed = 6.0;
-
-	//Velocità massima di volo senza vento (m/s)
-	parameter Real maxSpeed = 15.0;
-
-	//Tempo di volo massimo (minuti)
-	parameter Integer maxFlightTime = 46;
-
-	//Tempo di volo massimo con vento (minuti)
-	parameter Integer maxWindFlightTime = 40;
-
-	//Distanza massima percorribile(Km)
-	parameter Integer maxFlightDistance = 30;
 	
 //PARAMETRI SISTEMA DI VISIONE(ODD = orizontal detection distance, IDD  = infrared detection distance}
  	
@@ -127,7 +105,7 @@ block Drone
 	OutputReal startPos[K.N,3];
 
 	Real tmpBatt;
-
+	
 //Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
 //La somma dei vari pesi degli attributi deve essere uguale a 1.
@@ -164,7 +142,7 @@ equation
 	for i in 1:K.N loop 
 		Fx[i] = Trustx[i];	
 		Fy[i] = Trusty[i];
-		Fz[i] = Trustz[i] - weight * K.g;	
+		Fz[i] = Trustz[i] - K.m * K.g;	
 	end for;
 
 
@@ -172,9 +150,9 @@ equation
 	
 		if(not droneState[i] == 3) then	
 			
-			der(Vx[i]) = (Fx[i]/weight)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
-			der(Vy[i]) = (Fy[i]/weight)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
-			der(Vz[i]) = (Fz[i]/weight)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+			der(Vx[i]) = (Fx[i]/K.m)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+			der(Vy[i]) = (Fy[i]/K.m)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+			der(Vz[i]) = (Fz[i]/K.m)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
 
 			der(x[i]) = Vx[i];
 			der(y[i]) = Vy[i];
@@ -224,6 +202,9 @@ when sample(0,T) then
 			nearIntr[i] := fill(false, K.nIntr);
 		end if;	
 	end for;
+
+	//print("Velocità drone 1: (" +String(Vx[1]) + ", " +String(Vy[1]) + ", " +String(Vz[1]) + ")\n");
+
 	
 end when;
 	

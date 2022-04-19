@@ -8,7 +8,9 @@ SetPoint p;
 
 MonitorCollision col;
 
-flockingModule cad;
+flockingModule flock;
+
+CollisionAvoidance cad;
 
 faultSys fault;
 
@@ -45,19 +47,38 @@ equation
 		connect(ctr.Vx[i],drone.Vx[i]);
 		connect(ctr.Vy[i],drone.Vy[i]);
 		connect(ctr.Vz[i],drone.Vz[i]);
+		
+		connect(ctr.tmpSetX[i], cad.tmpDestX[i]);
+		connect(ctr.tmpSetY[i], cad.tmpDestY[i]);
+		connect(ctr.tmpSetZ[i], cad.tmpDestZ[i]);
+		connect(ctr.useTMPDest[i], cad.useTMPDest[i]);
 
-		//connection tra info drone e modulo collision avoidance		
+		//connection tra info drone e modulo flocking		
+		connect(flock.Vx[i],drone.Vx[i]);
+		connect(flock.Vy[i],drone.Vy[i]);
+		connect(flock.Vz[i],drone.Vz[i]);
+		connect(flock.x[i], drone.x[i]);
+		connect(flock.y[i], drone.y[i]);
+		connect(flock.z[i], drone.z[i]);
+		connect(flock.collision, col.outCollision);
+		for j in 1:K.N loop
+			connect(flock.neighbours[i,j], drone.neighbours[i,j]);
+		end for;
+		connect(flock.droneState[i], fault.state[i]);
+
+		//Connection tra drone e modulo collision avoidance
 		connect(cad.Vx[i],drone.Vx[i]);
 		connect(cad.Vy[i],drone.Vy[i]);
 		connect(cad.Vz[i],drone.Vz[i]);
 		connect(cad.x[i], drone.x[i]);
 		connect(cad.y[i], drone.y[i]);
 		connect(cad.z[i], drone.z[i]);
-		connect(cad.collision, col.outCollision);
-		for j in 1:K.N loop
-			connect(cad.neighbours[i,j], drone.neighbours[i,j]);
-		end for;
+		connect(cad.destX[i],p.setx[i]);
+		connect(cad.destY[i],p.sety[i]);
+		connect(cad.destZ[i],p.setz[i]);
 		connect(cad.droneState[i], fault.state[i]);
+		connect(cad.nearIntr[i], drone.nearIntr[i]);
+		
 
 		//connection tra pso e valori drone + posizione di arrivo
 		connect(pso.Vx[i],drone.Vx[i]);
@@ -72,9 +93,8 @@ equation
 		for j in 1:K.N loop
 			connect(pso.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
-		for j in 1:K.N loop
-			connect(pso.nearIntr[j], drone.nearIntr[j]);
-		end for;
+		connect(pso.nearIntr[i], drone.nearIntr[i]);
+
 
 
 		//trasferisco la forza dal controller al drone
@@ -82,15 +102,15 @@ equation
 		connect(drone.Trusty[i], ctr.Trusty[i]);
 		connect(drone.Trustz[i], ctr.Trustz[i]);
 		//Trasferisco le velocità calcolate dal monitor di flocking al drone
-		connect(drone.alignX[i], cad.alignX[i]);
-		connect(drone.alignY[i], cad.alignY[i]);
-		connect(drone.alignZ[i], cad.alignZ[i]);
-		connect(drone.separateX[i], cad.separateX[i]);
-		connect(drone.separateY[i], cad.separateY[i]);
-		connect(drone.separateZ[i], cad.separateZ[i]);
-		connect(drone.cohesionX[i], cad.cohesionX[i]);
-		connect(drone.cohesionY[i], cad.cohesionY[i]);
-		connect(drone.cohesionZ[i], cad.cohesionZ[i]);
+		connect(drone.alignX[i], flock.alignX[i]);
+		connect(drone.alignY[i], flock.alignY[i]);
+		connect(drone.alignZ[i], flock.alignZ[i]);
+		connect(drone.separateX[i], flock.separateX[i]);
+		connect(drone.separateY[i], flock.separateY[i]);
+		connect(drone.separateZ[i], flock.separateZ[i]);
+		connect(drone.cohesionX[i], flock.cohesionX[i]);
+		connect(drone.cohesionY[i], flock.cohesionY[i]);
+		connect(drone.cohesionZ[i], flock.cohesionZ[i]);
 		//Trasferisco l'heading vector dal pso al drone
 		connect(drone.headingX[i], pso.velocityX[i]);
 		connect(drone.headingY[i], pso.velocityY[i]);
@@ -143,8 +163,16 @@ equation
 		connect(col.intrX[z], intruder.x[z]);
 		connect(col.intrY[z], intruder.y[z]);
 		connect(col.intrZ[z], intruder.z[z]);
+
+		connect(cad.intrX[z], intruder.x[z]);
+		connect(cad.intrY[z], intruder.y[z]);
+		connect(cad.intrZ[z], intruder.z[z]);
+		connect(cad.vIntrX[z], intruder.Vx[z]);
+		connect(cad.vIntrY[z], intruder.Vy[z]);
+		connect(cad.vIntrZ[z], intruder.Vz[z]);
 	end for;
 
+	//Connection missili
 	for q in 1:K.nRocket loop
 
 		connect(rockP.x[q],rocket.x[q]);
