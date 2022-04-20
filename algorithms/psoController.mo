@@ -92,7 +92,7 @@ initial equation
 	velocityX = zeros(K.N);
 	velocityY = zeros(K.N);
 	velocityZ = zeros(K.N);
-	//batteryDischarge = zeros(K.N);
+	batteryDischarge = zeros(K.N);
 
 	r1 = 0;
 	r2 = 0;

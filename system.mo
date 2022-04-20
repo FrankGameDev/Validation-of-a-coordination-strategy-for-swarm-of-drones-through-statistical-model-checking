@@ -117,6 +117,8 @@ equation
 		connect(drone.headingZ[i], pso.velocityZ[i]);	
 		//trasferisco la scarica della batteria dovuta al modulo di comunicazione
 		connect(drone.commDischarge[i], pso.batteryDischarge[i]);
+		//Asserisco se il drone sta usando la nuova destinazione identificata dal monitor di collision avoidance
+		connect(drone.useTMPDest[i], cad.useTMPDest[i]);
 
 		//Connect monitor collisione
 		connect(col.x[i], drone.x[i]);

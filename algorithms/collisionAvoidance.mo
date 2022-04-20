@@ -51,10 +51,11 @@ when sample(1,T) then
         useTMPDest[i] := false;
         for j in 1:K.nIntr loop 
             if(nearIntr[i,j]) then
-                //Passo 1: controllo se il drone è a distanza di sicurezza dall'ostacolo
+                //2): controllo se il drone è a distanza di sicurezza dall'ostacolo
                 if(euclideanDistance(x[i], y[i], z[i], intrX[j], intrY[j], intrZ[j]) <= K.dangerRadius) then
-                    (tmpDestX[i], tmpDestY[i], tmpDestZ[i]):= findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]); 
+                    (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]); 
                     useTMPDest[i] := true; 
+
                     print("i: " + String(i) + "\n");
                     print("Vecchia destinazione: (" + String(destX[i]) + ", " + String(destY[i]) + ", " 
                     +  String(destZ[i]) + ");\n");
@@ -106,7 +107,7 @@ function findNewDestination
 algorithm   
     //1) Calcolo il vettore tra l'ostacolo e il drone
     vectDtoC := {intrX - x, intrY - y, intrZ - z};
-
+    print("Vettore drone-intruso: (" + String(vectDtoC[1]) + ", "+ String(vectDtoC[2]) + ", "+ String(vectDtoC[3]) + ")\n");
     //2) Inizializzo l'output  uguale alla vecchia destinazione
     newDestX := destX;
     newDestY := destY;

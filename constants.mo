@@ -2,9 +2,9 @@ record K
 
 //Costanti simulazione
 
-constant Integer N = 2; //Number of uavs
+constant Integer N = 10; //Number of uavs
 
-constant Integer nIntr = 1; //Numbers of intruders
+constant Integer nIntr = 5; //Numbers of intruders
 
 constant Integer nRocket = 1;
 
@@ -13,7 +13,7 @@ constant Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 constant Real pi = 3.14;
 
 //Dimensione area di volo
-constant Real flyZone[3] = {50,50,50};
+constant Real flyZone[3] = {100,100,100};
 
 //--------------------------------------------
 

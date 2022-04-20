@@ -12,13 +12,12 @@ block MonitorCollision"Controlla se i droni collidono con oggetti nell'area di v
 	InputReal intrY[K.nIntr];
 	InputReal intrZ[K.nIntr];
 
-	Real distEucl,t;
+	Real t;
 
 	OutputBool outCollision;
 
 
 initial algorithm
-	distEucl := 0.0;
 	t := 0;
 	outCollision := false;
 
@@ -29,26 +28,24 @@ when sample(0,T) then
 	for i in 1:K.N loop //drone da controllare
 		for j in 1:K.N loop //droni nelle vicinanze 		
 			if(i <> j) then 			
-				distEucl := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);		
-				//se 2 droni si trovano nella stessa posizione oppure troppo vicini, collision diventa true
+				//se 2 droni si trovano nella stessa posizione, collision diventa true
 				if(not outCollision) then
-					outCollision := (distEucl < 1.5);
+					outCollision := checkPosition(x[i],y[i],z[i],x[j],y[j],z[j]);
 				end if; 
 				if(outCollision and t < 1) then
 					t := t+1;
-					print("Collisione tra droni");
+					print("Collisione tra droni (" + String(i) + ", " + String(j) + ")\n");
 				end if;
 			end if;
 		end for;
 		
 		for j in 1:K.nIntr loop//Controlla le collisioni con gli intrusi
-			distEucl := euclideanDistance(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j]);	
 			if(not outCollision) then	
-				outCollision := (distEucl < 1.5);
+				outCollision := checkPosition(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j]);
 			end if; 
 			if(outCollision and t < 1) then
 				t := t+1;
-				print("Collisione tra drone e ostacolo");
+				print("Collisione tra drone e ostacolo(" + String(i) + ", " + String(j) + ")");
 			end if;
 		end for;
 	end for;
@@ -58,6 +55,20 @@ end when;
 end MonitorCollision;
 
 
+function checkPosition
+
+	InputReal x,y,z;
+	InputReal x2,y2,z2;
+
+	OutputBool col;
+
+algorithm
+	col := false;
+	if (x == x2 and y == y2 and z == z2) then
+		col := true;
+	end if;
+
+end checkPosition;
 
 
 

@@ -67,16 +67,16 @@ equation
 
 	for i in 1:K.nIntr loop 
 		der(x[i]) = Vx[i];
-		//der(Vx[i]) = (Fx[i]/K.m); 
-		der(Vx[i]) = 0;
+		der(Vx[i]) = (Fx[i]/K.m); 
+		//der(Vx[i]) = 0;
 
 		der(y[i]) = Vy[i];
-		//der(Vy[i]) = (Fy[i]/K.m);
-		der(Vy[i]) = 0;
+		der(Vy[i]) = (Fy[i]/K.m);
+		//der(Vy[i]) = 0;
 
 		der(z[i]) = Vz[i];
-		//der(Vz[i]) = (Fz[i]/K.m);
-		der(Vz[i]) = 0;
+		der(Vz[i]) = (Fz[i]/K.m);
+		//der(Vz[i]) = 0;
 	end for;
 end Intruders;
 

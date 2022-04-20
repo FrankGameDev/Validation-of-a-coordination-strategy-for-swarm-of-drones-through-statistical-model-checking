@@ -65,6 +65,10 @@ block Drone
 	//Scarica della batteria dovuta all'utilizzo del modulo di comunicazione
 	InputReal commDischarge[K.N];
 
+	//Valore che permette di definire se il modulo di collision avoidance ha determinato
+	//una nuova destinazione per schivare gli ostacoli
+	InputBool useTMPDest[K.N];
+
 	//Posizione sull'asse x
 	OutputReal x[K.N];
 
@@ -111,9 +115,9 @@ block Drone
 //La somma dei vari pesi degli attributi deve essere uguale a 1.
 	parameter Real cohesionWeight = 1;	
 	parameter Real alignWeight = 1.5;
-	parameter Real separateWeight = 1.5;
-	parameter Real headingWeight = 1;
-	parameter Real vWeight = 5;
+	parameter Real separateWeight = 2;
+	parameter Real headingWeight = 1.5;
+	parameter Real vWeight = 2;
 
 initial equation
 	
@@ -149,10 +153,15 @@ equation
 	for i in 1:K.N loop
 	
 		if(not droneState[i] == 3) then	
-			
-			der(Vx[i]) = (Fx[i]/K.m)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
-			der(Vy[i]) = (Fy[i]/K.m)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
-			der(Vz[i]) = (Fz[i]/K.m)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+			if(useTMPDest[i]) then
+				der(Vx[i]) = (Fx[i]/K.m);
+				der(Vy[i]) = (Fy[i]/K.m);
+				der(Vz[i]) = (Fz[i]/K.m);
+			else
+				der(Vx[i]) = (Fx[i]/K.m)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+				der(Vy[i]) = (Fy[i]/K.m)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+				der(Vz[i]) = (Fz[i]/K.m)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+			end if;
 
 			der(x[i]) = Vx[i];
 			der(y[i]) = Vy[i];
@@ -188,7 +197,6 @@ when initial() then
 end when;
 
 when sample(0,T) then
-	//print(String(commDischarge[1])+"\n");
 	for i in 1:K.N loop
 		tmpBatt := actualCapacity[i];
 		actualCapacity[i] := batteryMonitor(tmpBatt,1);
@@ -202,6 +210,7 @@ when sample(0,T) then
 			nearIntr[i] := fill(false, K.nIntr);
 		end if;	
 	end for;
+	//print(String(commDischarge[1]) + " discharge \n");
 
 	//print("Velocità drone 1: (" +String(Vx[1]) + ", " +String(Vy[1]) + ", " +String(Vz[1]) + ")\n");
 
@@ -233,45 +242,3 @@ algorithm
 	end if;
 end batteryMonitor;
 
-/*
-function move "Calcola la nuova posizione di un drone"
-
-	InputReal Vx, Vy, Vz;
-	InputReal vCap;
-
-	OutputReal x,y,z;
-
-algorithm
-	if(abs((Vx)) > K.maxSpeed) then
-		if((Vx) >= 0) then
-			(x) := K.maxSpeed;
-		else 
-			(x) := -K.maxSpeed;
-		end if;
-	else 
-		(x) := Vx;
-	end if;
-
-	if(abs((Vy)) > K.maxSpeed) then
-		if((Vy) >= 0) then
-			(y) := K.maxSpeed;
-		else 
-			(y) := -K.maxSpeed;
-		end if;
-	else
-		(y) := Vy;
-	end if;
-
-	if(abs((Vz)) > K.maxSpeed) then
-		if((Vz) >= 0) then
-			(z) := K.maxSpeed;
-		else 
-			(z) := -K.maxSpeed;
-		end if;
-	else
-		(z) := Vz;
-	end if;
-end move;
-
-
-*/
