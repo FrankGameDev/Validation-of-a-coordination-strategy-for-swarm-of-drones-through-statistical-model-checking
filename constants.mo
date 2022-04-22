@@ -2,18 +2,18 @@ record K
 
 //Costanti simulazione
 
-constant Integer N = 10; //Number of uavs
+constant Integer N = 20; //Number of uavs
 
-constant Integer nIntr = 5; //Numbers of intruders
+constant Integer nIntr = 1; //Number of intruders
 
-constant Integer nRocket = 1;
+constant Integer nRocket = 1; //Number of missile
 
 constant Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
 constant Real pi = 3.14;
 
 //Dimensione area di volo
-constant Real flyZone[3] = {100,100,100};
+constant Real flyZone[3] = {200,200,200};
 
 //--------------------------------------------
 
@@ -31,11 +31,17 @@ constant Real dDistance = 1.5;
 //Distanza di Controllo ambientale ad infrarossi dei droni 
 constant Real IDD = 8.0;
 
+//Distanza di controllo ambientale tramite videocamera
+//Orizzontale
+constant Real horizontalODD = 40;
+//Verticale
+constant Real verticalODD = 30;
+
 //Massimo angolo di sterzata
 constant Real maxAngle = 30.0;
 
 //Distanza di sicurezza che ogni drone deve mantenere dagli ostacoli(dm) e che utilizza per iniziare la manovra di evasione
-constant Real dangerRadius = 5;
+constant Real dangerRadius = 8.0;
 
 //Distanza minima tra droni e ostacolis
 constant Real minDistanceFromObs = 2.5;

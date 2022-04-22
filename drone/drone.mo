@@ -2,27 +2,17 @@ block Drone
 	
 	parameter Real T = 1.0;
 
-	
-//PARAMETRI SISTEMA DI VISIONE(ODD = orizontal detection distance, IDD  = infrared detection distance}
- 	
-	parameter Real horizontalODD[2] = {0.7,40};
-
-	parameter Real verticalODD[2] = {0.6, 30};
-
-	parameter Real IDD[2] = {0.1, 8};
-
 //PARAMETRI BATTERIA
 
 	//capacità massima(mAh)	
 	parameter Real capacity = 5000;
-	
-	//Energia massima(Wh)
-	parameter Real energy = 77;
-
-	//Tensione massima(V)
-	parameter Real voltage = 15.4;
 
 //Parametri volo
+
+	//Destinazione droni
+	InputReal destX[K.N];
+	InputReal destY[K.N];
+	InputReal destZ[K.N];
 
 	//forza di movimento del drone
 	InputReal Trustx[K.N];
@@ -48,8 +38,6 @@ block Drone
 	InputReal headingY[K.N];
 	InputReal headingZ[K.N];
 
-	
-
 	//Campi di fault
 
 	//Stato del drone. 1 = funzionante; 2 = errore sensoristica; 3 = errore di manovra; 4 = errore comunicazioni;
@@ -61,6 +49,11 @@ block Drone
 	InputReal intrX[K.nIntr];
 	InputReal intrY[K.nIntr];
 	InputReal intrZ[K.nIntr];
+
+	//Posizione missili
+	InputReal missX[K.nRocket];
+	InputReal missY[K.nRocket];
+	InputReal missZ[K.nRocket];
 
 	//Scarica della batteria dovuta all'utilizzo del modulo di comunicazione
 	InputReal commDischarge[K.N];
@@ -103,6 +96,10 @@ block Drone
 	//Vettore contenente informazioni sugli intrusi vicini
 	OutputBool nearIntr[K.N, K.nIntr];
 
+	//Vettore contenente informazioni sui missili vicini
+	OutputBool nearMissile[K.N, K.nRocket];
+
+	//capacità della batteria di ogni drone
 	OutputReal actualCapacity[K.N]; 	
 
 	//Start position of drones
@@ -114,16 +111,16 @@ block Drone
 
 //La somma dei vari pesi degli attributi deve essere uguale a 1.
 	parameter Real cohesionWeight = 1;	
-	parameter Real alignWeight = 1.5;
-	parameter Real separateWeight = 2;
-	parameter Real headingWeight = 1.5;
-	parameter Real vWeight = 2;
+	parameter Real alignWeight = 6;
+	parameter Real separateWeight = 6;
+	parameter Real headingWeight = 10;
+	parameter Real vWeight = 5;
 
 initial equation
 	
 	for i in 1:K.N loop
 		x[i] = 0;
-		y[i] = 0;
+		y[i] = i*K.dDistance;
 		z[i]= 5+i*K.dDistance;
 	end for;
 
@@ -135,6 +132,7 @@ initial equation
 	end for;	
 
 	actualCapacity = fill(capacity,K.N);
+	tmpBatt = actualCapacity[1];
 equation
 	/*
 	* f = m * a --> a =f/m
@@ -144,15 +142,22 @@ equation
 	
 	
 	for i in 1:K.N loop 
-		Fx[i] = Trustx[i];	
-		Fy[i] = Trusty[i];
-		Fz[i] = Trustz[i] - K.m * K.g;	
+		//Se non ci sono fault di manovra e la batteria ha ancora carica residua, leggo la trust del controller
+		if(not droneState[i] == 3 and actualCapacity[i] > 0) then	
+			Fx[i] = Trustx[i];	
+			Fy[i] = Trusty[i];
+			Fz[i] = Trustz[i] - K.m * K.g;
+		else
+			Fx[i] = 0;	
+			Fy[i] = 0;
+			Fz[i] = -K.m * K.g;
+		end if;	
 	end for;
 
 
 	for i in 1:K.N loop
 	
-		if(not droneState[i] == 3) then	
+		if(not droneState[i] == 3 and actualCapacity[i] > 0) then	
 			if(useTMPDest[i]) then
 				der(Vx[i]) = (Fx[i]/K.m);
 				der(Vy[i]) = (Fy[i]/K.m);
@@ -173,9 +178,9 @@ equation
 				der(Vy[i]) = 0;
 				der(Vx[i]) = 0; 
 			else
-				der(Vy[i]) = 0;
-				der(Vx[i]) = 0; 	
-				der(Vz[i]) = -K.g*vWeight;
+				der(Vx[i]) = (Fx[i]/K.m);
+				der(Vy[i]) = (Fy[i]/K.m);
+				der(Vz[i]) = (Fz[i]/K.m);
 			end if;
 			der(x[i]) = Vx[i];
 			der(y[i]) = Vy[i];
@@ -186,6 +191,7 @@ equation
 
 
 algorithm
+
 when initial() then
 	for i in 1:K.N loop
 		neighbours[i] := fill(true, K.N);
@@ -193,28 +199,31 @@ when initial() then
 		startPos[i,2] := y[i];
 		startPos[i,3] := z[i];
 		nearIntr := fill(false, K.N, K.nIntr);
+		nearMissile	:= fill(false, K.N, K.nRocket);
 	end for;
 end when;
 
 when sample(0,T) then
 	for i in 1:K.N loop
-		tmpBatt := actualCapacity[i];
-		actualCapacity[i] := batteryMonitor(tmpBatt,1);
-		//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
-		if(droneState[i] <> 2 and droneState[i] <> 3) then
-			(neighbours[i], nearIntr[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ);
+		if(actualCapacity[i] > 0) then
 			tmpBatt := actualCapacity[i];
-			actualCapacity[i] := batteryMonitor(tmpBatt,2);
-		else
-			neighbours[i] := fill(false, K.N);	
-			nearIntr[i] := fill(false, K.nIntr);
-		end if;	
+			actualCapacity[i] := batteryMonitor(tmpBatt,1);
+			//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
+			if(droneState[i] <> 2) then
+				(neighbours[i], nearIntr[i], nearMissile[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ, missX, missY, missZ);
+				tmpBatt := actualCapacity[i];
+				actualCapacity[i] := batteryMonitor(tmpBatt,2);
+			//seeNearObject(x[i], y[i], z[i], destX[i], destY[i], destZ[i], x,y,z, intrX, intrY, intrZ, missX, missY, missZ);
+			else
+				neighbours[i] := fill(false, K.N);	
+				nearIntr[i] := fill(false, K.nIntr);
+				nearMissile[i] := fill(false,K.nIntr);
+			end if;	
+		end if;
 	end for;
-	//print(String(commDischarge[1]) + " discharge \n");
 
 	//print("Velocità drone 1: (" +String(Vx[1]) + ", " +String(Vy[1]) + ", " +String(Vz[1]) + ")\n");
 
-	
 end when;
 	
 	
@@ -235,7 +244,7 @@ function batteryMonitor
 
 algorithm
 	
-	if(battery == 0) then 
+	if(battery <= 0) then 
 		outBattery := 0;
 	else
 		outBattery := battery - dischargeRate;

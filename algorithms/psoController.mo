@@ -38,11 +38,17 @@ InputReal intrX[K.nIntr];
 InputReal intrY[K.nIntr];
 InputReal intrZ[K.nIntr];
 
+//posizione missili
+InputReal missX[K.nRocket];
+InputReal missY[K.nRocket];
+InputReal missZ[K.nRocket];
+
 //intrusi vicini a droni
 InputBool nearIntr[K.N, K.nIntr];
+//Missili vicini a droni
+InputBool nearMissile[K.N, K.nRocket];
 
-//global fitness e global position sono calcolate tramite il modulo di comunicazione
-
+//global fitness e global position sono calcolate e condivise tramite il modulo di comunicazione
 
 //Migliore posizione individuale
 Real pBestPos[K.N,3];
@@ -105,7 +111,7 @@ initial equation
 algorithm
 
 when sample(0,T) then
-	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr);
+	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ, nearMissile);
 	if(timer < 2) then
 		timer := pre(timer) + 1;
 	else 
@@ -204,26 +210,51 @@ InputReal intrY[K.nIntr];
 InputReal intrZ[K.nIntr];
 InputBool nearIntr[K.N, K.nIntr];
 
+//posizione missili
+InputReal missX[K.nRocket];
+InputReal missY[K.nRocket];
+InputReal missZ[K.nRocket];
+
+//Missili vicini a droni
+InputBool nearMissile[K.N, K.nRocket];
+
 OutputReal fitValue[K.N];
 
 	protected 
-		Real tmpFit[K.nIntr];
+		Real tmpFitIntr[K.nIntr], tmpFitMissile[K.nIntr];
 
 algorithm 
 	fitValue := fill(10000000.0,K.N);
 	for i in 1:K.N loop
-		tmpFit := zeros(K.nIntr);	
+		//Calcolo la fitness value in base alla distanza con gli intrusi
+		tmpFitIntr := zeros(K.nIntr);	
 		for j in 1:K.nIntr loop
 			if (nearIntr[i,j]) then
-				tmpFit[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
+				tmpFitIntr[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
 			else 
-				tmpFit[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+				tmpFitIntr[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
 			end if;
 		end for;
 		
 		for j in 1:K.nIntr loop
-			if (tmpFit[j] < fitValue[i]) then
-				fitValue[i] := tmpFit[j];
+			if (tmpFitIntr[j] < fitValue[i]) then
+				fitValue[i] := tmpFitIntr[j];
+			end if;
+		end for;
+
+		//Calcolo la fitness value in base alla distanza con i missili
+		tmpFitMissile := zeros(K.nRocket);
+		for j in 1:K.nRocket loop
+			if (nearMissile[i,j]) then
+				tmpFitMissile[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]);
+			else 
+				tmpFitMissile[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+			end if;
+		end for;
+		
+		for j in 1:K.nRocket loop
+			if (tmpFitMissile[j] < fitValue[i]) then
+				fitValue[i] := tmpFitMissile[j];
 			end if;
 		end for;
 	end for;
@@ -260,25 +291,27 @@ outGbestFit := gBestFit;
 tmpBatt := zeros(K.N);
 
 for i in 1:K.N loop	
-		for j in 1:K.N loop
-			if(neighbours[i,j] and i <> j) then
-				tmpBatt[i] := tmpBatt[i] + 2;
-				if(acknowledgment(droneState[i],droneState[j])) then
-					tmpBatt[j] := tmpBatt[j] + 1;
-					if(psoComm(gBestFit[i], gBestFit[j])) then //Il drone i ha risposto con valori migliori
-						outGbestFit[j] := outGbestFit[j];
-						outGbestPos[j,1] := outGbestPos[i,1];
-						outGbestPos[j,2] := outGbestPos[i,2];
-						outGbestPos[j,3] := outGbestPos[i,3];
-					else
-						outGbestFit[i] := outGbestFit[j];
-						outGbestPos[i,1] := outGbestPos[j,1];
-						outGbestPos[i,2] := outGbestPos[j,2];
-						outGbestPos[i,3] := outGbestPos[j,3];	
+		if(droneState[i] <> 4) then //Se il drone ha una fault del sistema di comunicazione, non può scambiare messaggi
+			for j in 1:K.N loop
+				if(neighbours[i,j] and i <> j) then
+					tmpBatt[i] := tmpBatt[i] + 2;
+					if(acknowledgment(droneState[i],droneState[j])) then
+						tmpBatt[j] := tmpBatt[j] + 1;
+						if(psoComm(gBestFit[i], gBestFit[j])) then //Il drone i ha risposto con valori migliori
+							outGbestFit[j] := outGbestFit[j];
+							outGbestPos[j,1] := outGbestPos[i,1];
+							outGbestPos[j,2] := outGbestPos[i,2];
+							outGbestPos[j,3] := outGbestPos[i,3];
+						else
+							outGbestFit[i] := outGbestFit[j];
+							outGbestPos[i,1] := outGbestPos[j,1];
+							outGbestPos[i,2] := outGbestPos[j,2];
+							outGbestPos[i,3] := outGbestPos[j,3];	
+						end if;
 					end if;
 				end if;
-			end if;
-		end for;
+			end for;
+		end if;
 end for;
 
 battery := tmpBatt;
@@ -296,10 +329,10 @@ algorithm
 
 res := true;
 
-if(id1 == 3 or id1 == 4) then
+if(id1 == 4) then
 	res := false;
 	//print("Drone mittente non funzionante\n");
-elseif(id2 == 3 or id2 == 4) then
+elseif(id2 == 4) then
 	res := false;
 	//print("drone ricevente non funzionante\n");
 end if;

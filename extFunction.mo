@@ -98,8 +98,13 @@ function findNearObject "Restituisce una lista contenente tutti gli oggetti vici
 	InputReal intrY[K.nIntr];
 	InputReal intrZ[K.nIntr];
 
+	InputReal missX[K.nRocket];
+	InputReal missY[K.nRocket];
+	InputReal missZ[K.nRocket];
+
 	OutputBool neighbours[K.N];
 	OutputBool nearIntr[K.nIntr];
+	OutputBool nearMissile[K.nRocket];
 
 	protected
 		Real euclDist;
@@ -121,9 +126,54 @@ algorithm
 		end if;	
 	end for; 
 
+	for i in 1:K.nIntr loop
+		euclDist := euclideanDistance(x,y,z,intrX[i], intrY[i], intrZ[i]);
+		if(euclDist <= K.IDD and euclDist > 0) then
+			nearMissile[i] := true;
+		else nearMissile[i] := false;
+		end if;	
+	end for; 
+
 end findNearObject;
 
 function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilevati dal sistema video del drone"
+	InputReal x;
+	InputReal y;
+	InputReal z;
+
+	InputReal destX;
+	InputReal destY; 
+	InputReal destZ; 
+
+	InputReal x2[K.N];
+	InputReal y2[K.N];
+	InputReal z2[K.N];
+
+	InputReal intrX[K.nIntr];
+	InputReal intrY[K.nIntr];
+	InputReal intrZ[K.nIntr];
+
+	InputReal missX[K.nRocket];
+	InputReal missY[K.nRocket];
+	InputReal missZ[K.nRocket];
+
+	/*OutputBool neighbours[K.N];
+	OutputBool nearIntr[K.nIntr];
+	OutputBool nearMissile[K.nRocket];
+*/
+	protected
+		Real euclDist;
+		Real direction[3];
+		Real viewField[3];
+
+algorithm
+	//Calcolo la direzione del drone, così da poter valutare il campo visivo della videocamera sul drone
+	direction := {destX - x, destY - y, destZ - z};
+	(direction[1], direction[2], direction[3]) := norm(direction[1],direction[2],direction[3]);
+	//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
+	viewField := {direction[1] * (x + K.horizontalODD),direction[2] * (y + K.horizontalODD), direction[3] * (z + K.horizontalODD)};
+	print("Direzione drone:" + String(direction[1]) + ", "+ String(direction[2]) + ", "+ String(direction[3]) + ")\n" +
+	"Campo visivo: (" + String(viewField[1]) + ", "+ String(viewField[2]) + ", "+ String(viewField[3]) + ")\n");
 
 
 end seeNearObject;

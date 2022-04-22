@@ -13,9 +13,9 @@ In caso di:
 	//Matrice che identifica la probabilità di transizione
 	//Riga 1 = funzionante; Riga 2 = sensoristica; Riga 3 = manovra; Riga 4 = comunicazione
 	parameter Real transMatrix[4,4] = [0.8, 0.1, 0, 0.1;
-					   0.6, 0.4, 0, 0;
-					   0, 0, 1, 0;
-					   0.7, 0, 0, 0.3];
+										0.6, 0.4, 0, 0;
+										0, 0, 1, 0;
+										0.7, 0, 0, 0.3];
 
 	//probabilità calcolatà randomicamente
 	Real prob;

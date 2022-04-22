@@ -41,7 +41,7 @@ algorithm
 
 end RocketPointer;
 
-function findDrones"Permette di trovare tutti i droni entro 250Km"
+function findDrones "Permette di trovare tutti i droni entro 250Km e seguire quello più vicino"
 	
 	//Posizione missile
 	InputReal x,y,z;
@@ -65,7 +65,7 @@ algorithm
 	followed := foll;
 	pos := iP;
 	for i in 1:K.N loop
-		if(followed < 0) then
+		if(foll < 0) then
 			euclDist := euclideanDistance(x,y,z,dX[i],dY[i],dZ[i]);
 			if(euclDist <= 250.0 and euclDist <= best) then
 				best := euclDist;

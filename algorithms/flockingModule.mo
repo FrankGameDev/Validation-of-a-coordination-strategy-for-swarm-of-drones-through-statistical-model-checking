@@ -17,8 +17,6 @@ block flockingModule
 
 	InputInt droneState[K.N];
 
-	InputBool collision "Output del monitor che controlla le collisioni";
-
 	OutputReal alignX[K.N];
 	OutputReal alignY[K.N];
 	OutputReal alignZ[K.N];
@@ -102,7 +100,7 @@ algorithm
 
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		if(not droneState[i] == 3 and not droneState[i] == 2) then 
+		if(not droneState[i] == 2) then 
 			total := 0;
 			//print("separate i = " + String(i)+ "\n");
 			for j in 1:K.N loop
@@ -196,7 +194,7 @@ algorithm
 
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		if(not droneState[i] == 3 and not droneState[i] == 2) then 
+		if(not droneState[i] == 2) then 
 			total := 0;
 			avg_velocity := zeros(3);
 			for j in 1:K.N loop
@@ -279,7 +277,7 @@ algorithm
 sterring := zeros(K.N,3);
 
 for i in 1:K.N loop
-	if(not droneState[i] == 3 and not droneState[i] == 2) then 
+	if(not droneState[i] == 2) then 
 		center := zeros(3);
 		total := 0;
 		for j in 1:K.N loop
