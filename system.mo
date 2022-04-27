@@ -8,6 +8,8 @@ SetPoint p;
 
 MonitorCollision col;
 
+CollisionManagement colMan;
+
 flockingModule flock;
 
 CollisionAvoidance cad;
@@ -64,6 +66,8 @@ equation
 			connect(flock.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
 		connect(flock.droneState[i], fault.state[i]);
+		connect(flock.battery[i], drone.actualCapacity[i]);
+		connect(flock.droneDead[i], colMan.droneDead[i]);
 
 		//Connection tra drone e modulo collision avoidance
 		connect(cad.x[i], drone.x[i]);
@@ -75,7 +79,9 @@ equation
 		connect(cad.droneState[i], fault.state[i]);
 		connect(cad.nearIntr[i], drone.nearIntr[i]);
 		connect(cad.nearMissile[i], drone.nearMissile[i]);
-		
+		connect(cad.battery[i], drone.actualCapacity[i]);
+		connect(cad.droneDead[i], colMan.droneDead[i]);
+
 
 		//connection tra pso e valori drone + posizione di arrivo
 		connect(pso.Vx[i],drone.Vx[i]);
@@ -93,6 +99,8 @@ equation
 		connect(pso.nearIntr[i], drone.nearIntr[i]);
 		connect(pso.nearMissile[i], drone.nearMissile[i]);
 		connect(pso.droneState[i], fault.state[i]);
+		connect(pso.battery[i], drone.actualCapacity[i]);
+		connect(pso.droneDead[i], colMan.droneDead[i]);
 
 
 
@@ -123,11 +131,19 @@ equation
 		//Asserisco se il drone sta usando la nuova destinazione identificata dal monitor di collision avoidance
 		connect(drone.useTMPDest[i], cad.useTMPDest[i]);
 		connect(drone.droneState[i], fault.state[i]);
+		connect(drone.droneDead[i], colMan.droneDead[i]);
 
 		//Connect monitor collisione
 		connect(col.x[i], drone.x[i]);
 		connect(col.y[i], drone.y[i]);
 		connect(col.z[i], drone.z[i]);
+		connect(col.droneDead[i], colMan.droneDead[i]);
+
+
+		//Connect collision Management
+		connect(colMan.x[i], drone.x[i]);
+		connect(colMan.y[i], drone.y[i]);
+		connect(colMan.z[i], drone.z[i]);
 
 	
 		//connection pointer missili con posizione droni
@@ -158,18 +174,28 @@ equation
 		connect(drone.intrX[z], intruder.x[z]);
 		connect(drone.intrY[z], intruder.y[z]);
 		connect(drone.intrZ[z], intruder.z[z]);
+		connect(drone.intrDead[z], colMan.intrDead[z]);
 
 		connect(pso.intrX[z], intruder.x[z]);
 		connect(pso.intrY[z], intruder.y[z]);
 		connect(pso.intrZ[z], intruder.z[z]);
+		connect(pso.intrDead[z], colMan.intrDead[z]);
+
 
 		connect(col.intrX[z], intruder.x[z]);
 		connect(col.intrY[z], intruder.y[z]);
 		connect(col.intrZ[z], intruder.z[z]);
+		connect(col.intrDead[z], colMan.intrDead[z]);
+
+		connect(colMan.intrX[z], intruder.x[z]);
+		connect(colMan.intrY[z], intruder.y[z]);
+		connect(colMan.intrZ[z], intruder.z[z]);
 
 		connect(cad.intrX[z], intruder.x[z]);
 		connect(cad.intrY[z], intruder.y[z]);
-		connect(cad.intrZ[z], intruder.z[z]);
+		connect(cad.intrZ[z], intruder.z[z]);	
+		connect(cad.intrDead[z], colMan.intrDead[z]);
+
 	end for;
 
 	//Connection missili
@@ -198,18 +224,27 @@ equation
 		connect(drone.missX[q], rocket.x[q]);
 		connect(drone.missY[q], rocket.y[q]);
 		connect(drone.missZ[q], rocket.z[q]);
+		connect(drone.missDead[q], colMan.missDead[q]);
 
 		connect(pso.missX[q], rocket.x[q]);
 		connect(pso.missY[q], rocket.y[q]);
 		connect(pso.missZ[q], rocket.z[q]);
+		connect(pso.missDead[q], colMan.missDead[q]);
 
 		connect(col.missX[q], rocket.x[q]);
 		connect(col.missY[q], rocket.y[q]);
 		connect(col.missZ[q], rocket.z[q]);
+		connect(col.missDead[q], colMan.missDead[q]);
+
+		connect(colMan.missX[q], rocket.x[q]);
+		connect(colMan.missY[q], rocket.y[q]);
+		connect(colMan.missZ[q], rocket.z[q]);
 
 		connect(cad.missX[q], rocket.x[q]);
 		connect(cad.missY[q], rocket.y[q]);
 		connect(cad.missZ[q], rocket.z[q]);
+		connect(cad.missDead[q], colMan.missDead[q]);
+
 	end for;
 
 end System;

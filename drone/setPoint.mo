@@ -58,9 +58,9 @@ when sample(0,T) then
 			sety[i] := startY[i];
 			setz[i] := startZ[i];
 		else
-			setx[i] := rand * K.flyZone[1] + K.dDistance*i;
-			sety[i] := rand * K.flyZone[2] + K.dDistance*i;	
-			setz[i] := rand * K.flyZone[3] + K.dDistance*i;
+			setx[i] := rand * K.flyZone[1];
+			sety[i] := rand * K.flyZone[2];	
+			setz[i] := rand * K.flyZone[3];
 		end if;
 	end for;
 	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");

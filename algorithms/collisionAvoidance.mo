@@ -2,7 +2,7 @@ block CollisionAvoidance
 "Modulo si occupa di prevenire collisioni con gli ostacoli. Deve quindi rilevare ostacoli nella traievectBetweenoria, 
 mantenere la distanza di sicurezza e decidere una nuova traievectBetweenoria se l'ostacolo si trova troppo vicino"
 
-parameter Real T = 1;
+parameter Real T = 0.5;
 
 //Punti di arrivo dei droni
 InputReal destX[K.N];
@@ -29,6 +29,12 @@ InputReal missZ[K.nRocket];
 
 InputBool nearIntr[K.N,K.nIntr];
 InputBool nearMissile[K.N, K.nRocket];
+InputReal battery[K.N];
+
+//Permette di sapere se droni,ostacoli o missili sono collisi
+InputBool droneDead[K.N];
+InputBool intrDead[K.nIntr];
+InputBool missDead[K.nRocket];
 
 //Nuove dest
 OutputReal tmpDestX[K.N], tmpDestY[K.N], tmpDestZ[K.N];
@@ -44,27 +50,29 @@ initial equation
 algorithm
 when sample(1,T) then
     for i in 1:K.N loop
-        useTMPDest[i] := false;
-        //1) Controllo collision avoidance per ostacoli
-        for j in 1:K.nIntr loop 
-            if(nearIntr[i,j]) then
-                //2): controllo se il drone è a distanza di sicurezza dall'ostacolo
-                if(euclideanDistance(x[i], y[i], z[i], intrX[j], intrY[j], intrZ[j]) <= K.dangerRadius) then
-                    (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]); 
-                    useTMPDest[i] := true; 
+        if(battery[i] > 0 and droneState[i] <> 2 and (not droneDead[i])) then
+            useTMPDest[i] := false;
+            //1) Controllo collision avoidance per ostacoli
+            for j in 1:K.nIntr loop 
+                if(nearIntr[i,j] and (not intrDead[j])) then
+                    //2): controllo se il drone è a distanza di sicurezza dall'ostacolo
+                    if(euclideanDistance(x[i], y[i], z[i], intrX[j], intrY[j], intrZ[j]) <= K.dangerRadius) then
+                        (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]); 
+                        useTMPDest[i] := true; 
+                    end if;
                 end if;
-            end if;
-        end for;
+            end for;
 
-        //1) Controllo collision avoidance per missili
-        for j in 1:K.nIntr loop 
-            if(nearMissile[i,j]) then
-                if(euclideanDistance(x[i], y[i], z[i], missX[j], missY[j], missZ[j]) <= K.dangerRadius) then
-                    (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]); 
-                    useTMPDest[i] := true; 
+            //1) Controllo collision avoidance per missili
+            for j in 1:K.nRocket loop 
+                if(nearMissile[i,j] and (not missDead[j])) then
+                    if(euclideanDistance(x[i], y[i], z[i], missX[j], missY[j], missZ[j]) <= K.dangerRadius) then
+                        (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]); 
+                        useTMPDest[i] := true; 
+                    end if;
                 end if;
-            end if;
-        end for;
+            end for;
+        end if;
     end for;
 
 

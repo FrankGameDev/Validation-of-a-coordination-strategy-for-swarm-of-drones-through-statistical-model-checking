@@ -29,6 +29,9 @@ InputReal Vz[K.N];
 
 //Stato dei droni
 InputInt droneState[K.N];
+InputBool droneDead[K.N];
+InputBool intrDead[K.nIntr];
+InputBool missDead[K.nRocket];
 
 //Droni vicini
 InputBool neighbours[K.N,K.N];
@@ -47,6 +50,9 @@ InputReal missZ[K.nRocket];
 InputBool nearIntr[K.N, K.nIntr];
 //Missili vicini a droni
 InputBool nearMissile[K.N, K.nRocket];
+
+//Batteria residua di ogni drone
+InputReal battery[K.N];
 
 //global fitness e global position sono calcolate e condivise tramite il modulo di comunicazione
 
@@ -77,7 +83,7 @@ Real tmpGFit[K.N];
 //Permette di resettare i valori di fitness, così da aggiornare l'algoritmo
 Real timer;
 
-Real battery[K.N];
+Real tmpBattery[K.N];
 
 OutputReal velocityX[K.N];
 OutputReal velocityY[K.N];
@@ -111,7 +117,8 @@ initial equation
 algorithm
 
 when sample(0,T) then
-	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ, nearMissile);
+	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ, 
+						nearMissile, droneDead, intrDead,missDead);
 	if(timer < 2) then
 		timer := pre(timer) + 1;
 	else 
@@ -121,32 +128,33 @@ when sample(0,T) then
 	end if;
 
 	for i in 1:K.N loop
+		if(battery[i] > 0 and (not droneDead[i])) then
+			//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
+			if(tmpFit[i] < pBestFit[i]) then
+				pBestFit[i] := tmpFit[i];
+				pBestPos[i] := {x[i],y[i],z[i]};
+			end if;
 
-		//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
-		if(tmpFit[i] < pBestFit[i]) then
-			pBestFit[i] := tmpFit[i];
-			pBestPos[i] := {x[i],y[i],z[i]};
+			//Aggiornamento gBests da inviare al modulo di comunicazione
+			if(tmpFit[i] < globFitness[i]) then
+				globFitness[i] := tmpFit[i];
+				gBestPos[i] := {x[i],y[i],z[i]};
+			end if;
+			
+			r1 := myrandom();
+			r2 := myrandom();
+			
+			velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (gBestPos[i,1] - x[i])));
+			velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (gBestPos[i,2] - y[i])));
+			velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
+
+			//velocity cap
+			(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
+			//print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
 		end if;
-
-		//Aggiornamento gBests da inviare al modulo di comunicazione
-		if(tmpFit[i] < globFitness[i]) then
-			globFitness[i] := tmpFit[i];
-			gBestPos[i] := {x[i],y[i],z[i]};
-		end if;
-		
-		r1 := myrandom();
-		r2 := myrandom();
-		
-		velocityX[i] := ((w*Vx[i]) + (c1*r1* (pBestPos[i,1] - x[i])) + (c2*r2* (gBestPos[i,1] - x[i])));
-		velocityY[i] := ((w*Vy[i]) + (c1*r1* (pBestPos[i,2] - y[i])) + (c2*r2* (gBestPos[i,2] - y[i])));
-		velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
-
-		//velocity cap
-		(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
-		//print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
 	end for;
 
-	(tmpGPos, tmpGFit, battery) := talking(globFitness, gBestPos, neighbours, droneState);
+	(tmpGPos, tmpGFit, tmpBattery) := talking(globFitness, gBestPos, neighbours, droneState);
 	globFitness := tmpGFit;
 	gBestPos := tmpGPos;
 	batteryDischarge := battery;
@@ -218,6 +226,11 @@ InputReal missZ[K.nRocket];
 //Missili vicini a droni
 InputBool nearMissile[K.N, K.nRocket];
 
+//Permette di sapere se droni,ostacoli o missili sono collisi
+InputBool droneDead[K.N];
+InputBool intrDead[K.nIntr];
+InputBool missDead[K.nRocket];
+
 OutputReal fitValue[K.N];
 
 	protected 
@@ -228,35 +241,37 @@ algorithm
 	for i in 1:K.N loop
 		//Calcolo la fitness value in base alla distanza con gli intrusi
 		tmpFitIntr := zeros(K.nIntr);	
-		for j in 1:K.nIntr loop
-			if (nearIntr[i,j]) then
-				tmpFitIntr[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
-			else 
-				tmpFitIntr[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
-			end if;
-		end for;
-		
-		for j in 1:K.nIntr loop
-			if (tmpFitIntr[j] < fitValue[i]) then
-				fitValue[i] := tmpFitIntr[j];
-			end if;
-		end for;
+		if(not droneDead[i]) then
+			for j in 1:K.nIntr loop
+				if (nearIntr[i,j] and (not intrDead[j])) then
+					tmpFitIntr[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
+				else 
+					tmpFitIntr[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+				end if;
+			end for;
+			
+			for j in 1:K.nIntr loop
+				if (tmpFitIntr[j] < fitValue[i]) then
+					fitValue[i] := tmpFitIntr[j];
+				end if;
+			end for;
 
-		//Calcolo la fitness value in base alla distanza con i missili
-		tmpFitMissile := zeros(K.nRocket);
-		for j in 1:K.nRocket loop
-			if (nearMissile[i,j]) then
-				tmpFitMissile[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]);
-			else 
-				tmpFitMissile[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
-			end if;
-		end for;
-		
-		for j in 1:K.nRocket loop
-			if (tmpFitMissile[j] < fitValue[i]) then
-				fitValue[i] := tmpFitMissile[j];
-			end if;
-		end for;
+			//Calcolo la fitness value in base alla distanza con i missili
+			tmpFitMissile := zeros(K.nRocket);
+			for j in 1:K.nRocket loop
+				if (nearMissile[i,j] and (not missDead[j])) then
+					tmpFitMissile[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]);
+				else 
+					tmpFitMissile[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+				end if;
+			end for;
+			
+			for j in 1:K.nRocket loop
+				if (tmpFitMissile[j] < fitValue[i]) then
+					fitValue[i] := tmpFitMissile[j];
+				end if;
+			end for;
+		end if;
 	end for;
 
 end allFitness;

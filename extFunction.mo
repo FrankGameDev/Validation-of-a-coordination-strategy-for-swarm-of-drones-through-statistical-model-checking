@@ -126,8 +126,8 @@ algorithm
 		end if;	
 	end for; 
 
-	for i in 1:K.nIntr loop
-		euclDist := euclideanDistance(x,y,z,intrX[i], intrY[i], intrZ[i]);
+	for i in 1:K.nRocket loop
+		euclDist := euclideanDistance(x,y,z,missX[i], missY[i], missZ[i]);
 		if(euclDist <= K.IDD and euclDist > 0) then
 			nearMissile[i] := true;
 		else nearMissile[i] := false;
@@ -137,17 +137,14 @@ algorithm
 end findNearObject;
 
 function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilevati dal sistema video del drone"
-	InputReal x;
-	InputReal y;
-	InputReal z;
+	
+	InputReal x[K.N];
+	InputReal y[K.N];
+	InputReal z[K.N];
 
-	InputReal destX;
-	InputReal destY; 
-	InputReal destZ; 
-
-	InputReal x2[K.N];
-	InputReal y2[K.N];
-	InputReal z2[K.N];
+	InputReal destX[K.N];
+	InputReal destY[K.N]; 
+	InputReal destZ[K.N]; 
 
 	InputReal intrX[K.nIntr];
 	InputReal intrY[K.nIntr];
@@ -157,26 +154,109 @@ function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilev
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
-	/*OutputBool neighbours[K.N];
-	OutputBool nearIntr[K.nIntr];
-	OutputBool nearMissile[K.nRocket];
-*/
+	InputBool neighbours[K.N, K.N];
+	InputBool nearIntr[K.N, K.nIntr];
+	InputBool nearMissile[K.N, K.nRocket];
+
+	OutputBool outneighbours[K.N, K.N];
+	OutputBool outnearIntr[K.N,K.nIntr];
+	OutputBool outnearMissile[K.N,K.nRocket];
+
+
 	protected
-		Real euclDist;
 		Real direction[3];
 		Real viewField[3];
 
 algorithm
-	//Calcolo la direzione del drone, così da poter valutare il campo visivo della videocamera sul drone
-	direction := {destX - x, destY - y, destZ - z};
-	(direction[1], direction[2], direction[3]) := norm(direction[1],direction[2],direction[3]);
-	//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
-	viewField := {direction[1] * (x + K.horizontalODD),direction[2] * (y + K.horizontalODD), direction[3] * (z + K.horizontalODD)};
-	print("Direzione drone:" + String(direction[1]) + ", "+ String(direction[2]) + ", "+ String(direction[3]) + ")\n" +
-	"Campo visivo: (" + String(viewField[1]) + ", "+ String(viewField[2]) + ", "+ String(viewField[3]) + ")\n");
+	
+	for i in 1:K.N loop
+		//Controllo video
+		//Calcolo la direzione del drone, così da poter valutare il campo visivo della videocamera sul drone
+		direction := findDirection(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
+		//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
+		viewField := {direction[1]*(x[i] + K.horizontalODD), direction[2]*(y[i] + K.horizontalODD), direction[3]*(z[i] + K.verticalODD)};
 
+		for j in 1:K.N loop
+			if(not neighbours[i,j]) then
+				outneighbours[i,j] := false;
+				if((x[j] >= x[i] and x[j] <= viewField[1]) or (x[j] <= x[i] and x[j] >= viewField[1])) then
+					if((y[j] >= y[i] and y[j] <= viewField[2]) or (y[j] <= y[i] and y[j] >= viewField[2])) then
+						if((z[j] >= z[i] and z[j] <= viewField[3]) or (z[j] <= z[i] and z[j] >= viewField[3])) then
+							outneighbours[i,j] := true;
+						end if;
+					end if;
+				end if;
+			end if;
+		end for;
+
+		for j in 1:K.nIntr loop
+			if(not nearIntr[i,j]) then
+				outnearIntr[i,j] := false;
+				if((intrX[j] >= x[i] and intrX[j] <= viewField[1]) or (intrX[j] <= x[i] and intrX[j] >= viewField[1])) then
+					if((intrY[j] >= y[i] and intrY[j] <= viewField[2]) or (intrY[j] <= y[i] and intrY[j] >= viewField[2])) then
+						if((intrZ[j] >= z[i] and intrZ[j] <= viewField[3]) or (intrZ[j] <= z[i] and intrZ[j] >= viewField[3])) then
+							outnearIntr[i,j] := true;
+						end if;
+					end if;
+				end if;
+			end if;
+		end for; 
+
+		for j in 1:K.nRocket loop
+			if(not nearMissile[i,j]) then
+				outnearMissile[i,j] := false;
+				if((missX[j] >= x[i] and missX[j] <= viewField[1]) or (missX[j] <= x[i] and missX[j] >= viewField[1])) then
+					if((missY[j] >= y[i] and missY[j] <= viewField[2]) or (missY[j] <= y[i] and missY[j] >= viewField[2])) then
+						if((missZ[j] >= z[i] and missZ[j] <= viewField[3]) or (missZ[j] <= z[i] and missZ[j] >= viewField[3])) then
+							outnearMissile[i,j] := true;
+						end if;
+					end if;
+				end if;
+			end if;	
+		end for; 
+	end for;
 
 end seeNearObject;
+
+function findDirection "Calcola la direzione di un drone normalizzando le componenti del vettore al valore 1 o -1"
+
+	//Punto 1
+	InputReal x1;
+	InputReal y1;
+	InputReal z1;
+	
+	//Punto 2
+	InputReal x2;
+	InputReal y2;
+	InputReal z2;
+
+	OutputReal direction[3];
+
+	protected 
+		Real vect[3];
+
+algorithm
+	vect := {x2 - x1, y2 - y1, z2 - z1};
+	//Set x
+	if(vect[1] >= 0) then
+		direction[1] := 1;
+	else
+		direction[1] := -1;
+	end if;
+	//Set y
+	if(vect[2] >= 0) then
+		direction[2] := 1;
+	else
+		direction[2] := -1;
+	end if;
+	//Set z
+	if(vect[3] >= 0) then
+		direction[3] := 1;
+	else
+		direction[3] := -1;
+	end if;
+
+end findDirection;
 
 function euclideanDistance
 	

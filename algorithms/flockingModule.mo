@@ -1,5 +1,5 @@
 /*
-QUESTO BLOCCO MODELLA L'ALGORITMO DI FLOCKING"
+QUESTO BLOCCO MODELLA L'ALGORITMO DI FLOCKING "
 */
 block flockingModule 
 	
@@ -16,6 +16,9 @@ block flockingModule
 	InputBool neighbours[K.N,K.N];
 
 	InputInt droneState[K.N];
+	InputBool droneDead[K.N];
+
+	InputReal battery[K.N];
 
 	OutputReal alignX[K.N];
 	OutputReal alignY[K.N];
@@ -50,15 +53,14 @@ end when;
 
 when sample(0,T) then
 
-	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz, droneState, neighbours);
-	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, droneState, neighbours);
-	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState,neighbours);	
+	(alignX,alignY,alignZ) := align(x,y,z,Vx,Vy,Vz, droneState, droneDead, neighbours, battery);
+	(cohesionX,cohesionY,cohesionZ) := cohesion(x,y,z,Vx,Vy,Vz, droneState, droneDead, neighbours, battery);
+	(separateX,separateY,separateZ) := separate(x,y,z,Vx,Vy,Vz, droneState, droneDead, neighbours, battery);	
 
-	/*
-	print("Align (" + String(alignX[1]) + ", " + String(alignY[1]) + ", " + String(alignZ[1]) + ")\n");		
-	print("Cohesion (" + String(cohesionX[1]) + ", " + String(cohesionY[1]) + ", " + String(cohesionZ[1]) + ")\n");		
-	print("Separate (" + String(separateX[1]) + ", " + String(separateY[1]) + ", " + String(separateZ[1]) + ")\n\n");		
-	*/
+	//print("Align (" + String(alignX[1]) + ", " + String(alignY[1]) + ", " + String(alignZ[1]) + ")\n");		
+	//print("Cohesion (" + String(cohesionX[1]) + ", " + String(cohesionY[1]) + ", " + String(cohesionZ[1]) + ")\n");		
+	//print("Separate (" + String(separateX[1]) + ", " + String(separateY[1]) + ", " + String(separateZ[1]) + ")\n\n");		
+	
 end when;
 
 end flockingModule;
@@ -77,9 +79,11 @@ function separate "Calcola la velocità di sterzata per separare ogni drone dai 
 	InputReal Vz[K.N];
 	
 	InputInt droneState[K.N];
+	InputBool droneDead[K.N];
 
 	//Informazioni sui droni vicini
-	InputBool neighbours[K.N,K.N];	
+	InputBool neighbours[K.N,K.N];
+	InputReal battery[K.N];	
 
 	OutputReal outAx[K.N];
 	OutputReal outAy[K.N];
@@ -94,23 +98,23 @@ function separate "Calcola la velocità di sterzata per separare ogni drone dai 
 	
 	 Real distance;
 	 Real diff[3];
+	 Real separationDist = 50.0;
 		
 
 algorithm
 
 sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		if(not droneState[i] == 2) then 
+		if(droneState[i] <> 2 and battery[i] > 0 and (not droneDead[i])) then 
 			total := 0;
 			//print("separate i = " + String(i)+ "\n");
 			for j in 1:K.N loop
-				if(neighbours[i,j]) then
+				if(neighbours[i,j] and (not droneDead[j])) then
 					distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
-					if(distance < K.dDistance and distance > 0) then
+					if(distance < separationDist and distance > 0) then
 						diff[1] := x[i] - x[j];
 						diff[2] := y[i] - y[j];
 						diff[3] := z[i] - z[j];
-						(diff[1],diff[2],diff[3]) := norm(diff[1],diff[2],diff[3]);
 						diff := diff / distance;
 						sterring[i,1] := sterring[i,1] + diff[1];
 						sterring[i,2] := sterring[i,2] + diff[2];
@@ -125,10 +129,6 @@ sterring := zeros(K.N,3);
 				sterring[i,1] := sterring[i,1]/total;
 				sterring[i,2] := sterring[i,2]/total;
 				sterring[i,3] := sterring[i,3]/total;
-				
-			end if;
-			
-			if (magnitude(sterring[i,1],sterring[i,2], sterring[i,3]) > 0) then
 				(sterring[i,1],sterring[i,2],sterring[i,3]) := norm(sterring[i,1],sterring[i,2], sterring[i,3]);
 				sterring[i,1] := sterring[i,1] * K.maxSpeed;
 				sterring[i,2] := sterring[i,2] * K.maxSpeed;
@@ -165,9 +165,12 @@ function align "Calcola, per tutti i droni, la direzione da seguire per mantener
 	InputReal Vz[K.N];
 	
 	InputInt droneState[K.N];
+	//Permette di sapere se droni,ostacoli o missili sono collisi
+	InputBool droneDead[K.N];
 
 	//Informazioni sui droni vicini
 	InputBool neighbours[K.N,K.N];	
+	InputReal battery[K.N];	
 
 	OutputReal outAx[K.N];
 	OutputReal outAy[K.N];
@@ -188,23 +191,23 @@ function align "Calcola, per tutti i droni, la direzione da seguire per mantener
 
 	 Real distance; //Distanza desiderata da droni vicini
 
-
+	 Real droneDist = 50;
 	
 algorithm
 
-sterring := zeros(K.N,3);
+	sterring := zeros(K.N,3);
 	for i in 1:K.N loop
-		if(not droneState[i] == 2) then 
+		if(droneState[i] <> 2 and battery[i] > 0 and (not droneDead[i])) then 
 			total := 0;
 			avg_velocity := zeros(3);
 			for j in 1:K.N loop
-				if(neighbours[i,j]) then
+				if(neighbours[i,j] and (not droneDead[j])) then
 					/*
 					Calcolo la magnitudine del vettore e lo normalizzo. Se la lunghezza è minore della distanza 
 					desiderata da ciascun altro drone, aggiungo il drone seguente al totale e calcolo la velocità media
 					*/
 					distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]);
-					if(distance < K.dDistance and distance > 0) then 
+					if(distance <= droneDist and distance >= 0) then 
 						avg_velocity := avg_velocity + {Vx[j],Vy[j],Vz[j]};
 						total:= total + 1;
 					end if;	
@@ -226,11 +229,11 @@ sterring := zeros(K.N,3);
 		end if;
 	end for;
 	
-for i in 1:K.N loop
-	outAx[i] := sterring[i,1];		
-	outAy[i] := sterring[i,2];	
-	outAz[i] := sterring[i,3];	
-end for;
+	for i in 1:K.N loop
+		outAx[i] := sterring[i,1];		
+		outAy[i] := sterring[i,2];	
+		outAz[i] := sterring[i,3];	
+	end for;
 
 end align;
 
@@ -250,9 +253,11 @@ function cohesion "Permette di calcolare la direzione che ogni singolo drone dev
 	InputReal Vz[K.N];
 	
 	InputInt droneState[K.N];
+	InputBool droneDead[K.N];
 
 	//Informazioni sui droni vicini
 	InputBool neighbours[K.N,K.N];		
+	InputReal battery[K.N];	
 
 	OutputReal outAx[K.N];
 	OutputReal outAy[K.N];
@@ -272,18 +277,19 @@ function cohesion "Permette di calcolare la direzione che ogni singolo drone dev
 		
 		Real distance;
 
+		Real droneDist = 50;
 algorithm
 
 sterring := zeros(K.N,3);
 
 for i in 1:K.N loop
-	if(not droneState[i] == 2) then 
+	if(droneState[i] <> 2 and battery[i] > 0 and (not droneDead[i])) then 
 		center := zeros(3);
 		total := 0;
 		for j in 1:K.N loop
-			if(neighbours[i,j]) then	
+			if(neighbours[i,j] and (not droneDead[j])) then	
 				distance := euclideanDistance(x[i],y[i],z[i],x[j],y[j],z[j]); 
-				if(distance < K.dDistance and distance > 0) then 	
+				if(distance < droneDist and distance > 0) then 	
 					center := center + {x[j], y[j], z[j]};		
 					total := total + 1;	
 				end if;

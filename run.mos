@@ -19,6 +19,9 @@ getErrorString();
 loadFile("Monitors/MonitorCollision.mo");
 getErrorString();
 
+loadFile("Monitors/CollisionManagement.mo");
+getErrorString();
+
 loadFile("algorithms/flockingModule.mo");
 getErrorString();
 
@@ -67,7 +70,9 @@ getErrorString();
 plot({drone.x[1], drone.y[1], drone.z[1], drone.x[2], drone.y[2], drone.z[2], ctr.setx[1], ctr.sety[1], ctr.setz[1],
  ctr.setx[2], ctr.sety[2], ctr.setz[2], col.outCollision}, externalWindow=true);
 
-plot({col.tDD,col.tDC, col.tDR}, externalWindow = true);
+//plot({col.tDD,col.tDC, col.tDR}, externalWindow = true);
+
+plot({drone.actualCapacity[1], drone.actualCapacity[2]},externalWindow = true);
 
 //plot({rocket.x[1], rocket.y[1], rocket.z[1], rockP.droneFollowed[1]}, externalWindow = true);
 
