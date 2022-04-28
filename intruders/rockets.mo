@@ -19,6 +19,8 @@ block Rocket "modella dei missili che cercano di colpire i droni"
 	//Forza su z
 	InputReal Trustz[K.nRocket];
 
+	//Determina se il missile ha raggiunto la destinazione
+	InputBool targetReached[K.nRocket];
 
 	//Posizione sull'asse x
 	OutputReal x[K.nRocket];
@@ -64,15 +66,21 @@ equation
 		Fz[i] = Trustz[i] - K.m * K.g;	
 	end for;
 
-	for i in 1:K.nRocket loop 
-		der(x[i]) = Vx[i];
-		der(Vx[i]) = (Fx[i]/K.m); 
+	for i in 1:K.nRocket loop
+		if(targetReached[i]) then
+			der(Vx[i]) = 0; 
+			der(Vy[i]) = 0;
+			der(Vz[i]) = 0;
+		else
+			der(Vx[i]) = (Fx[i]/K.m); 
+			der(Vy[i]) = (Fy[i]/K.m);
+			der(Vz[i]) = (Fz[i]/K.m);
+		end if; 
 
+		der(x[i]) = Vx[i];
 		der(y[i]) = Vy[i];
-		der(Vy[i]) = (Fy[i]/K.m);
-		
 		der(z[i]) = Vz[i];
-		der(Vz[i]) = (Fz[i]/K.m);
+
 	end for;
 end Rocket;
 

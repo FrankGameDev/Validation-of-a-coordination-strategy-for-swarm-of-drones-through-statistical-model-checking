@@ -89,6 +89,7 @@ OutputReal velocityX[K.N];
 OutputReal velocityY[K.N];
 OutputReal velocityZ[K.N];
 
+//Scarica batteria dovuta al modulo di comunicazione
 OutputReal batteryDischarge[K.N];
 
 initial equation
@@ -157,7 +158,7 @@ when sample(0,T) then
 	(tmpGPos, tmpGFit, tmpBattery) := talking(globFitness, gBestPos, neighbours, droneState);
 	globFitness := tmpGFit;
 	gBestPos := tmpGPos;
-	batteryDischarge := battery;
+	batteryDischarge := tmpBattery;
 end when;
 
 end PSO;
@@ -196,8 +197,12 @@ algorithm
 	dotProd := (dVector[1] * intrVector[1]) + (dVector[2] * intrVector[2]) + (dVector[3] * intrVector[3]); 
 	fromDtoT := magnitude(dVector[1], dVector[2], dVector[3]);
 	fromDtoIntr := magnitude(intrVector[1],intrVector[2],intrVector[3]);
-	alpha := acos(dotProd / (fromDtoT * fromDtoIntr)); 
-	fitvalue := (1000*magnitude((destX-x),(destY-y), (destZ-z)))/ alpha;
+	if((dotProd / (fromDtoT * fromDtoIntr)) >= 1) then
+		fitvalue := 1000*magnitude((destX-x),(destY-y), (destZ-z));
+	else
+		alpha := acos(dotProd / (fromDtoT * fromDtoIntr)); 
+		fitvalue := if(alpha <> 0) then (1000*magnitude((destX-x),(destY-y), (destZ-z)))/ alpha else 1000*magnitude((destX-x),(destY-y), (destZ-z));
+	end if;
 end fitness;
 
 
@@ -295,6 +300,7 @@ function talking "Comunicazione relativa alle info del pso"
 
 	OutputReal outGbestFit[K.N];
 
+	//Scarica dovuta alla comunicazione tra droni
 	OutputReal battery[K.N];
 
 	protected

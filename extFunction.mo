@@ -16,19 +16,13 @@ algorithm
 	VzCap := Vz;
 
 	if (abs(Vx) > velCap) then 
-		if(Vx >= 0) then VxCap := velCap;
-		else VxCap := -velCap;
-		end if;	
+		VxCap := if(Vx >= 0) then velCap else -velCap;
 	end if;
 	if (abs(Vy) > velCap) then 
-		if(Vy > 0) then VyCap := velCap;
-		else VyCap := -velCap;
-		end if;	
+		VyCap := if(Vy > 0) then velCap else -velCap;
 	end if;
 	if (abs(Vz) > velCap) then 
-		if(Vz > 0) then VzCap := velCap;
-		else VzCap := -velCap;	
-		end if;	
+		VzCap := if(Vz > 0) then velCap else -velCap;
 	end if;
 end velocityCap;
 

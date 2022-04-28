@@ -1,6 +1,6 @@
 block RocketPointer"Determina i punti di arrivo degli intrusi"
 
-	parameter Real T = 10 "tempo di aggiornamento del punto di arrivo";
+	parameter Real T = 5 "tempo di aggiornamento del punto di arrivo";
 
 	//Posizione droni
 	InputReal droneX[K.N], droneY[K.N], droneZ[K.N];
@@ -10,6 +10,8 @@ block RocketPointer"Determina i punti di arrivo degli intrusi"
 	OutputReal setx[K.nRocket];
 	OutputReal sety[K.nRocket];
 	OutputReal setz[K.nRocket];
+
+	OutputBool targetReached[K.nRocket];
 
 	Integer droneFollowed[K.nRocket];
 	Real dronePosition[K.nRocket,3];
@@ -21,6 +23,7 @@ initial algorithm
 	
 	droneFollowed := fill(-1, K.nRocket);
 	dronePosition := zeros(K.nRocket,3);
+	targetReached := fill(false, K.nRocket);
 
 algorithm
 	when sample(0,T) then
@@ -34,6 +37,7 @@ algorithm
 				setx[i] := dronePosition[i,1];
 				sety[i] := dronePosition[i,2];
 				setz[i] := dronePosition[i,3]; 
+				targetReached[i] := mission(x[i],y[i],z[i],setx[i],sety[i],setz[i]);
 			end if;
 	
 		end for;
@@ -61,13 +65,13 @@ function findDrones "Permette di trovare tutti i droni entro 250Km e seguire que
 		Real euclDist;
 
 algorithm	
-	best := 250.0; 
+	best := K.detectionDistance; 
 	followed := foll;
 	pos := iP;
 	for i in 1:K.N loop
 		if(foll < 0) then
 			euclDist := euclideanDistance(x,y,z,dX[i],dY[i],dZ[i]);
-			if(euclDist <= 250.0 and euclDist <= best) then
+			if(euclDist <= K.detectionDistance and euclDist <= best) then
 				best := euclDist;
 				followed := i;
 				pos := {dX[followed], dY[followed], dZ[followed]};
@@ -75,3 +79,19 @@ algorithm
 		end if;
 	end for; 
 end findDrones;
+
+function mission "Determina se il missile ha raggiunto la destinazione prestabilita dopo aver trovato un drone da inseguire"
+
+//Posizione missile
+	InputReal x,y,z;
+	
+	InputReal destX,destY,destZ;
+
+	OutputBool res;
+
+algorithm
+	// print("x,y,z = (" + String(x) + ", " + String(y) + ", " + String(z) + ") \n" +
+			// "destX,destY,destZ = (" + String(destX) + ", " + String(destY) + ", " + String(destZ) + ")\n");
+	res := (x == destX and y == destY and z == destZ);
+
+end mission;

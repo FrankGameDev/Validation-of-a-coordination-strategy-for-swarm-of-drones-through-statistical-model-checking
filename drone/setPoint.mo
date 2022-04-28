@@ -5,6 +5,7 @@ block SetPoint
 	Real rand;
 
 	InputReal battery[K.N];
+	//Posizioni di partenza dei droni
 	InputReal startX[K.N], startY[K.N], startZ[K.N];
 
 	OutputReal setx[K.N];
@@ -35,7 +36,7 @@ algorithm
 when sample(0,T) then
 	rand := myrandom();
 	for i in 1:K.N loop
-		if(battery[i] < (K.N*15)/100) then
+		if(battery[i] < (K.capacity*15)/100) then
 			setx[i] := startX[i];
 			sety[i] := startY[i];
 			setz[i] := startZ[i];

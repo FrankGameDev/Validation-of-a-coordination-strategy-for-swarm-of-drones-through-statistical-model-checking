@@ -4,9 +4,9 @@ record K
 
 constant Integer N = 10; //Number of uavs
 
-constant Integer nIntr = 2; //Number of intruders
+constant Integer nIntr = 3; //Number of intruders
 
-constant Integer nRocket = 2; //Number of missile
+constant Integer nRocket = 3; //Number of missile
 
 constant Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
@@ -51,5 +51,9 @@ constant Real sysTimeResponse = 0.0025;
 
 //Capcità massima (mAh) di un drone
 constant Real capacity = 5000.0;
+
+//Costanti missili
+
+constant Real detectionDistance = 50.0;
 
 end K;

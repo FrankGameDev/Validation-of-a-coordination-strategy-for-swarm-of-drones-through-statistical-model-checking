@@ -14,10 +14,9 @@ block Drone
 	InputReal destY[K.N];
 	InputReal destZ[K.N];
 
-	//forza di movimento del drone
-	InputReal Trustx[K.N];
-	InputReal Trusty[K.N];
-	InputReal Trustz[K.N];	
+	//Accellerazione del drone calcolata dal controller
+	InputReal accX[K.N],accY[K.N],accZ[K.N];
+
 
 	//Campi di fault
 
@@ -56,6 +55,7 @@ block Drone
 	
 	//Posizione sull'asse z
 	OutputReal z[K.N];
+
 	
 	//Velocità su x
 	OutputReal Vx[K.N];
@@ -85,7 +85,12 @@ block Drone
 	
 //Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
-
+//La somma dei vari pesi degli attributi deve essere uguale a 1.
+	parameter Real cohesionWeight = 0.5;	
+	parameter Real alignWeight = 1;
+	parameter Real separateWeight = 3;
+	parameter Real headingWeight = 1.5;
+	parameter Real vWeight = 5;
 
 initial equation
 	
@@ -114,15 +119,17 @@ equation
 	
 	
 	for i in 1:K.N loop 
-		//Se non ci sono fault di manovra e la batteria ha ancora carica residua, leggo la trust del controller
-		der(Vx[i]) = Trustx[i];	
-		der(Vy[i]) = Trusty[i];
-		der(Vz[i]) = Trustz[i];	
-
-		der(x[i]) = Vx[i];
-		der(y[i]) = Vy[i];
-		der(z[i]) = Vz[i];
+		Vx[i] = accX[i];	
+		Vy[i] = accY[i];	
+		Vz[i] = accZ[i];	
 	end for;
+
+	for i in 1:K.N loop
+		x[i] = x[i] + accX[i];
+		y[i] = y[i] + accY[i];
+		z[i] = z[i] + accZ[i];
+	end for;
+
 
 
 algorithm
@@ -139,8 +146,6 @@ when initial() then
 end when;
 
 when sample(0,T) then
-
-
 	//Controllo zona di volo
 	for i in 1:K.N loop
 		if(actualCapacity[i] > 0 and (not droneDead[i])) then
@@ -160,7 +165,7 @@ when sample(0,T) then
 	end for;
 
 	//(neighbours, nearIntr, nearMissile) := seeNearObject(x, y, z, destX, destY,destZ, intrX, intrY, intrZ, missX, missY, missZ, neighbours, nearIntr, nearMissile);
-	// print("Velocity 1: (" + String(Vx[1]) + ", " + String(Vy[1]) + ", " + String(Vz[1]) + ")\n");
+	print("Velocity 1: (" + String(Vx[1]) + ", " + String(Vy[1]) + ", " + String(Vz[1]) + ")\n");
 end when;
 	
 	
@@ -174,6 +179,9 @@ function batteryMonitor
 	//Scarica della batteria
 	InputReal dischargeRate;
 	
+	//Discharge rate dovuta al modulo di comunicazione
+	//InputReal commDischarge;
+		
 	OutputReal outBattery;
 
 algorithm

@@ -40,17 +40,21 @@ equation
 		connect(ctr.setx[i],p.setx[i]);
 		connect(ctr.sety[i],p.sety[i]);
 		connect(ctr.setz[i],p.setz[i]);
+
+		//Passo la posizione del drone al controller
 		connect(ctr.x[i],drone.x[i]);
 		connect(ctr.y[i],drone.y[i]);
 		connect(ctr.z[i],drone.z[i]);
-		connect(ctr.Vx[i],drone.Vx[i]);
+
+		/* connect(ctr.Vx[i],drone.Vx[i]);
 		connect(ctr.Vy[i],drone.Vy[i]);
-		connect(ctr.Vz[i],drone.Vz[i]);
+		connect(ctr.Vz[i],drone.Vz[i]); */
+		
 		connect(ctr.tmpSetX[i], cad.tmpDestX[i]);
 		connect(ctr.tmpSetY[i], cad.tmpDestY[i]);
 		connect(ctr.tmpSetZ[i], cad.tmpDestZ[i]);
 		connect(ctr.useTMPDest[i], cad.useTMPDest[i]);
-		//Velocità calcolate dal modulo di flocking
+
 		connect(ctr.alignX[i], flock.alignX[i]);
 		connect(ctr.alignY[i], flock.alignY[i]);
 		connect(ctr.alignZ[i], flock.alignZ[i]);
@@ -64,12 +68,6 @@ equation
 		connect(ctr.headingX[i], pso.velocityX[i]);
 		connect(ctr.headingY[i], pso.velocityY[i]);
 		connect(ctr.headingZ[i], pso.velocityZ[i]);
-		//Stato di fault del drone + Stato drone
-		connect(ctr.droneState[i],fault.state[i]);
-		connect(ctr.droneDead[i],colMan.droneDead[i]);
-		//Valori di scarica della batteria
-		connect(ctr.batterySensDischarge[i], drone.actualCapacity[i]);
-		connect(ctr.batteryPSODischarge[i], pso.batteryDischarge[i]);
 
 
 		//connection tra info drone e modulo flocking		
@@ -126,9 +124,10 @@ equation
 		connect(drone.destX[i], p.setx[i]);
 		connect(drone.destY[i], p.sety[i]);
 		connect(drone.destZ[i], p.setz[i]);
-		connect(drone.Trustx[i], ctr.Trustx[i]);
-		connect(drone.Trusty[i], ctr.Trusty[i]);
-		connect(drone.Trustz[i], ctr.Trustz[i]);
+		connect(drone.accX[i], ctr.accX[i]);
+		connect(drone.accY[i], ctr.accY[i]);
+		connect(drone.accZ[i], ctr.accZ[i]);
+		//Trasferisco le velocità calcolate dal monitor di flocking al drone
 		//trasferisco la scarica della batteria dovuta al modulo di comunicazione
 		connect(drone.commDischarge[i], pso.batteryDischarge[i]);
 		//Asserisco se il drone sta usando la nuova destinazione identificata dal monitor di collision avoidance

@@ -19,6 +19,25 @@ block Drone
 	InputReal Trusty[K.N];
 	InputReal Trustz[K.N];	
 
+	//Valori restituiti dal collision avoidance module
+	InputReal alignX[K.N];
+	InputReal alignY[K.N];
+	InputReal alignZ[K.N];
+
+	InputReal cohesionX[K.N];
+	InputReal cohesionY[K.N];
+	InputReal cohesionZ[K.N];
+	
+	InputReal separateX[K.N];
+	InputReal separateY[K.N];
+	InputReal separateZ[K.N];
+	
+	//direzione da prendere in aggiunta alla velocità, generata dal PSO
+
+	InputReal headingX[K.N];
+	InputReal headingY[K.N];
+	InputReal headingZ[K.N];
+
 	//Campi di fault
 
 	//Stato del drone. 1 = funzionante; 2 = errore sensoristica; 3 = errore di manovra; 4 = errore comunicazioni;
@@ -56,6 +75,16 @@ block Drone
 	
 	//Posizione sull'asse z
 	OutputReal z[K.N];
+
+
+	//Forza su x
+	OutputReal Fx[K.N];
+	
+	//Forza su y
+	OutputReal Fy[K.N];
+
+	//Forza su z
+	OutputReal Fz[K.N];
 	
 	//Velocità su x
 	OutputReal Vx[K.N];
@@ -85,7 +114,12 @@ block Drone
 	
 //Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
 
-
+//La somma dei vari pesi degli attributi deve essere uguale a 1.
+	parameter Real cohesionWeight = 0.5;	
+	parameter Real alignWeight = 1;
+	parameter Real separateWeight = 3;
+	parameter Real headingWeight = 1.5;
+	parameter Real vWeight = 5;
 
 initial equation
 	
@@ -115,10 +149,32 @@ equation
 	
 	for i in 1:K.N loop 
 		//Se non ci sono fault di manovra e la batteria ha ancora carica residua, leggo la trust del controller
-		der(Vx[i]) = Trustx[i];	
-		der(Vy[i]) = Trusty[i];
-		der(Vz[i]) = Trustz[i];	
+		if(droneState[i] <> 3 and actualCapacity[i] > 0 and (not droneDead[i])) then	
+			Fx[i] = Trustx[i];	
+			Fy[i] = Trusty[i];
+			Fz[i] = Trustz[i] - K.m * K.g;
+		else
+			Fx[i] = 0;	
+			Fy[i] = 0;
+			Fz[i] = -(K.m * K.g);
+		end if;	
+	end for;
 
+
+	for i in 1:K.N loop
+		if(droneDead[i]) then
+			der(Vx[i]) = 0;
+			der(Vy[i]) = 0;
+			der(Vz[i]) = 0;
+		elseif(useTMPDest[i] or (droneState[i] == 3 and actualCapacity[i] <= 0)) then
+			der(Vx[i]) = (Fx[i]/K.m);
+			der(Vy[i]) = (Fy[i]/K.m);
+			der(Vz[i]) = (Fz[i]/K.m);
+		else
+			der(Vx[i]) = (Fx[i]/K.m)*vWeight + (alignX[i]*alignWeight + cohesionX[i]*cohesionWeight + separateX[i]*separateWeight + headingX[i]*headingWeight); 
+			der(Vy[i]) = (Fy[i]/K.m)*vWeight + (alignY[i]*alignWeight + cohesionY[i]*cohesionWeight + separateY[i]*separateWeight + headingY[i]*headingWeight);
+			der(Vz[i]) = (Fz[i]/K.m)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);
+		end if;
 		der(x[i]) = Vx[i];
 		der(y[i]) = Vy[i];
 		der(z[i]) = Vz[i];
@@ -139,7 +195,7 @@ when initial() then
 end when;
 
 when sample(0,T) then
-
+	
 
 	//Controllo zona di volo
 	for i in 1:K.N loop
@@ -160,7 +216,7 @@ when sample(0,T) then
 	end for;
 
 	//(neighbours, nearIntr, nearMissile) := seeNearObject(x, y, z, destX, destY,destZ, intrX, intrY, intrZ, missX, missY, missZ, neighbours, nearIntr, nearMissile);
-	// print("Velocity 1: (" + String(Vx[1]) + ", " + String(Vy[1]) + ", " + String(Vz[1]) + ")\n");
+	print("Velocity 1: (" + String(Vx[1]) + ", " + String(Vy[1]) + ", " + String(Vz[1]) + ")\n");
 end when;
 	
 	
@@ -174,6 +230,9 @@ function batteryMonitor
 	//Scarica della batteria
 	InputReal dischargeRate;
 	
+	//Discharge rate dovuta al modulo di comunicazione
+	//InputReal commDischarge;
+		
 	OutputReal outBattery;
 
 algorithm
