@@ -10,12 +10,17 @@ In caso di:
 
 	parameter Real T = 7.5 "Tempo di aggiornamento probabilità fault";	
 
-	//Matrice che identifica la probabilità di transizione
+/* 	//Matrice che identifica la probabilità di transizione
 	//Riga 1 = funzionante; Riga 2 = sensoristica; Riga 3 = manovra; Riga 4 = comunicazione
 	parameter Real transMatrix[4,4] = [0.7, 0.1, 0.1, 0.1;
 										0.6, 0.4, 0, 0;
 										0.5, 0, 0.5, 0;
-										0.7, 0, 0, 0.3];
+										0.7, 0, 0, 0.3]; */
+									
+	parameter Real transMatrix[4,4] = [1, 0, 0, 0;
+										1, 0, 0, 0;
+										1, 0, 0, 0;
+										1, 0, 0, 0];
 
 	//probabilità calcolatà randomicamente
 	Real prob;

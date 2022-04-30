@@ -17,6 +17,11 @@ block MonitorCollision"Controlla se i droni collidono con oggetti nell'area di v
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
+	//Posizione ostacoli
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
+
 	InputBool droneDead[K.N];
     InputBool intrDead[K.nIntr];
     InputBool missDead[K.nRocket];
@@ -30,7 +35,6 @@ initial algorithm
 	outCollision := false;
 
 algorithm
-
 when sample(0,T) then		
 	//Dato un drone, controlla se collide con gli altri k-1 droni
 	for i in 1:K.N loop //drone da controllare
@@ -59,6 +63,15 @@ when sample(0,T) then
 			for j in 1:K.nRocket loop//Controlla le collisioni con gli intrusi
 				if((not missDead[j]) and (not outCollision)) then
 					outCollision := checkPosition(x[i],y[i],z[i],missX[j], missY[j], missZ[j]);
+				end if; 
+				if(outCollision and t < 1) then
+					t := t+1;
+				end if;
+			end for;
+
+			for j in 1:K.nStatObs loop//Controlla le collisioni con gli intrusi
+				if(not outCollision) then
+					outCollision := checkPosition(x[i],y[i],z[i],statX[j], statY[j], statZ[j]);
 				end if; 
 				if(outCollision and t < 1) then
 					t := t+1;

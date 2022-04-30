@@ -96,9 +96,14 @@ function findNearObject "Restituisce una lista contenente tutti gli oggetti vici
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
+
 	OutputBool neighbours[K.N];
 	OutputBool nearIntr[K.nIntr];
 	OutputBool nearMissile[K.nRocket];
+	OutputBool nearStatObs[K.nStatObs];
 
 	protected
 		Real euclDist;
@@ -128,7 +133,15 @@ algorithm
 		end if;	
 	end for; 
 
+	for i in 1:K.nStatObs loop
+		euclDist := euclideanDistance(x,y,z,statX[i], statY[i], statZ[i]);
+		if(euclDist <= K.IDD and euclDist > 0) then
+			nearStatObs[i] := true;
+		else nearStatObs[i] := false;
+		end if;	
+	end for; 
 end findNearObject;
+
 
 function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilevati dal sistema video del drone"
 	

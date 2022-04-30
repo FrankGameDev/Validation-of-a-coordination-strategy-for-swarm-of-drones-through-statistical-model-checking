@@ -6,8 +6,6 @@ block Intruders "modella gli oggetti in movimento che ostacolano i droni"
 	//Velocità massima di volo senza vento (m/s)
 	parameter Real maxSpeed = 7.5;
 
-	Real Fx[K.nIntr],Fy[K.nIntr],Fz[K.nIntr];
-
 //Parametri volo
 	
 	//Forza su x
@@ -59,24 +57,13 @@ initial algorithm
 equation
 
 	for i in 1:K.nIntr loop 
-		Fx[i] = Trustx[i];	
-		Fy[i] = Trusty[i];
-		Fz[i] = Trustz[i] - K.m * K.g;	
-	end for;
+		der(Vx[i]) = Trustx[i];	
+		der(Vy[i]) = Trusty[i];
+		der(Vz[i]) = Trustz[i];	
 
-	for i in 1:K.nIntr loop 
 		der(x[i]) = Vx[i];
-		der(Vx[i]) = (Fx[i]/K.m); 
-		//der(Vx[i]) = 0;
-
 		der(y[i]) = Vy[i];
-		der(Vy[i]) = (Fy[i]/K.m);
-		//der(Vy[i]) = 0;
-
 		der(z[i]) = Vz[i];
-		der(Vz[i]) = (Fz[i]/K.m);
-		//der(Vz[i]) = 0;
 	end for;
+	
 end Intruders;
-
-

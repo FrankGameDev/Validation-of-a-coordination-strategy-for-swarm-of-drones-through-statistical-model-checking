@@ -40,6 +40,10 @@ block Drone
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
+	//Posizione ostacoli
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
 
 	//Scarica della batteria dovuta all'utilizzo del modulo di comunicazione
 	InputReal commDischarge[K.N];
@@ -75,6 +79,9 @@ block Drone
 	//Vettore contenente informazioni sui missili vicini
 	OutputBool nearMissile[K.N, K.nRocket];
 
+	//Vettore contente informazioni sugli ostacoli fissi
+	OutputBool nearStatObs[K.N, K.nStatObs];
+
 	//capacità della batteria di ogni drone
 	OutputReal actualCapacity[K.N]; 	
 
@@ -90,9 +97,9 @@ block Drone
 initial equation
 	
 	for i in 1:K.N loop
-		x[i] = 0;
+		x[i] = 5 + i*K.dDistance;
 		y[i] = i*K.dDistance;
-		z[i]= 5+i*K.dDistance;
+		z[i]= 0;
 	end for;
 
 
@@ -135,12 +142,11 @@ when initial() then
 		startPos[i,3] := z[i];
 		nearIntr := fill(false, K.N, K.nIntr);
 		nearMissile	:= fill(false, K.N, K.nRocket);
+		nearStatObs	:= fill(false, K.N, K.nStatObs);
 	end for;
 end when;
 
 when sample(0,T) then
-
-
 	//Controllo zona di volo
 	for i in 1:K.N loop
 		if(actualCapacity[i] > 0 and (not droneDead[i])) then
@@ -148,7 +154,8 @@ when sample(0,T) then
 			actualCapacity[i] := batteryMonitor(tmpBatt,1);
 			//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
 			if(droneState[i] <> 2) then
-				(neighbours[i], nearIntr[i], nearMissile[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ, missX, missY, missZ);
+				(neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ,
+											 missX, missY, missZ, statX,statY,statZ);
 				tmpBatt := actualCapacity[i];
 				actualCapacity[i] := batteryMonitor(tmpBatt,2);
 			else
@@ -200,28 +207,3 @@ algorithm
 	end if; 
 
 end returnedHome;
-
-function vel
-
-	InputReal x,y,z;
-
-	//Forza su x
-	InputReal Fx;
-	//Forza su y
-	InputReal Fy;
-	//Forza su z
-	InputReal Fz;
-
-	InputReal alignX,alignY,alignZ;
-	InputReal separateX,separateY,separateZ;
-	InputReal cohesionX,cohesionY,cohesionZ;
-	InputReal headingX,headingY,headingZ;
-
-	OutputReal outx,outy,outz;
-
-algorithm
- outx := x + Fx + (alignX + cohesionX + separateX + headingX); 
- outy := y + Fy + (alignY + cohesionY + separateY + headingY); 
- outz := z + Fz + (alignZ + cohesionZ + separateZ + headingZ); 
- 
-end vel;

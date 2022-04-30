@@ -58,29 +58,33 @@ getErrorString();
 loadFile("intruders/rocketController.mo");
 getErrorString();
 
+loadFile("intruders/staticObs.mo");
+getErrorString();
+
 loadFile("system.mo");
 getErrorString();
 
 /* setCommandLineOptions("-d=initialization");
 getErrorString(); */
 
-simulate(System, stopTime=1300);
+simulate(System, stopTime=270);
 getErrorString();
 
-//plot({drone.x[1], drone.y[1], drone.z[1], drone.x[2], drone.y[2], drone.z[2], ctr.setx[1], ctr.sety[1], ctr.setz[1],
- //ctr.setx[2], ctr.sety[2], ctr.setz[2], col.outCollision}, externalWindow=true);
+plot({drone.x[1], drone.y[1], drone.z[1], drone.x[2], drone.y[2], drone.z[2], ctr.setx[1], ctr.sety[1], ctr.setz[1],
+ ctr.setx[2], ctr.sety[2], ctr.setz[2], col.outCollision}, externalWindow=true);
 
-plot({drone.x[1], drone.y[1], drone.z[1], ctr.setx[1], ctr.sety[1], ctr.setz[1], col.outCollision}, externalWindow=true);
+// plot({drone.x[1], drone.y[1], drone.z[1], ctr.setx[1], ctr.sety[1], ctr.setz[1], col.outCollision}, externalWindow=true);
 
-plot({ctr.battery[1], ctr.droneState[1], ctr.droneDead[1]}, externalWindow=true);
+// plot({ctr.battery[1], ctr.droneState[1], ctr.droneDead[1], ctr.battery[2], ctr.droneState[2], ctr.droneDead[2]}, externalWindow=true);
 
-// plot({drone.Vx[1], drone.Vy[1], drone.Vz[1], ctr.Trustx[1], ctr.Trusty[1], ctr.Trustz[1]}, externalWindow=true);
+// plot({drone.Vx[1], drone.Vy[1], drone.Vz[1], ctr.Trustx[1], ctr.Trusty[1], ctr.Trustz[1], 
+// ctr.battery[1], ctr.droneDead[1]}, externalWindow=true);
 
 //plot({col.tDD,col.tDC, col.tDR}, externalWindow = true);
 
 //plot({drone.actualCapacity[1], drone.actualCapacity[2]},externalWindow = true);
 
-//plot({rocket.x[1], rocket.y[1], rocket.z[1], rockP.droneFollowed[1], rockP.targetReached[1]}, externalWindow = true);
+// plot({rocket.x[1], rocket.y[1], rocket.z[1], rockP.droneFollowed[1], rockP.targetReached[1]}, externalWindow = true);
 
 //plot({intruder.x[1],intruder.x[2], intruder.y[1],intruder.y[2],intruder.z[1],intruder.z[2]}, externalWindow = true);
 

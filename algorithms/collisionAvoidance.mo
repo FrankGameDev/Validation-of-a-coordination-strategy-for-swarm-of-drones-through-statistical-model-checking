@@ -27,8 +27,14 @@ InputReal missX[K.nRocket];
 InputReal missY[K.nRocket];
 InputReal missZ[K.nRocket];
 
+//Posizione ostacoli
+InputReal statX[K.nStatObs];
+InputReal statY[K.nStatObs];
+InputReal statZ[K.nStatObs];
+
 InputBool nearIntr[K.N,K.nIntr];
 InputBool nearMissile[K.N, K.nRocket];
+InputBool nearStatObs[K.N, K.nStatObs];
 InputReal battery[K.N];
 
 //Permette di sapere se droni,ostacoli o missili sono collisi
@@ -68,6 +74,16 @@ when sample(1,T) then
                 if(nearMissile[i,j] and (not missDead[j])) then
                     if(euclideanDistance(x[i], y[i], z[i], missX[j], missY[j], missZ[j]) <= K.dangerRadius) then
                         (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]); 
+                        useTMPDest[i] := true; 
+                    end if;
+                end if;
+            end for;
+            
+            //2) Controllo collision avoidance per ostacoli
+            for j in 1:K.nStatObs loop 
+                if(nearStatObs[i,j]) then
+                    if(euclideanDistance(x[i], y[i], z[i], statX[j], statY[j], statZ[j]) <= K.dangerRadius) then
+                        (tmpDestX[i], tmpDestY[i], tmpDestZ[i]) := findNewDestination(x[i], y[i], z[i], destX[i], destY[i], destZ[i], statX[j], statY[j], statZ[j]); 
                         useTMPDest[i] := true; 
                     end if;
                 end if;
@@ -145,7 +161,9 @@ algorithm
     //Controllo z
     if(abs(vectDtoC[3]) < K.dangerRadius) then
         if(vectDtoC[3] >= 0) then 
-            newDestZ := destZ - vectDtoC[3] - K.dangerRadius; 
+            if(z > K.dangerRadius + vectDtoC[3]) then //Controllo effettuato se il drone si trova troppo vicino al terreno
+                newDestZ := destZ - vectDtoC[3] - K.dangerRadius; 
+            end if;
         else
             newDestZ := destZ + vectDtoC[3] + K.dangerRadius; 
         end if;

@@ -36,7 +36,9 @@ algorithm
 for i in 1:K.nIntr loop
 	Trustx[i] := K.m*(kx1*(x[i] - setx[i]) + kx2*Vx[i]);
 	Trusty[i] := K.m*(ky1*(y[i] - sety[i]) + ky2*Vy[i]);
-	Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]);
+	Trustz[i] := K.m*(K.g + kz1*(z[i] - setz[i]) + kz2*Vz[i]) - K.intrudersMass;
+
+	(Trustx[i],Trusty[i],Trustz[i]) := velocityCap(Trustx[i],Trusty[i],Trustz[i],K.maxSpeed);	
 end for;
 
 

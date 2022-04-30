@@ -46,10 +46,18 @@ InputReal missX[K.nRocket];
 InputReal missY[K.nRocket];
 InputReal missZ[K.nRocket];
 
+//Posizione ostacoli
+InputReal statX[K.nStatObs];
+InputReal statY[K.nStatObs];
+InputReal statZ[K.nStatObs];
+
+
 //intrusi vicini a droni
 InputBool nearIntr[K.N, K.nIntr];
 //Missili vicini a droni
 InputBool nearMissile[K.N, K.nRocket];
+
+InputBool nearStatObs[K.N, K.nStatObs];
 
 //Batteria residua di ogni drone
 InputReal battery[K.N];
@@ -118,8 +126,8 @@ initial equation
 algorithm
 
 when sample(0,T) then
-	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ, 
-						nearMissile, droneDead, intrDead,missDead);
+	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ,nearMissile,
+	 					statX,statY,statZ,nearStatObs, droneDead, intrDead,missDead);
 	if(timer < 2) then
 		timer := pre(timer) + 1;
 	else 
@@ -162,11 +170,6 @@ when sample(0,T) then
 end when;
 
 end PSO;
-
-
-
-
-
 
 //Valuta il valore di fitness del singolo drone
 function fitness "La fitness value non è altro che la magnitudine tra il drone e la sua destinazione. Se nel percorso si presenta un ostacolo, allora si divide la magnitudine con l'angolo definito tra i 2 vettori"
@@ -227,9 +230,13 @@ InputBool nearIntr[K.N, K.nIntr];
 InputReal missX[K.nRocket];
 InputReal missY[K.nRocket];
 InputReal missZ[K.nRocket];
-
 //Missili vicini a droni
 InputBool nearMissile[K.N, K.nRocket];
+
+InputReal statX[K.nStatObs];
+InputReal statY[K.nStatObs];
+InputReal statZ[K.nStatObs];
+InputBool nearStatObs[K.N,K.nStatObs];
 
 //Permette di sapere se droni,ostacoli o missili sono collisi
 InputBool droneDead[K.N];
@@ -239,7 +246,7 @@ InputBool missDead[K.nRocket];
 OutputReal fitValue[K.N];
 
 	protected 
-		Real tmpFitIntr[K.nIntr], tmpFitMissile[K.nIntr];
+		Real tmpFitIntr[K.nIntr], tmpFitMissile[K.nRocket], tmpFitObs[K.nStatObs];
 
 algorithm 
 	fitValue := fill(10000000.0,K.N);
@@ -274,6 +281,22 @@ algorithm
 			for j in 1:K.nRocket loop
 				if (tmpFitMissile[j] < fitValue[i]) then
 					fitValue[i] := tmpFitMissile[j];
+				end if;
+			end for;
+
+			//Calcolo la fitness value in base alla distanza con gli ostacoli
+			tmpFitObs := zeros(K.nStatObs);
+			for j in 1:K.nStatObs loop
+				if (nearStatObs[i,j]) then
+					tmpFitObs[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], statX[j], statY[j], statZ[j]);
+				else 
+					tmpFitObs[j] := 1000*magnitude((destX[i]-x[i]), (destY[i]-y[i]), (destZ[i]-z[i]));
+				end if;
+			end for;
+			
+			for j in 1:K.nStatObs loop
+				if (tmpFitObs[j] < fitValue[i]) then
+					fitValue[i] := tmpFitObs[j];
 				end if;
 			end for;
 		end if;
@@ -380,7 +403,3 @@ algorithm
 gOK := gBestFit_1 <= gBestFit_2;
 
 end psoComm;
-
-
-
-

@@ -3,7 +3,7 @@ QUESTO BLOCCO MODELLA L'ALGORITMO DI FLOCKING "
 */
 block flockingModule 
 	
-	parameter Real T = 0.5 "Timer controllo droni vicini";
+	parameter Real T = 0.25 "Timer controllo droni vicini";
 
 	InputReal x[K.N];
 	InputReal y[K.N];

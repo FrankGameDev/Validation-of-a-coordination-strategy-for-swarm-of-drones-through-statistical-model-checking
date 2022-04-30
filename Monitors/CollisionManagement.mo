@@ -17,7 +17,12 @@ block CollisionManagement"Controlla se i droni collidono con oggetti nell'area d
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
-	Real tDD, tDC, tDR;
+    //Posizione ostacoli
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
+
+	Real tDD, tDC, tDR, tDSC;
 
     //Vettori che memorizzano informazioni relative alle collisioni
     OutputBool droneDead[K.N];
@@ -29,6 +34,7 @@ initial algorithm
 	tDD := 0;
 	tDC := 0;
 	tDR := 0;
+    tDSC := 0;
     droneDead := fill(false,K.N);
     intrDead := fill(false,K.nIntr);
     missDead := fill(false,K.nRocket);
@@ -53,7 +59,7 @@ when sample(0,T) then
 		
             for j in 1:K.nIntr loop//Controlla le collisioni con gli intrusi
                 if((not intrDead[j]) and checkPosition(x[i],y[i],z[i],intrX[j], intrY[j], intrZ[j])) then
-                    print("Collisione tra drone e ostacolo(" + String(i) + ", " + String(j) + ")\n");
+                    print("Collisione tra drone e intruso(" + String(i) + ", " + String(j) + ")\n");
                     tDC := tDC + 1;
                     droneDead[i] := true;
                     intrDead[j] := true;
@@ -67,6 +73,14 @@ when sample(0,T) then
                     droneDead[i] := true;
                     missDead[j] := true;
                 end if;
+            end for;
+
+            for j in 1:K.nStatObs loop//Controlla le collisioni con gli intrusi
+                if(checkPosition(x[i],y[i],z[i],statX[j], statY[j], statZ[j])) then
+                    print("Collisione tra drone e ostacolo fisso(" + String(i) + ", " + String(j) + ")\n");
+                    tDSC := tDSC + 1;
+                    droneDead[i] := true;
+                    end if;
             end for;
         end if;
 	end for;

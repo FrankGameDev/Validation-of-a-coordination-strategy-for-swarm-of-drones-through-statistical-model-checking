@@ -2,11 +2,13 @@ record K
 
 //Costanti simulazione
 
-constant Integer N = 10; //Number of uavs
+constant Integer N = 2; //Number of uavs
 
-constant Integer nIntr = 3; //Number of intruders
+constant Integer nIntr = 5; //Number of intruders
 
-constant Integer nRocket = 3; //Number of missile
+constant Integer nRocket = 5; //Number of missile
+
+constant Integer nStatObs = 5; //Number of static obstacle
 
 constant Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
@@ -26,7 +28,7 @@ constant Real m = 0.895;
 constant Real maxSpeed = 15.0;
 
 //Distanza da mantenere tra ogni drone
-constant Real dDistance = 20; 
+constant Real dDistance = 15; 
 
 //Distanza di Controllo ambientale ad infrarossi dei droni 
 constant Real IDD = 8.0;
@@ -44,16 +46,20 @@ constant Real maxAngle = 30.0;
 constant Real dangerRadius = 8.0;
 
 //Distanza minima tra droni e ostacolis
-constant Real minDistanceFromObs = 2.5;
-
-//Tempo di risposta del sistema utilizzata per anticipare la manovra di collision avoidance
-constant Real sysTimeResponse = 0.0025;
+constant Real minDistanceFromObs = 3;
 
 //Capcità massima (mAh) di un drone
 constant Real capacity = 5000.0;
 
+//Costanti intrusi
+
+constant Real intrudersMass = 0.7;
+
 //Costanti missili
 
+//Raggio di rilevamento droni
 constant Real detectionDistance = 50.0;
+
+constant Real rocketMass = 1.5;
 
 end K;

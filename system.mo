@@ -26,6 +26,8 @@ Rocket rocket;
 RocketPointer rockP;
 RockController rockCtr;
 
+StaticObs statObs;
+
 equation 
 
 	//Connection per i droni
@@ -96,6 +98,7 @@ equation
 		connect(cad.droneState[i], fault.state[i]);
 		connect(cad.nearIntr[i], drone.nearIntr[i]);
 		connect(cad.nearMissile[i], drone.nearMissile[i]);
+		connect(cad.nearStatObs[i], drone.nearStatObs[i]);
 		connect(cad.battery[i], drone.actualCapacity[i]);
 		connect(cad.droneDead[i], colMan.droneDead[i]);
 
@@ -118,8 +121,7 @@ equation
 		connect(pso.droneState[i], fault.state[i]);
 		connect(pso.battery[i], drone.actualCapacity[i]);
 		connect(pso.droneDead[i], colMan.droneDead[i]);
-
-
+		connect(pso.nearStatObs[i], drone.nearStatObs[i]);
 
 
 		//trasferisco la forza dal controller al drone
@@ -215,15 +217,14 @@ equation
 		connect(rockCtr.x[q],rocket.x[q]);
 		connect(rockCtr.y[q],rocket.y[q]);
 		connect(rockCtr.z[q],rocket.z[q]);
-
 		connect(rockCtr.Vx[q],rocket.Vx[q]);
 		connect(rockCtr.Vy[q],rocket.Vy[q]);
 		connect(rockCtr.Vz[q],rocket.Vz[q]);
+		connect(rockCtr.targetReached[q], rockP.targetReached[q]);
 
 		connect(rocket.Trustx[q], rockCtr.Trustx[q]);
 		connect(rocket.Trusty[q], rockCtr.Trusty[q]);
 		connect(rocket.Trustz[q], rockCtr.Trustz[q]);
-		connect(rocket.targetReached[q], rockP.targetReached[q]);
 
 		connect(drone.missX[q], rocket.x[q]);
 		connect(drone.missY[q], rocket.y[q]);
@@ -249,6 +250,28 @@ equation
 		connect(cad.missZ[q], rocket.z[q]);
 		connect(cad.missDead[q], colMan.missDead[q]);
 
+	end for;
+
+	for l in 1:K.nStatObs loop
+		connect(drone.statX[l], statObs.x[l]);
+		connect(drone.statY[l], statObs.y[l]);
+		connect(drone.statZ[l], statObs.z[l]);
+
+		connect(pso.statX[l], statObs.x[l]);
+		connect(pso.statY[l], statObs.y[l]);
+		connect(pso.statZ[l], statObs.z[l]);
+
+		connect(cad.statX[l], statObs.x[l]);
+		connect(cad.statY[l], statObs.y[l]);
+		connect(cad.statZ[l], statObs.z[l]);
+				
+		connect(col.statX[l], statObs.x[l]);
+		connect(col.statY[l], statObs.y[l]);
+		connect(col.statZ[l], statObs.z[l]);
+
+		connect(colMan.statX[l], statObs.x[l]);
+		connect(colMan.statY[l], statObs.y[l]);
+		connect(colMan.statZ[l], statObs.z[l]);
 	end for;
 
 end System;

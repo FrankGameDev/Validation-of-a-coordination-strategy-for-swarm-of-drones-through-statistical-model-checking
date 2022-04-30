@@ -1,6 +1,6 @@
 block SetPoint
 	
-	parameter Real T = 10 "tempo di aggiornamento del punto di arrivo";
+	parameter Real T = 60"tempo di aggiornamento del punto di arrivo";
 
 	Real rand;
 
@@ -15,23 +15,8 @@ block SetPoint
 	
 algorithm
 	//Setto punto di arrivo
-	
-/*	
-	for i in 1:K.N loop
-		rand := myrandom();
-		if(battery[i] < (K.N*15)/100) then
-			setx[i] := startX[i];
-			sety[i] := startY[i];
-			setz[i] := startZ[i];
-		else
-			setx[i] := 0;
-			sety[i] := 2*i + 5*i*sin((2*3.14/2)*time);		
-			setz[i] := 3*i + 5*i*cos((2*3.14/2)*time);
-		end if;
-	end for;
-*/
 
-
+/* 
 //posizione di arrivo totalmente random
 when sample(0,T) then
 	rand := myrandom();
@@ -47,9 +32,9 @@ when sample(0,T) then
 		end if;	
 	end for;
 end when;
+ */
 
 
-/*
 //arrivo in fila
 when sample(0,T) then
 	rand := myrandom();
@@ -66,6 +51,6 @@ when sample(0,T) then
 	end for;
 	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
 end when;
-*/
+
 
 end SetPoint;
