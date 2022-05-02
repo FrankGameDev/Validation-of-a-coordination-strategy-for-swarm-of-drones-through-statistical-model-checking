@@ -6,7 +6,7 @@ Controller ctr;
 
 SetPoint p;
 
-MonitorCollision col;
+MonitorSuccess sucMo;
 
 CollisionManagement colMan;
 
@@ -138,19 +138,22 @@ equation
 		connect(drone.droneState[i], fault.state[i]);
 		connect(drone.droneDead[i], colMan.droneDead[i]);
 
-		//Connect monitor collisione
-		connect(col.x[i], drone.x[i]);
-		connect(col.y[i], drone.y[i]);
-		connect(col.z[i], drone.z[i]);
-		connect(col.droneDead[i], colMan.droneDead[i]);
-
-
 		//Connect collision Management
 		connect(colMan.x[i], drone.x[i]);
 		connect(colMan.y[i], drone.y[i]);
 		connect(colMan.z[i], drone.z[i]);
 
-	
+		//connect monitor success
+		connect(sucMo.x[i], drone.x[i]);
+		connect(sucMo.y[i], drone.y[i]);
+		connect(sucMo.z[i], drone.z[i]);
+		connect(sucMo.destX[i], p.setx[i]);
+		connect(sucMo.destY[i], p.sety[i]);
+		connect(sucMo.destZ[i], p.setz[i]);
+		connect(sucMo.batterySensDischarge[i], drone.actualCapacity[i]);
+		connect(sucMo.batteryPSODischarge[i], pso.batteryDischarge[i]);
+		connect(sucMo.droneDead[i], colMan.droneDead[i]);
+
 		//connection pointer missili con posizione droni
 		connect(rockP.droneX[i],drone.x[i]);
 		connect(rockP.droneY[i],drone.y[i]);
@@ -185,12 +188,6 @@ equation
 		connect(pso.intrY[z], intruder.y[z]);
 		connect(pso.intrZ[z], intruder.z[z]);
 		connect(pso.intrDead[z], colMan.intrDead[z]);
-
-
-		connect(col.intrX[z], intruder.x[z]);
-		connect(col.intrY[z], intruder.y[z]);
-		connect(col.intrZ[z], intruder.z[z]);
-		connect(col.intrDead[z], colMan.intrDead[z]);
 
 		connect(colMan.intrX[z], intruder.x[z]);
 		connect(colMan.intrY[z], intruder.y[z]);
@@ -236,11 +233,6 @@ equation
 		connect(pso.missZ[q], rocket.z[q]);
 		connect(pso.missDead[q], colMan.missDead[q]);
 
-		connect(col.missX[q], rocket.x[q]);
-		connect(col.missY[q], rocket.y[q]);
-		connect(col.missZ[q], rocket.z[q]);
-		connect(col.missDead[q], colMan.missDead[q]);
-
 		connect(colMan.missX[q], rocket.x[q]);
 		connect(colMan.missY[q], rocket.y[q]);
 		connect(colMan.missZ[q], rocket.z[q]);
@@ -264,10 +256,6 @@ equation
 		connect(cad.statX[l], statObs.x[l]);
 		connect(cad.statY[l], statObs.y[l]);
 		connect(cad.statZ[l], statObs.z[l]);
-				
-		connect(col.statX[l], statObs.x[l]);
-		connect(col.statY[l], statObs.y[l]);
-		connect(col.statZ[l], statObs.z[l]);
 
 		connect(colMan.statX[l], statObs.x[l]);
 		connect(colMan.statY[l], statObs.y[l]);

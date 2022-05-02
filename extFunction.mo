@@ -78,6 +78,54 @@ algorithm
 
 end norm;
 
+function skyScan "Controlla i dintorni dei droni attraverso il sistema di rilevamento ad infrarossi e il sistema video"
+
+	InputReal x;
+	InputReal y;
+	InputReal z;
+
+	InputReal x2[K.N];
+	InputReal y2[K.N];
+	InputReal z2[K.N];	
+	
+	InputReal destX;
+	InputReal destY; 
+	InputReal destZ; 
+
+	InputReal intrX[K.nIntr];
+	InputReal intrY[K.nIntr];
+	InputReal intrZ[K.nIntr];
+
+	InputReal missX[K.nRocket];
+	InputReal missY[K.nRocket];
+	InputReal missZ[K.nRocket];
+
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
+
+	OutputBool neighbours[K.N];
+	OutputBool nearIntr[K.nIntr];
+	OutputBool nearMissile[K.nRocket];
+	OutputBool nearStatObs[K.nStatObs];
+
+	protected 
+		Boolean neigh1[K.N],neigh2[K.N];
+		Boolean nIntr1[K.nIntr],nIntr2[K.nIntr];
+		Boolean nMiss1[K.nRocket],nMiss2[K.nRocket];
+		Boolean nStat1[K.nStatObs],nStat2[K.nStatObs];
+
+algorithm
+	(neigh1, nIntr1, nMiss1, nStat1) := findNearObject(x, y, z, x2,y2,z2, intrX, intrY, intrZ,
+																		missX, missY, missZ, statX,statY,statZ);
+	(neigh2, nIntr2, nMiss2, nStat2) := seeNearObject(x, y, z, x2,y2,z2, destX, destY, destZ,intrX, intrY, intrZ,
+																	missX, missY, missZ, statX,statY,statZ); 
+	neighbours := neigh1 or neigh2;
+	nearIntr := nIntr1 or nIntr2;
+	nearMissile := nMiss1 or nMiss2;
+	nearStatObs := nStat1 or nStat2;
+end skyScan;
+
 function findNearObject "Restituisce una lista contenente tutti gli oggetti vicini utilizzando gli infrarossi"
 	
 	InputReal x;
@@ -145,13 +193,17 @@ end findNearObject;
 
 function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilevati dal sistema video del drone"
 	
-	InputReal x[K.N];
-	InputReal y[K.N];
-	InputReal z[K.N];
+	InputReal x;
+	InputReal y;
+	InputReal z;
 
-	InputReal destX[K.N];
-	InputReal destY[K.N]; 
-	InputReal destZ[K.N]; 
+	InputReal x2[K.N];
+	InputReal y2[K.N];
+	InputReal z2[K.N];
+
+	InputReal destX;
+	InputReal destY; 
+	InputReal destZ; 
 
 	InputReal intrX[K.nIntr];
 	InputReal intrY[K.nIntr];
@@ -161,71 +213,71 @@ function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilev
 	InputReal missY[K.nRocket];
 	InputReal missZ[K.nRocket];
 
-	InputBool neighbours[K.N, K.N];
-	InputBool nearIntr[K.N, K.nIntr];
-	InputBool nearMissile[K.N, K.nRocket];
+	InputReal statX[K.nStatObs];
+	InputReal statY[K.nStatObs];
+	InputReal statZ[K.nStatObs];
 
-	OutputBool outneighbours[K.N, K.N];
-	OutputBool outnearIntr[K.N,K.nIntr];
-	OutputBool outnearMissile[K.N,K.nRocket];
-
+	OutputBool outneighbours[K.N];
+	OutputBool outnearIntr[K.nIntr];
+	OutputBool outnearMissile[K.nRocket];
+	OutputBool outnearStatObs[K.nStatObs];
 
 	protected
-		Real direction[3];
 		Real viewField[3];
 
 algorithm
 	
-	for i in 1:K.N loop
-		//Controllo video
-		//Calcolo la direzione del drone, così da poter valutare il campo visivo della videocamera sul drone
-		direction := findDirection(x[i],y[i],z[i],destX[i],destY[i],destZ[i]);
-		//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
-		viewField := {direction[1]*(x[i] + K.horizontalODD), direction[2]*(y[i] + K.horizontalODD), direction[3]*(z[i] + K.verticalODD)};
+	//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
+	// viewField := findViewField(x,y,z, destX,destY,destZ);
+	viewField := zeros(3);
 
-		for j in 1:K.N loop
-			if(not neighbours[i,j]) then
-				outneighbours[i,j] := false;
-				if((x[j] >= x[i] and x[j] <= viewField[1]) or (x[j] <= x[i] and x[j] >= viewField[1])) then
-					if((y[j] >= y[i] and y[j] <= viewField[2]) or (y[j] <= y[i] and y[j] >= viewField[2])) then
-						if((z[j] >= z[i] and z[j] <= viewField[3]) or (z[j] <= z[i] and z[j] >= viewField[3])) then
-							outneighbours[i,j] := true;
-						end if;
-					end if;
+	for j in 1:K.N loop
+		outneighbours[j] := false;
+		if((x2[j] >= x and x2[j] <= viewField[1]) or (x2[j] <= x and x2[j] >= viewField[1])) then
+			if((y2[j] >= y and y2[j] <= viewField[2]) or (y2[j] <= y and y2[j] >= viewField[2])) then
+				if((z2[j] >= z and z2[j] <= viewField[3]) or (z2[j] <= z and z2[j] >= viewField[3])) then
+					outneighbours[j] := true;
 				end if;
 			end if;
-		end for;
-
-		for j in 1:K.nIntr loop
-			if(not nearIntr[i,j]) then
-				outnearIntr[i,j] := false;
-				if((intrX[j] >= x[i] and intrX[j] <= viewField[1]) or (intrX[j] <= x[i] and intrX[j] >= viewField[1])) then
-					if((intrY[j] >= y[i] and intrY[j] <= viewField[2]) or (intrY[j] <= y[i] and intrY[j] >= viewField[2])) then
-						if((intrZ[j] >= z[i] and intrZ[j] <= viewField[3]) or (intrZ[j] <= z[i] and intrZ[j] >= viewField[3])) then
-							outnearIntr[i,j] := true;
-						end if;
-					end if;
-				end if;
-			end if;
-		end for; 
-
-		for j in 1:K.nRocket loop
-			if(not nearMissile[i,j]) then
-				outnearMissile[i,j] := false;
-				if((missX[j] >= x[i] and missX[j] <= viewField[1]) or (missX[j] <= x[i] and missX[j] >= viewField[1])) then
-					if((missY[j] >= y[i] and missY[j] <= viewField[2]) or (missY[j] <= y[i] and missY[j] >= viewField[2])) then
-						if((missZ[j] >= z[i] and missZ[j] <= viewField[3]) or (missZ[j] <= z[i] and missZ[j] >= viewField[3])) then
-							outnearMissile[i,j] := true;
-						end if;
-					end if;
-				end if;
-			end if;	
-		end for; 
+		end if;
 	end for;
+
+	for j in 1:K.nIntr loop
+		outnearIntr[j] := false;
+		if((intrX[j] >= x and intrX[j] <= viewField[1]) or (intrX[j] <= x and intrX[j] >= viewField[1])) then
+			if((intrY[j] >= y and intrY[j] <= viewField[2]) or (intrY[j] <= y and intrY[j] >= viewField[2])) then
+				if((intrZ[j] >= z and intrZ[j] <= viewField[3]) or (intrZ[j] <= z and intrZ[j] >= viewField[3])) then
+					outnearIntr[j] := true;
+				end if;
+			end if;
+		end if;
+	end for; 
+
+	for j in 1:K.nRocket loop
+		outnearMissile[j] := false;
+		if((missX[j] >= x and missX[j] <= viewField[1]) or (missX[j] <= x and missX[j] >= viewField[1])) then
+			if((missY[j] >= y and missY[j] <= viewField[2]) or (missY[j] <= y and missY[j] >= viewField[2])) then
+				if((missZ[j] >= z and missZ[j] <= viewField[3]) or (missZ[j] <= z and missZ[j] >= viewField[3])) then
+					outnearMissile[j] := true;
+				end if;
+			end if;
+		end if;
+	end for; 
+
+	for j in 1:K.nStatObs loop
+		outnearStatObs[j] := false;
+		if((statX[j] >= x and statX[j] <= viewField[1]) or (statX[j] <= x and statX[j] >= viewField[1])) then
+			if((statY[j] >= y and statY[j] <= viewField[2]) or (statY[j] <= y and statY[j] >= viewField[2])) then
+				if((statZ[j] >= z and statZ[j] <= viewField[3]) or (statZ[j] <= z and statZ[j] >= viewField[3])) then
+					outnearStatObs[j] := true;
+				end if;
+			end if;
+		end if;
+	end for; 
 
 end seeNearObject;
 
-function findDirection "Calcola la direzione di un drone normalizzando le componenti del vettore al valore 1 o -1"
+function findViewField "Calcola la direzione di un drone normalizzando le componenti del vettore al valore 1 o -1"
 
 	//Punto 1
 	InputReal x1;
@@ -237,33 +289,28 @@ function findDirection "Calcola la direzione di un drone normalizzando le compon
 	InputReal y2;
 	InputReal z2;
 
-	OutputReal direction[3];
+	OutputReal view[3];
 
 	protected 
 		Real vect[3];
+		Integer direction[3];
 
 algorithm
-	vect := {x2 - x1, y2 - y1, z2 - z1};
-	//Set x
-	if(vect[1] >= 0) then
-		direction[1] := 1;
-	else
-		direction[1] := -1;
-	end if;
-	//Set y
-	if(vect[2] >= 0) then
-		direction[2] := 1;
-	else
-		direction[2] := -1;
-	end if;
-	//Set z
-	if(vect[3] >= 0) then
-		direction[3] := 1;
-	else
-		direction[3] := -1;
-	end if;
+	view := {x2 - x1, y2 - y1, z2 - z1};
 
-end findDirection;
+	//Set x
+	direction[1] := if(vect[1] >= 0) then 1 else -1;
+
+	//Set y
+	direction[2] := if(vect[2] >= 0) then 1 else -1;
+	
+	//Set z
+	direction[3] := if(vect[3] >= 0) then 1 else -1; 
+ 
+	view := {direction[1]*(x1 + K.horizontalODD), direction[2]*(y1 + K.horizontalODD), direction[3]*(z1 + K.verticalODD)};
+
+
+end findViewField;
 
 function euclideanDistance
 	

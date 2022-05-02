@@ -1,11 +1,6 @@
 block Intruders "modella gli oggetti in movimento che ostacolano i droni"
 	
 	
-//PARAMETRI intrusi
-
-	//Velocità massima di volo senza vento (m/s)
-	parameter Real maxSpeed = 7.5;
-
 //Parametri volo
 	
 	//Forza su x

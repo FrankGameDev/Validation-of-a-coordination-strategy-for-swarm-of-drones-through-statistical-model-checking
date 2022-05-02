@@ -89,17 +89,13 @@ block Drone
 	OutputReal startPos[K.N,3];
 
 	Real tmpBatt;
-	
-//Parametri sull'applicazione degli algoritmi di flocking e Pathfinding
-
-
 
 initial equation
 	
 	for i in 1:K.N loop
-		x[i] = 5 + i*K.dDistance;
-		y[i] = i*K.dDistance;
-		z[i]= 0;
+		x[i] = i*K.dDistance;
+		y[i] = 0;
+		z[i] = 0;
 	end for;
 
 
@@ -154,18 +150,19 @@ when sample(0,T) then
 			actualCapacity[i] := batteryMonitor(tmpBatt,1);
 			//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
 			if(droneState[i] <> 2) then
-				(neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := findNearObject(x[i], y[i], z[i], x,y,z, intrX, intrY, intrZ,
-											 missX, missY, missZ, statX,statY,statZ);
+				(neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := findNearObject(x[i], y[i], z[i],x,y,z, intrX, intrY, intrZ, missX, missY, missZ, statX,statY,statZ);				
+				/* (neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := skyScan(x[i], y[i], z[i],
+									x,y,z, destX[i], destY[i], destZ[i], intrX, intrY, intrZ, missX, missY, missZ, statX,statY,statZ); */
 				tmpBatt := actualCapacity[i];
 				actualCapacity[i] := batteryMonitor(tmpBatt,2);
 			else
 				neighbours[i] := fill(false, K.N);	
 				nearIntr[i] := fill(false, K.nIntr);
 				nearMissile[i] := fill(false,K.nRocket);
+				nearStatObs[i] := fill(false,K.nStatObs);
 			end if;	
 		end if;
 	end for;
-
 	//(neighbours, nearIntr, nearMissile) := seeNearObject(x, y, z, destX, destY,destZ, intrX, intrY, intrZ, missX, missY, missZ, neighbours, nearIntr, nearMissile);
 	// print("Velocity 1: (" + String(Vx[1]) + ", " + String(Vy[1]) + ", " + String(Vz[1]) + ")\n");
 end when;

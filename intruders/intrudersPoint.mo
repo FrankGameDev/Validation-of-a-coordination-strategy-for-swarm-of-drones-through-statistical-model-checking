@@ -1,6 +1,6 @@
 block IntrudersPoint"Determina i punti di arrivo degli intrusi"
 
-	parameter Real T = 10 "tempo di aggiornamento del punto di arrivo";
+	parameter Real T = 25 "tempo di aggiornamento del punto di arrivo";
 
 	OutputReal setx[K.nIntr];
 	OutputReal sety[K.nIntr];

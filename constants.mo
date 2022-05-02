@@ -2,17 +2,23 @@ record K
 
 //Costanti simulazione
 
-constant Integer N = 2; //Number of uavs
+constant Integer N = 5; //Number of uavs
 
-constant Integer nIntr = 5; //Number of intruders
+constant Integer nIntr = 1; //Number of intruders
 
-constant Integer nRocket = 5; //Number of missile
+constant Integer nRocket = 1; //Number of missile
 
-constant Integer nStatObs = 5; //Number of static obstacle
+constant Integer nStatObs = 1; //Number of static obstacle
 
 constant Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
 constant Real pi = 3.14;
+
+//Distanza minima da percorrere dal punto di partenza a quello di arrivo
+constant Real minDestDistance = 30;
+
+//Costante utile alla cattura dei risultati. Valuta una distanza massima dal punto di arrivo al fine di considerare il drone arrivato
+constant Real arrivalThreshold = 5;
 
 //Dimensione area di volo
 constant Real flyZone[3] = {100,100,100};
@@ -28,7 +34,7 @@ constant Real m = 0.895;
 constant Real maxSpeed = 15.0;
 
 //Distanza da mantenere tra ogni drone
-constant Real dDistance = 15; 
+constant Real dDistance = 25; 
 
 //Distanza di Controllo ambientale ad infrarossi dei droni 
 constant Real IDD = 8.0;

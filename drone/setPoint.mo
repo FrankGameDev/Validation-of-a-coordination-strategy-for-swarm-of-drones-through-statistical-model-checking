@@ -1,8 +1,8 @@
 block SetPoint
 	
-	parameter Real T = 60"tempo di aggiornamento del punto di arrivo";
+	parameter Real T = 180"tempo di aggiornamento del punto di arrivo";
 
-	Real rand;
+	Real rand[3];
 
 	InputReal battery[K.N];
 	//Posizioni di partenza dei droni
@@ -35,21 +35,29 @@ end when;
  */
 
 
-//arrivo in fila
+//arrivo in un punto prestabilito
 when sample(0,T) then
-	rand := myrandom();
+	rand := {myrandom(),myrandom(),myrandom()};
 	for i in 1:K.N loop
 		if(battery[i] < (K.N*15)/100) then
 			setx[i] := startX[i];
 			sety[i] := startY[i];
 			setz[i] := startZ[i];
 		else
-			setx[i] := rand * K.flyZone[1];
-			sety[i] := rand * K.flyZone[2];	
-			setz[i] := rand * K.flyZone[3];
+			setx[i] := rand[1] * K.flyZone[1];
+			sety[i] := rand[2] * K.flyZone[2];	
+			setz[i] := rand[3] * K.flyZone[3];
+			if(setx[i] < K.minDestDistance) then
+				setx[i] := setx[i] + K.minDestDistance;
+			end if;
+			if(sety[i] < K.minDestDistance) then
+				sety[i] := sety[i] + K.minDestDistance;
+			end if;
+			if(setz[i] < K.minDestDistance) then
+				setz[i] := setz[i] + K.minDestDistance;
+			end if;
 		end if;
 	end for;
-	//print(String(setx[1]) + "\t" + String(sety[1]) + "\t" +String(setz[1]) + "\n");
 end when;
 
 

@@ -88,8 +88,8 @@ algorithm
 				Trustz[i] := (tmpFz/K.m)*vWeight + (alignZ[i]*alignWeight + cohesionZ[i]*cohesionWeight + separateZ[i]*separateWeight + headingZ[i]*headingWeight);		
 			end if;
 		else
-			Trustx[i] := 0;
-			Trusty[i] := 0;
+			Trustx[i] := if(z[i] > 5) then -(K.m * K.g) else 0;
+			Trusty[i] := if(z[i] > 5) then -(K.m * K.g) else 0;
 			Trustz[i] := if(z[i] > 5) then -(K.m * K.g) else 0;
 		end if;
 		//Velocity cap
