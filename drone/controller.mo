@@ -59,7 +59,7 @@ Real battery[K.N];
 parameter Real cohesionWeight = 1;	
 parameter Real alignWeight = 6;
 parameter Real separateWeight = 6;
-parameter Real headingWeight = 10;
+parameter Real headingWeight = 5;
 parameter Real vWeight = 5;
 
 algorithm

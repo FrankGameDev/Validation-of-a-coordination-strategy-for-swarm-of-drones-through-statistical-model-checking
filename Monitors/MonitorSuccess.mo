@@ -23,6 +23,7 @@ block MonitorSuccess "Monitora il numero di droni arrivati a destinazione e il l
     Real battery;
     Boolean timeToEnd;
 
+
 initial equation
     arrivalTime = fill(0, K.N);
     arrived = fill(false,K.N);
@@ -35,7 +36,7 @@ algorithm
                 arrived[i] := if(not arrived[i]) then checkArrived(x[i],y[i],z[i],destX[i],destY[i],destZ[i]) else true;
                 if(arrivalTime[i] <= 0 and arrived[i]) then 
                     arrivalTime[i] := time;
-                    print("drone " +String(i)+ " arrivato e Tempo di arrivo: (" + String(arrived[i]) + ", " + String(arrivalTime[i]) + ")\n");
+                    // print("drone " +String(i)+ " arrivato e Tempo di arrivo: (" + String(arrived[i]) + ", " + String(arrivalTime[i]) + ")\n");
                 end if;
             else 
                 arrivalTime[i] := -1;

@@ -19,7 +19,7 @@ getErrorString();
 loadFile("Monitors/MonitorSuccess.mo");
 getErrorString();
 
-loadFile("Monitors/CollisionManagement.mo");
+loadFile("Monitors/MonitorCollision.mo");
 getErrorString();
 
 loadFile("algorithms/flockingModule.mo");
