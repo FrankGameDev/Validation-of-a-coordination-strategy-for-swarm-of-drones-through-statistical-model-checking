@@ -19,12 +19,12 @@ def sweep():
 	with open("constants.mo","r") as f:
 		line = f.readlines()
 		for x in line:
-			i = x.find("constant Integer N")
+			i = x.find("parameter Integer N")
 			if (i > -1):
 				print("N droni = "+x.split(";")[0].split("=")[1])
 				n = int(x.split(";")[0].split("=")[1])
 		for x in line:
-			i = x.find("constant Integer nIntr")
+			i = x.find("parameter Integer nIntr")
 			if (i > -1):
 				print("nintr = ".join(x.split(";")[0].split("=")[1]))
 				nIntr = int(x.split(";")[0].split("=")[1])

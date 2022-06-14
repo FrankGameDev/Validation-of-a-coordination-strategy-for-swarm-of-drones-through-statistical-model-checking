@@ -28,6 +28,7 @@ RockController rockCtr;
 
 StaticObs statObs;
 
+K const;
 equation 
 	//Connection per i droni
 	for i in 1:K.N loop

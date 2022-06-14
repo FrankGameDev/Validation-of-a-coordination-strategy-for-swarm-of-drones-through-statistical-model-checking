@@ -2,13 +2,13 @@ record K
 
 //Costanti simulazione
 
-parameter Integer N = 10; //Number of uavs
+parameter Integer N = 5; //Number of uavs
 
-parameter Integer nIntr = 1; //Number of intruders
+parameter Integer nIntr = 5; //Number of intruders
 
 parameter Integer nRocket = 1; //Number of missile
 
-parameter Integer nStatObs = 1; //Number of static obstacle
+parameter Integer nStatObs = 5; //Number of static obstacle
 
 parameter Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
@@ -17,11 +17,11 @@ parameter Real pi = 3.14;
 //Distanza minima da percorrere dal punto di partenza a quello di arrivo
 parameter Real minDestDistance = 30;
 
-//Costante utile alla cattura dei risultati. Valuta una distanza massima dal punto di arrivo al fine di considerare il drone arrivato
+//Costante utile alla cattura dei risultati. Valuta una distanza massima dal punto di arrivo al fine di considerare il drone arrivato a destinazione
 parameter Real arrivalThreshold = 5;
 
 //Dimensione area di volo
-parameter Real flyZone[3] = {150,150,150};
+parameter Real flyZone[3] = {100,100,100};
 
 //--------------------------------------------
 

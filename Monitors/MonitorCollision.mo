@@ -103,11 +103,7 @@ function checkPosition
 	OutputBool col;
 
 algorithm
-	col := false;
-	if(euclideanDistance(x,y,z,x2,y2,z2) < 2) then
-		col := true;
-	end if;
-	
+	col := if(euclideanDistance(x,y,z,x2,y2,z2) < 2) then true else false;
 end checkPosition;
 
 

@@ -8,7 +8,7 @@ block Drone
 	parameter Real capacity = 5000;
 
 //Parametri volo
-
+	
 	//Destinazione droni
 	InputReal destX[K.N];
 	InputReal destY[K.N];
