@@ -31,8 +31,7 @@ StaticObs statObs;
 K const;
 equation 
 	//Connection per i droni
-	for i in 1:K.N loop
-		
+	for i in 1:const.N loop
 		connect(p.startX[i], drone.startPos[i,1]);
 		connect(p.startY[i], drone.startPos[i,2]);
 		connect(p.startZ[i], drone.startPos[i,3]);
@@ -81,7 +80,7 @@ equation
 		connect(flock.x[i], drone.x[i]);
 		connect(flock.y[i], drone.y[i]);
 		connect(flock.z[i], drone.z[i]);
-		for j in 1:K.N loop
+		for j in 1:const.N loop
 			connect(flock.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
 		connect(flock.droneState[i], fault.state[i]);
@@ -113,7 +112,7 @@ equation
 		connect(pso.destX[i],p.setx[i]);
 		connect(pso.destY[i],p.sety[i]);
 		connect(pso.destZ[i],p.setz[i]);
-		for j in 1:K.N loop
+		for j in 1:const.N loop
 			connect(pso.neighbours[i,j], drone.neighbours[i,j]);
 		end for;
 		connect(pso.nearIntr[i], drone.nearIntr[i]);
@@ -162,7 +161,7 @@ equation
 	end for;
 	
 	//Connection per gli intruders
-	for z in 1:K.nIntr loop
+	for z in 1:const.nIntr loop
 		connect(intrCtr.setx[z],intrP.setx[z]);
 		connect(intrCtr.sety[z],intrP.sety[z]);
 		connect(intrCtr.setz[z],intrP.setz[z]);
@@ -201,7 +200,7 @@ equation
 	end for;
 
 	//Connection missili
-	for q in 1:K.nRocket loop
+	for q in 1:const.nRocket loop
 
 		connect(rockP.x[q],rocket.x[q]);
 		connect(rockP.y[q],rocket.y[q]);
@@ -244,7 +243,7 @@ equation
 
 	end for;
 
-	for l in 1:K.nStatObs loop
+	for l in 1:const.nStatObs loop
 		connect(drone.statX[l], statObs.x[l]);
 		connect(drone.statY[l], statObs.y[l]);
 		connect(drone.statZ[l], statObs.z[l]);

@@ -1,23 +1,24 @@
 block IntrudersPoint"Determina i punti di arrivo degli intrusi"
-
+	
+	K const;
 	parameter Real T = 25 "tempo di aggiornamento del punto di arrivo";
 
-	OutputReal setx[K.nIntr];
-	OutputReal sety[K.nIntr];
-	OutputReal setz[K.nIntr];
+	OutputReal setx[const.nIntr];
+	OutputReal sety[const.nIntr];
+	OutputReal setz[const.nIntr];
 
 initial algorithm
-setx := zeros(K.nIntr);
-sety := zeros(K.nIntr);
-setz := zeros(K.nIntr);
+setx := zeros(const.nIntr);
+sety := zeros(const.nIntr);
+setz := zeros(const.nIntr);
 
 
 algorithm
 	when sample(0,T) then
-		for i in 1:K.nIntr loop
-			setx[i] := myrandom() * K.flyZone[1];
-			sety[i] := myrandom() * K.flyZone[2];	
-			setz[i] := myrandom() * K.flyZone[3];
+		for i in 1:const.nIntr loop
+			setx[i] := myrandom() * const.flyZone[1];
+			sety[i] := myrandom() * const.flyZone[2];	
+			setz[i] := myrandom() * const.flyZone[3];
 		end for;
 	end when;
 

@@ -1,5 +1,7 @@
 block PSO "Modulo di controllo dell'algoritmo di pathfinding"
 	
+K const;
+
 //tempo di aggiornamento del pso
 parameter Real T = 0.5;
 
@@ -13,96 +15,96 @@ parameter Real c1 = 2;
 parameter Real c2 = 2;
 
 //Punti di arrivo dei droni
-InputReal destX[K.N];
-InputReal destY[K.N];
-InputReal destZ[K.N];
+InputReal destX[const.N];
+InputReal destY[const.N];
+InputReal destZ[const.N];
 
 //Posizione dei droni
-InputReal x[K.N];
-InputReal y[K.N];
-InputReal z[K.N];
+InputReal x[const.N];
+InputReal y[const.N];
+InputReal z[const.N];
 
 //Velocità dei droni
-InputReal Vx[K.N];
-InputReal Vy[K.N];
-InputReal Vz[K.N];
+InputReal Vx[const.N];
+InputReal Vy[const.N];
+InputReal Vz[const.N];
 
 //Stato dei droni
-InputInt droneState[K.N];
-InputBool droneDead[K.N];
-InputBool intrDead[K.nIntr];
-InputBool missDead[K.nRocket];
+InputInt droneState[const.N];
+InputBool droneDead[const.N];
+InputBool intrDead[const.nIntr];
+InputBool missDead[const.nRocket];
 
 //Droni vicini
-InputBool neighbours[K.N,K.N];
+InputBool neighbours[const.N,const.N];
 
 //Posizione intrusi
-InputReal intrX[K.nIntr];
-InputReal intrY[K.nIntr];
-InputReal intrZ[K.nIntr];
+InputReal intrX[const.nIntr];
+InputReal intrY[const.nIntr];
+InputReal intrZ[const.nIntr];
 
 //posizione missili
-InputReal missX[K.nRocket];
-InputReal missY[K.nRocket];
-InputReal missZ[K.nRocket];
+InputReal missX[const.nRocket];
+InputReal missY[const.nRocket];
+InputReal missZ[const.nRocket];
 
 //Posizione ostacoli
-InputReal statX[K.nStatObs];
-InputReal statY[K.nStatObs];
-InputReal statZ[K.nStatObs];
+InputReal statX[const.nStatObs];
+InputReal statY[const.nStatObs];
+InputReal statZ[const.nStatObs];
 
 
 //intrusi vicini a droni
-InputBool nearIntr[K.N, K.nIntr];
+InputBool nearIntr[const.N, const.nIntr];
 //Missili vicini a droni
-InputBool nearMissile[K.N, K.nRocket];
+InputBool nearMissile[const.N, const.nRocket];
 
-InputBool nearStatObs[K.N, K.nStatObs];
+InputBool nearStatObs[const.N, const.nStatObs];
 
 //Batteria residua di ogni drone
-InputReal battery[K.N];
+InputReal battery[const.N];
 
 //global fitness e global position sono calcolate e condivise tramite il modulo di comunicazione
 
 //Migliore posizione individuale
-Real pBestPos[K.N,3];
+Real pBestPos[const.N,3];
 
 //Migliore posizione globale.La gBest pos è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni
-Real gBestPos[K.N,3];
+Real gBestPos[const.N,3];
 
 //migliore fitness value personale
-Real pBestFit[K.N];
+Real pBestFit[const.N];
 
 //Global fitnessValue. La gBest fit è unica, ma viene usata sotto forma di vettore per simulare la memorizzazione e la comunicazione della variabile per tutti i droni.
 //La fitness value è un valore che identifica il livello di ottimizzazione del sistema simulato
-Real globFitness[K.N];
+Real globFitness[const.N];
 
 //Variabile temporanea per il calcolo e confronto della fitness value
-Real tmpFit[K.N];
+Real tmpFit[const.N];
 
 //valori random per calcolare velocità
 Real r1;
 Real r2;
 
 //Variabili temporanee per salvataggio dati risultanti dal modulo di comunicazione
-Real tmpGPos[K.N,3];
-Real tmpGFit[K.N];
+Real tmpGPos[const.N,3];
+Real tmpGFit[const.N];
 
 //Permette di resettare i valori di fitness, così da aggiornare l'algoritmo
 Real timer;
 
-Real tmpBattery[K.N];
+Real tmpBattery[const.N];
 
-OutputReal velocityX[K.N];
-OutputReal velocityY[K.N];
-OutputReal velocityZ[K.N];
+OutputReal velocityX[const.N];
+OutputReal velocityY[const.N];
+OutputReal velocityZ[const.N];
 
 //Scarica batteria dovuta al modulo di comunicazione
-OutputReal batteryDischarge[K.N];
+OutputReal batteryDischarge[const.N];
 
 initial equation
 
-	for i in 1:K.N loop
+	for i in 1:const.N loop
 		pBestFit[i] = 100000;
 		pBestPos[i] = {x[i],y[i],z[i]};
 
@@ -110,33 +112,33 @@ initial equation
 		gBestPos[i] = {x[i],y[i],z[i]};
 	end for;
 
-	velocityX = zeros(K.N);
-	velocityY = zeros(K.N);
-	velocityZ = zeros(K.N);
-	batteryDischarge = zeros(K.N);
+	velocityX = zeros(const.N);
+	velocityY = zeros(const.N);
+	velocityZ = zeros(const.N);
+	batteryDischarge = zeros(const.N);
 
 	r1 = 0;
 	r2 = 0;
 	timer = 0;
 	
-	tmpGPos = zeros(K.N,3);
-	tmpGFit = zeros(K.N);
-	tmpFit = zeros(K.N);
+	tmpGPos = zeros(const.N,3);
+	tmpGFit = zeros(const.N);
+	tmpFit = zeros(const.N);
 
 algorithm
 
 when sample(0,T) then
-	tmpFit := allFitness(x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ,nearMissile,
+	tmpFit := allFitness(const, x,y,z,destX,destY,destZ,intrX,intrY,intrZ, nearIntr, missX, missY, missZ,nearMissile,
 	 					statX,statY,statZ,nearStatObs, droneDead, intrDead,missDead);
 	if(timer < 2) then
 		timer := pre(timer) + 1;
 	else 
 		timer := 0;
-		pBestFit := fill(100000.0, K.N);
-		globFitness := fill(100000.0, K.N);
+		pBestFit := fill(100000.0, const.N);
+		globFitness := fill(100000.0, const.N);
 	end if;
 
-	for i in 1:K.N loop
+	for i in 1:const.N loop
 		if(battery[i] > 0 and (not droneDead[i])) then
 			//Confronto e setup Pbest. Posso calcolarlo qui poichè richiede solamente i dati del singolo drone.
 			if(tmpFit[i] < pBestFit[i]) then
@@ -158,12 +160,12 @@ when sample(0,T) then
 			velocityZ[i] := ((w*Vz[i]) + (c1*r1* (pBestPos[i,3] - z[i])) + (c2*r2* (gBestPos[i,3] - z[i])));
 
 			//velocity cap
-			(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], K.maxSpeed);
+			(velocityX[i],velocityY[i],velocityZ[i]) := velocityCap(velocityX[i],velocityY[i],velocityZ[i], const.maxSpeed);
 			//print("Velocità PSO: (" +String(velocityX[1]) + ", " +String(velocityY[1]) + ", " +String(velocityZ[1]) + ")\n");
 		end if;
 	end for;
 
-	(tmpGPos, tmpGFit, tmpBattery) := talking(globFitness, gBestPos, neighbours, droneState);
+	(tmpGPos, tmpGFit, tmpBattery) := talking(const, globFitness, gBestPos, neighbours, droneState);
 	globFitness := tmpGFit;
 	gBestPos := tmpGPos;
 	batteryDischarge := tmpBattery;
@@ -213,48 +215,50 @@ end fitness;
 //La fitness value di un drone viene calcolata basandosi sulla distanza con un ostacolo in movimento (drone nemico, missile, ecc...)
 function allFitness
 
-//posizione droni
-InputReal x[K.N];
-InputReal y[K.N];
-InputReal z[K.N];
+input K const;
 
-InputReal destX[K.N], destY[K.N], destZ[K.N];
+//posizione droni
+InputReal x[const.N];
+InputReal y[const.N];
+InputReal z[const.N];
+
+InputReal destX[const.N], destY[const.N], destZ[const.N];
 
 //posizione destinazione
-InputReal intrX[K.nIntr];
-InputReal intrY[K.nIntr];
-InputReal intrZ[K.nIntr];
-InputBool nearIntr[K.N, K.nIntr];
+InputReal intrX[const.nIntr];
+InputReal intrY[const.nIntr];
+InputReal intrZ[const.nIntr];
+InputBool nearIntr[const.N, const.nIntr];
 
 //posizione missili
-InputReal missX[K.nRocket];
-InputReal missY[K.nRocket];
-InputReal missZ[K.nRocket];
+InputReal missX[const.nRocket];
+InputReal missY[const.nRocket];
+InputReal missZ[const.nRocket];
 //Missili vicini a droni
-InputBool nearMissile[K.N, K.nRocket];
+InputBool nearMissile[const.N, const.nRocket];
 
-InputReal statX[K.nStatObs];
-InputReal statY[K.nStatObs];
-InputReal statZ[K.nStatObs];
-InputBool nearStatObs[K.N,K.nStatObs];
+InputReal statX[const.nStatObs];
+InputReal statY[const.nStatObs];
+InputReal statZ[const.nStatObs];
+InputBool nearStatObs[const.N,const.nStatObs];
 
 //Permette di sapere se droni,ostacoli o missili sono collisi
-InputBool droneDead[K.N];
-InputBool intrDead[K.nIntr];
-InputBool missDead[K.nRocket];
+InputBool droneDead[const.N];
+InputBool intrDead[const.nIntr];
+InputBool missDead[const.nRocket];
 
-OutputReal fitValue[K.N];
+OutputReal fitValue[const.N];
 
 	protected 
-		Real tmpFitIntr[K.nIntr], tmpFitMissile[K.nRocket], tmpFitObs[K.nStatObs];
+		Real tmpFitIntr[const.nIntr], tmpFitMissile[const.nRocket], tmpFitObs[const.nStatObs];
 
 algorithm 
-	fitValue := fill(10000000.0,K.N);
-	for i in 1:K.N loop
+	fitValue := fill(10000000.0,const.N);
+	for i in 1:const.N loop
 		//Calcolo la fitness value in base alla distanza con gli intrusi
-		tmpFitIntr := zeros(K.nIntr);	
+		tmpFitIntr := zeros(const.nIntr);	
 		if(not droneDead[i]) then
-			for j in 1:K.nIntr loop
+			for j in 1:const.nIntr loop
 				if (nearIntr[i,j] and (not intrDead[j])) then
 					tmpFitIntr[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], intrX[j], intrY[j], intrZ[j]);
 				else 
@@ -262,15 +266,15 @@ algorithm
 				end if;
 			end for;
 			
-			for j in 1:K.nIntr loop
+			for j in 1:const.nIntr loop
 				if (tmpFitIntr[j] < fitValue[i]) then
 					fitValue[i] := tmpFitIntr[j];
 				end if;
 			end for;
 
 			//Calcolo la fitness value in base alla distanza con i missili
-			tmpFitMissile := zeros(K.nRocket);
-			for j in 1:K.nRocket loop
+			tmpFitMissile := zeros(const.nRocket);
+			for j in 1:const.nRocket loop
 				if (nearMissile[i,j] and (not missDead[j])) then
 					tmpFitMissile[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], missX[j], missY[j], missZ[j]);
 				else 
@@ -278,15 +282,15 @@ algorithm
 				end if;
 			end for;
 			
-			for j in 1:K.nRocket loop
+			for j in 1:const.nRocket loop
 				if (tmpFitMissile[j] < fitValue[i]) then
 					fitValue[i] := tmpFitMissile[j];
 				end if;
 			end for;
 
 			//Calcolo la fitness value in base alla distanza con gli ostacoli
-			tmpFitObs := zeros(K.nStatObs);
-			for j in 1:K.nStatObs loop
+			tmpFitObs := zeros(const.nStatObs);
+			for j in 1:const.nStatObs loop
 				if (nearStatObs[i,j]) then
 					tmpFitObs[j] := fitness(x[i],y[i],z[i], destX[i], destY[i], destZ[i], statX[j], statY[j], statZ[j]);
 				else 
@@ -294,7 +298,7 @@ algorithm
 				end if;
 			end for;
 			
-			for j in 1:K.nStatObs loop
+			for j in 1:const.nStatObs loop
 				if (tmpFitObs[j] < fitValue[i]) then
 					fitValue[i] := tmpFitObs[j];
 				end if;
@@ -310,33 +314,35 @@ end allFitness;
 
 function talking "Comunicazione relativa alle info del pso"
 	
-	InputReal gBestFit[K.N];
+	input K const;
 
-	InputReal gBestPos[K.N,3];
+	InputReal gBestFit[const.N];
+
+	InputReal gBestPos[const.N,3];
 	
 	//Matrice contenente info sui droni vicini tra loro
-	InputBool neighbours[K.N,K.N];
+	InputBool neighbours[const.N,const.N];
 
-	InputInt droneState[K.N];
+	InputInt droneState[const.N];
 	
-	OutputReal outGbestPos[K.N,3];
+	OutputReal outGbestPos[const.N,3];
 
-	OutputReal outGbestFit[K.N];
+	OutputReal outGbestFit[const.N];
 
 	//Scarica dovuta alla comunicazione tra droni
-	OutputReal battery[K.N];
+	OutputReal battery[const.N];
 
 	protected
-		Real tmpBatt[K.N];
+		Real tmpBatt[const.N];
 	
 algorithm
 outGbestPos := gBestPos;
 outGbestFit := gBestFit;
-tmpBatt := zeros(K.N);
+tmpBatt := zeros(const.N);
 
-for i in 1:K.N loop	
+for i in 1:const.N loop	
 		if(droneState[i] <> 4) then //Se il drone ha una fault del sistema di comunicazione, non può scambiare messaggi
-			for j in 1:K.N loop
+			for j in 1:const.N loop
 				if(neighbours[i,j] and i <> j) then
 					tmpBatt[i] := tmpBatt[i] + 2;
 					if(acknowledgment(droneState[i],droneState[j])) then

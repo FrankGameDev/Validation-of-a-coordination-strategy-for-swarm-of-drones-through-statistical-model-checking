@@ -1,49 +1,49 @@
 block Rocket "modella dei missili che cercano di colpire i droni"
 	
-
+	K const;
 //Parametri volo
 	
 	//Forza su x
-	InputReal Trustx[K.nRocket];
+	InputReal Trustx[const.nRocket];
 	
 	//Forza su y
-	InputReal Trusty[K.nRocket];
+	InputReal Trusty[const.nRocket];
 
 	//Forza su z
-	InputReal Trustz[K.nRocket];
+	InputReal Trustz[const.nRocket];
 
 	//Posizione sull'asse x
-	OutputReal x[K.nRocket];
+	OutputReal x[const.nRocket];
 
 	//Posizione sull'asse y
-	OutputReal y[K.nRocket];
+	OutputReal y[const.nRocket];
 	
 	//Posizione sull'asse z
-	OutputReal z[K.nRocket];
+	OutputReal z[const.nRocket];
 	
 	//Velocità su x
-	OutputReal Vx[K.nRocket];
+	OutputReal Vx[const.nRocket];
 
 	//Velocità su y
-	OutputReal Vy[K.nRocket];
+	OutputReal Vy[const.nRocket];
 
 	//Velocità su z
-	OutputReal Vz[K.nRocket];
+	OutputReal Vz[const.nRocket];
 
 	//Posizione di partenza dei missili
-	// OutputReal startPos[K.nRocket,3];
+	// OutputReal startPos[const.nRocket,3];
 	
 initial equation
 	
 	//inizializzo posizione intrusi
-	for i in 1:K.nRocket loop
-		x[i] = myrandom() * K.flyZone[1];
-		y[i] = myrandom() * K.flyZone[2];
+	for i in 1:const.nRocket loop
+		x[i] = myrandom() * const.flyZone[1];
+		y[i] = myrandom() * const.flyZone[2];
 		z[i] = 0; 
 	end for;
 	
 
-	for i in 1:K.nRocket loop
+	for i in 1:const.nRocket loop
 		Vx[i] = 0;
 		Vy[i] = 0;
 		Vz[i] = 0;
@@ -54,7 +54,7 @@ initial equation
 //Aggiorno velocità e posizione dell'inturso
 equation
 
-	for i in 1:K.nRocket loop
+	for i in 1:const.nRocket loop
 		der(Vx[i]) = Trustx[i];	
 		der(Vy[i]) = Trusty[i];
 		der(Vz[i]) = Trustz[i];	

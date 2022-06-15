@@ -64,8 +64,12 @@ getErrorString();
 loadFile("system.mo");
 getErrorString();
 
+GC_set_max_heap_size(80000000000);getErrorString();
+GC_gcollect_and_unmap();getErrorString();
 /* setCommandLineOptions("-d=initialization");
 getErrorString(); */
+
+// setCommandLineOptions("-d=optdaedump");getErrorString();
 
 simulate(System, stopTime=30);
 getErrorString();

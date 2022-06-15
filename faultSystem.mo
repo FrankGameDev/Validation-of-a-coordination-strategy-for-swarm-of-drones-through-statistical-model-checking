@@ -7,6 +7,7 @@ In caso di:
 - Fault di manovra: Il drone smette di funzionare
 
 */
+	K const;
 
 	parameter Real T = 7.5 "Tempo di aggiornamento probabilità fault";	
 
@@ -26,16 +27,16 @@ In caso di:
 	Real prob;
 	
 	//stato del drone. Viene restituito al drone stesso per valutare la sua situazione
-	OutputInt state[K.N];
+	OutputInt state[const.N];
 	
 algorithm
 	//inizializzo lo stato 
 	when initial() then
-		state := fill(1,K.N);
+		state := fill(1,const.N);
 		prob := 0;
 
 	elsewhen sample(0,T) then
-		for i in 1:K.N loop	
+		for i in 1:const.N loop	
 			prob := myrandom();
 			//print("Drone "+ String(i) +": " + String(state[i])+", " + String(prob) + "\n");
 			state[i] := nextState(pre(state[i]), transMatrix, prob);

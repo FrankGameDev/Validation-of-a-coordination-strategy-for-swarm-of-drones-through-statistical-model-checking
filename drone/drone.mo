@@ -1,5 +1,7 @@
 block Drone
 	
+	K const;
+
 	parameter Real T = 0.5;
 
 //PARAMETRI BATTERIA
@@ -10,102 +12,102 @@ block Drone
 //Parametri volo
 	
 	//Destinazione droni
-	InputReal destX[K.N];
-	InputReal destY[K.N];
-	InputReal destZ[K.N];
+	InputReal destX[const.N];
+	InputReal destY[const.N];
+	InputReal destZ[const.N];
 
 	//forza di movimento del drone
-	InputReal Trustx[K.N];
-	InputReal Trusty[K.N];
-	InputReal Trustz[K.N];	
+	InputReal Trustx[const.N];
+	InputReal Trusty[const.N];
+	InputReal Trustz[const.N];	
 
 	//Campi di fault
 
 	//Stato del drone. 1 = funzionante; 2 = errore sensoristica; 3 = errore di manovra; 4 = errore comunicazioni;
-	InputInt droneState[K.N];
+	InputInt droneState[const.N];
 
 	//Permette di sapere se droni,ostacoli o missili sono collisi
-	InputBool droneDead[K.N];
-    InputBool intrDead[K.nIntr];
-    InputBool missDead[K.nRocket];
+	InputBool droneDead[const.N];
+    InputBool intrDead[const.nIntr];
+    InputBool missDead[const.nRocket];
 	
 	//Campi posizione intrusi
 
-	InputReal intrX[K.nIntr];
-	InputReal intrY[K.nIntr];
-	InputReal intrZ[K.nIntr];
+	InputReal intrX[const.nIntr];
+	InputReal intrY[const.nIntr];
+	InputReal intrZ[const.nIntr];
 
 	//Posizione missili
-	InputReal missX[K.nRocket];
-	InputReal missY[K.nRocket];
-	InputReal missZ[K.nRocket];
+	InputReal missX[const.nRocket];
+	InputReal missY[const.nRocket];
+	InputReal missZ[const.nRocket];
 
 	//Posizione ostacoli
-	InputReal statX[K.nStatObs];
-	InputReal statY[K.nStatObs];
-	InputReal statZ[K.nStatObs];
+	InputReal statX[const.nStatObs];
+	InputReal statY[const.nStatObs];
+	InputReal statZ[const.nStatObs];
 
 	//Scarica della batteria dovuta all'utilizzo del modulo di comunicazione
-	InputReal commDischarge[K.N];
+	InputReal commDischarge[const.N];
 
 	//Valore che permette di definire se il modulo di collision avoidance ha determinato
 	//una nuova destinazione per schivare gli ostacoli
-	InputBool useTMPDest[K.N];
+	InputBool useTMPDest[const.N];
 
 	//Posizione sull'asse x
-	OutputReal x[K.N];
+	OutputReal x[const.N];
 
 	//Posizione sull'asse y
-	OutputReal y[K.N];
+	OutputReal y[const.N];
 	
 	//Posizione sull'asse z
-	OutputReal z[K.N];
+	OutputReal z[const.N];
 	
 	//Velocità su x
-	OutputReal Vx[K.N];
+	OutputReal Vx[const.N];
 
 	//Velocità su y
-	OutputReal Vy[K.N];
+	OutputReal Vy[const.N];
 
 	//Velocità su z
-	OutputReal Vz[K.N];
+	OutputReal Vz[const.N];
 
 	//Array contenente informazioni sui vicini al drone i-esimo
-	OutputBool neighbours[K.N,K.N];
+	OutputBool neighbours[const.N,const.N];
 
 	//Vettore contenente informazioni sugli intrusi vicini
-	OutputBool nearIntr[K.N, K.nIntr];
+	OutputBool nearIntr[const.N, const.nIntr];
 
 	//Vettore contenente informazioni sui missili vicini
-	OutputBool nearMissile[K.N, K.nRocket];
+	OutputBool nearMissile[const.N, const.nRocket];
 
 	//Vettore contente informazioni sugli ostacoli fissi
-	OutputBool nearStatObs[K.N, K.nStatObs];
+	OutputBool nearStatObs[const.N, const.nStatObs];
 
 	//capacità della batteria di ogni drone
-	OutputReal actualCapacity[K.N]; 	
+	OutputReal actualCapacity[const.N]; 	
 
 	//Start position of drones
-	OutputReal startPos[K.N,3];
+	OutputReal startPos[const.N,3];
 
 	Real tmpBatt;
 
 initial equation
 	
-	for i in 1:K.N loop
-		x[i] = i*K.dDistance;
+	for i in 1:const.N loop
+		x[i] = i*const.dDistance;
 		y[i] = 0;
 		z[i] = 0;
 	end for;
 
 
-	for i in 1:K.N loop
+	for i in 1:const.N loop
 		Vx[i] = 0;
 		Vy[i] = 0;
 		Vz[i] = 0;
 	end for;	
 
-	actualCapacity = fill(capacity,K.N);
+	actualCapacity = fill(capacity,const.N);
 	tmpBatt = actualCapacity[1];
 
 equation
@@ -116,7 +118,7 @@ equation
 	*/
 	
 	
-	for i in 1:K.N loop 
+	for i in 1:const.N loop 
 		//Se non ci sono fault di manovra e la batteria ha ancora carica residua, leggo la trust del controller
 		der(Vx[i]) = Trustx[i];	
 		der(Vy[i]) = Trusty[i];
@@ -131,35 +133,35 @@ equation
 algorithm
 
 when initial() then
-	for i in 1:K.N loop
-		neighbours[i] := fill(true, K.N);
+	for i in 1:const.N loop
+		neighbours[i] := fill(true, const.N);
 		startPos[i,1] := x[i];
 		startPos[i,2] := y[i];
 		startPos[i,3] := z[i];
-		nearIntr := fill(false, K.N, K.nIntr);
-		nearMissile	:= fill(false, K.N, K.nRocket);
-		nearStatObs	:= fill(false, K.N, K.nStatObs);
+		nearIntr := fill(false, const.N, const.nIntr);
+		nearMissile	:= fill(false, const.N, const.nRocket);
+		nearStatObs	:= fill(false, const.N, const.nStatObs);
 	end for;
 end when;
 
 when sample(0,T) then
 	//Controllo zona di volo
-	for i in 1:K.N loop
+	for i in 1:const.N loop
 		if(actualCapacity[i] > 0 and (not droneDead[i])) then
 			tmpBatt := actualCapacity[i];
 			actualCapacity[i] := batteryMonitor(tmpBatt,1);
 			//Se i sensori del drone non funzionano allora non trova gli oggetti vicini
 			if(droneState[i] <> 2) then
-				(neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := findNearObject(x[i], y[i], z[i],x,y,z, intrX, intrY, intrZ, missX, missY, missZ, statX,statY,statZ);				
+				(neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := findNearObject(const,x[i], y[i], z[i],x,y,z, intrX, intrY, intrZ, missX, missY, missZ, statX,statY,statZ);				
 				/* (neighbours[i], nearIntr[i], nearMissile[i], nearStatObs[i]) := skyScan(x[i], y[i], z[i],
 									x,y,z, destX[i], destY[i], destZ[i], intrX, intrY, intrZ, missX, missY, missZ, statX,statY,statZ); */
 				tmpBatt := actualCapacity[i];
 				actualCapacity[i] := batteryMonitor(tmpBatt,2);
 			else
-				neighbours[i] := fill(false, K.N);	
-				nearIntr[i] := fill(false, K.nIntr);
-				nearMissile[i] := fill(false,K.nRocket);
-				nearStatObs[i] := fill(false,K.nStatObs);
+				neighbours[i] := fill(false, const.N);	
+				nearIntr[i] := fill(false, const.nIntr);
+				nearMissile[i] := fill(false,const.nRocket);
+				nearStatObs[i] := fill(false,const.nStatObs);
 			end if;	
 		end if;
 	end for;

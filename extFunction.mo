@@ -84,106 +84,109 @@ function skyScan "Controlla i dintorni dei droni attraverso il sistema di rileva
 	InputReal y;
 	InputReal z;
 
-	InputReal x2[K.N];
-	InputReal y2[K.N];
-	InputReal z2[K.N];	
+	InputReal x2[const.N];
+	InputReal y2[const.N];
+	InputReal z2[const.N];	
 	
 	InputReal destX;
 	InputReal destY; 
 	InputReal destZ; 
 
-	InputReal intrX[K.nIntr];
-	InputReal intrY[K.nIntr];
-	InputReal intrZ[K.nIntr];
+	InputReal intrX[const.nIntr];
+	InputReal intrY[const.nIntr];
+	InputReal intrZ[const.nIntr];
 
-	InputReal missX[K.nRocket];
-	InputReal missY[K.nRocket];
-	InputReal missZ[K.nRocket];
+	InputReal missX[const.nRocket];
+	InputReal missY[const.nRocket];
+	InputReal missZ[const.nRocket];
 
-	InputReal statX[K.nStatObs];
-	InputReal statY[K.nStatObs];
-	InputReal statZ[K.nStatObs];
+	InputReal statX[const.nStatObs];
+	InputReal statY[const.nStatObs];
+	InputReal statZ[const.nStatObs];
 
-	OutputBool neighbours[K.N];
-	OutputBool nearIntr[K.nIntr];
-	OutputBool nearMissile[K.nRocket];
-	OutputBool nearStatObs[K.nStatObs];
+	OutputBool neighbours[const.N];
+	OutputBool nearIntr[const.nIntr];
+	OutputBool nearMissile[const.nRocket];
+	OutputBool nearStatObs[const.nStatObs];
 
 	protected 
-		Boolean neigh1[K.N],neigh2[K.N];
-		Boolean nIntr1[K.nIntr],nIntr2[K.nIntr];
-		Boolean nMiss1[K.nRocket],nMiss2[K.nRocket];
-		Boolean nStat1[K.nStatObs],nStat2[K.nStatObs];
+		K const;
+		Boolean neigh1[const.N],neigh2[const.N];
+		Boolean nIntr1[const.nIntr],nIntr2[const.nIntr];
+		Boolean nMiss1[const.nRocket],nMiss2[const.nRocket];
+		Boolean nStat1[const.nStatObs],nStat2[const.nStatObs];
 
-algorithm
-	(neigh1, nIntr1, nMiss1, nStat1) := findNearObject(x, y, z, x2,y2,z2, intrX, intrY, intrZ,
-																		missX, missY, missZ, statX,statY,statZ);
-	(neigh2, nIntr2, nMiss2, nStat2) := seeNearObject(x, y, z, x2,y2,z2, destX, destY, destZ,intrX, intrY, intrZ,
-																	missX, missY, missZ, statX,statY,statZ); 
-	neighbours := neigh1 or neigh2;
-	nearIntr := nIntr1 or nIntr2;
-	nearMissile := nMiss1 or nMiss2;
-	nearStatObs := nStat1 or nStat2;
+	algorithm
+		(neigh1, nIntr1, nMiss1, nStat1) := findNearObject(x, y, z, x2,y2,z2, intrX, intrY, intrZ,
+																			missX, missY, missZ, statX,statY,statZ);
+		(neigh2, nIntr2, nMiss2, nStat2) := seeNearObject(x, y, z, x2,y2,z2, destX, destY, destZ,intrX, intrY, intrZ,
+																		missX, missY, missZ, statX,statY,statZ); 
+		neighbours := neigh1 or neigh2;
+		nearIntr := nIntr1 or nIntr2;
+		nearMissile := nMiss1 or nMiss2;
+		nearStatObs := nStat1 or nStat2;
 end skyScan;
 
 function findNearObject "Restituisce una lista contenente tutti gli oggetti vicini utilizzando gli infrarossi"
 	
+	input K const;
+
 	InputReal x;
 	InputReal y;
 	InputReal z;
 
-	InputReal x2[K.N];
-	InputReal y2[K.N];
-	InputReal z2[K.N];
+	InputReal x2[const.N];
+	InputReal y2[const.N];
+	InputReal z2[const.N];
 
-	InputReal intrX[K.nIntr];
-	InputReal intrY[K.nIntr];
-	InputReal intrZ[K.nIntr];
+	InputReal intrX[const.nIntr];
+	InputReal intrY[const.nIntr];
+	InputReal intrZ[const.nIntr];
 
-	InputReal missX[K.nRocket];
-	InputReal missY[K.nRocket];
-	InputReal missZ[K.nRocket];
+	InputReal missX[const.nRocket];
+	InputReal missY[const.nRocket];
+	InputReal missZ[const.nRocket];
 
-	InputReal statX[K.nStatObs];
-	InputReal statY[K.nStatObs];
-	InputReal statZ[K.nStatObs];
+	InputReal statX[const.nStatObs];
+	InputReal statY[const.nStatObs];
+	InputReal statZ[const.nStatObs];
 
-	OutputBool neighbours[K.N];
-	OutputBool nearIntr[K.nIntr];
-	OutputBool nearMissile[K.nRocket];
-	OutputBool nearStatObs[K.nStatObs];
+	OutputBool neighbours[const.N];
+	OutputBool nearIntr[const.nIntr];
+	OutputBool nearMissile[const.nRocket];
+	OutputBool nearStatObs[const.nStatObs];
 
 	protected
 		Real euclDist;
 
 algorithm
-	for i in 1:K.N loop
+	for i in 1:const.N loop
 		euclDist := euclideanDistance(x,y,z,x2[i],y2[i],z2[i]);
-		if(euclDist <= K.IDD and euclDist > 0) then
+		if(euclDist <= const.IDD and euclDist > 0) then
 			neighbours[i] := true;
 		else neighbours[i] := false;
 		end if;	
 	end for; 
 	
-	for i in 1:K.nIntr loop
+	for i in 1:const.nIntr loop
 		euclDist := euclideanDistance(x,y,z,intrX[i], intrY[i], intrZ[i]);
-		if(euclDist <= K.IDD and euclDist > 0) then
+		if(euclDist <= const.IDD and euclDist > 0) then
 			nearIntr[i] := true;
 		else nearIntr[i] := false;
 		end if;	
 	end for; 
 
-	for i in 1:K.nRocket loop
+	for i in 1:const.nRocket loop
 		euclDist := euclideanDistance(x,y,z,missX[i], missY[i], missZ[i]);
-		if(euclDist <= K.IDD and euclDist > 0) then
+		if(euclDist <= const.IDD and euclDist > 0) then
 			nearMissile[i] := true;
 		else nearMissile[i] := false;
 		end if;	
 	end for; 
 
-	for i in 1:K.nStatObs loop
+	for i in 1:const.nStatObs loop
 		euclDist := euclideanDistance(x,y,z,statX[i], statY[i], statZ[i]);
-		if(euclDist <= K.IDD and euclDist > 0) then
+		if(euclDist <= const.IDD and euclDist > 0) then
 			nearStatObs[i] := true;
 		else nearStatObs[i] := false;
 		end if;	
@@ -197,41 +200,42 @@ function seeNearObject "Restituisce una lista contenente tutti gli oggetti rilev
 	InputReal y;
 	InputReal z;
 
-	InputReal x2[K.N];
-	InputReal y2[K.N];
-	InputReal z2[K.N];
+	InputReal x2[const.N];
+	InputReal y2[const.N];
+	InputReal z2[const.N];
 
 	InputReal destX;
 	InputReal destY; 
 	InputReal destZ; 
 
-	InputReal intrX[K.nIntr];
-	InputReal intrY[K.nIntr];
-	InputReal intrZ[K.nIntr];
+	InputReal intrX[const.nIntr];
+	InputReal intrY[const.nIntr];
+	InputReal intrZ[const.nIntr];
 
-	InputReal missX[K.nRocket];
-	InputReal missY[K.nRocket];
-	InputReal missZ[K.nRocket];
+	InputReal missX[const.nRocket];
+	InputReal missY[const.nRocket];
+	InputReal missZ[const.nRocket];
 
-	InputReal statX[K.nStatObs];
-	InputReal statY[K.nStatObs];
-	InputReal statZ[K.nStatObs];
+	InputReal statX[const.nStatObs];
+	InputReal statY[const.nStatObs];
+	InputReal statZ[const.nStatObs];
 
-	OutputBool outneighbours[K.N];
-	OutputBool outnearIntr[K.nIntr];
-	OutputBool outnearMissile[K.nRocket];
-	OutputBool outnearStatObs[K.nStatObs];
+	OutputBool outneighbours[const.N];
+	OutputBool outnearIntr[const.nIntr];
+	OutputBool outnearMissile[const.nRocket];
+	OutputBool outnearStatObs[const.nStatObs];
 
 	protected
+		K const;
 		Real viewField[3];
 
-algorithm
+	algorithm
 	
 	//Imposto i limiti del campo visivo. Data la direzione del drone, ogni asse avrà il suo limite.
 	// viewField := findViewField(x,y,z, destX,destY,destZ);
 	viewField := zeros(3);
 
-	for j in 1:K.N loop
+	for j in 1:const.N loop
 		outneighbours[j] := false;
 		if((x2[j] >= x and x2[j] <= viewField[1]) or (x2[j] <= x and x2[j] >= viewField[1])) then
 			if((y2[j] >= y and y2[j] <= viewField[2]) or (y2[j] <= y and y2[j] >= viewField[2])) then
@@ -242,7 +246,7 @@ algorithm
 		end if;
 	end for;
 
-	for j in 1:K.nIntr loop
+	for j in 1:const.nIntr loop
 		outnearIntr[j] := false;
 		if((intrX[j] >= x and intrX[j] <= viewField[1]) or (intrX[j] <= x and intrX[j] >= viewField[1])) then
 			if((intrY[j] >= y and intrY[j] <= viewField[2]) or (intrY[j] <= y and intrY[j] >= viewField[2])) then
@@ -253,7 +257,7 @@ algorithm
 		end if;
 	end for; 
 
-	for j in 1:K.nRocket loop
+	for j in 1:const.nRocket loop
 		outnearMissile[j] := false;
 		if((missX[j] >= x and missX[j] <= viewField[1]) or (missX[j] <= x and missX[j] >= viewField[1])) then
 			if((missY[j] >= y and missY[j] <= viewField[2]) or (missY[j] <= y and missY[j] >= viewField[2])) then
@@ -264,7 +268,7 @@ algorithm
 		end if;
 	end for; 
 
-	for j in 1:K.nStatObs loop
+	for j in 1:const.nStatObs loop
 		outnearStatObs[j] := false;
 		if((statX[j] >= x and statX[j] <= viewField[1]) or (statX[j] <= x and statX[j] >= viewField[1])) then
 			if((statY[j] >= y and statY[j] <= viewField[2]) or (statY[j] <= y and statY[j] >= viewField[2])) then
@@ -292,10 +296,11 @@ function findViewField "Calcola la direzione di un drone normalizzando le compon
 	OutputReal view[3];
 
 	protected 
+		K const;
 		Real vect[3];
 		Integer direction[3];
 
-algorithm
+	algorithm
 	view := {x2 - x1, y2 - y1, z2 - z1};
 
 	//Set x
@@ -307,7 +312,7 @@ algorithm
 	//Set z
 	direction[3] := if(vect[3] >= 0) then 1 else -1; 
  
-	view := {direction[1]*(x1 + K.horizontalODD), direction[2]*(y1 + K.horizontalODD), direction[3]*(z1 + K.verticalODD)};
+	view := {direction[1]*(x1 + const.horizontalODD), direction[2]*(y1 + const.horizontalODD), direction[3]*(z1 + const.verticalODD)};
 
 
 end findViewField;
@@ -371,16 +376,16 @@ OutputReal gamma;
 protected
     Real dotProd; //Prodotto tra 2 vettori
     Real magnProd; //Prodotto tra la magnitudine di 2 vettori
-
+	K const;
 algorithm
 
     //Prima parte: calcolo theta
     dotProd := (x*x2) + (y*y2); 
     magnProd := magnitude2D(x,y) * magnitude2D(x2,y2);
 	if(magnProd == 0) then 
-		gamma := acos(0) * (180/K.pi);
+		gamma := acos(0) * (180/const.pi);
 	else
-    	gamma := acos(dotProd/magnProd) * (180/K.pi);
+    	gamma := acos(dotProd/magnProd) * (180/const.pi);
 	end if;
 
 end vectorAngle2D;
@@ -406,12 +411,12 @@ OutputReal gamma;
 protected
     Real dotProd; //Prodotto tra 2 vettori
     Real magnProd; //Prodotto tra la magnitudine di 2 vettori
-
+	K const;
 algorithm
 
     //Prima parte: calcolo gamma
     dotProd := (x*x2) + (y*y2) + (z*z2); 
     magnProd := magnitude(x,y,z) * magnitude(x2,y2,z2);
-    gamma := acos(dotProd/magnProd) * (180/K.pi);
+    gamma := acos(dotProd/magnProd) * (180/const.pi);
 
 end vectorAngle3D;

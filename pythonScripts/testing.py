@@ -98,6 +98,9 @@ faultMatrix = [[0.7, 0.1, 0.1, 0.1],[0.6, 0.4, 0, 0],[0.5, 0, 0.5, 0],[0.7, 0, 0
 
 
 def startSimulation(n, intr, miss, statObs, fault, flyZone):
+
+	os.system("rm LogOverride.txt")
+
 	#Overwrite parameters
 	with open("newValues.txt", 'wt') as f:
 		f.write("const.N="+str(n)+"\n")
@@ -113,20 +116,21 @@ def startSimulation(n, intr, miss, statObs, fault, flyZone):
 		os.fsync(f)
 
 	#Dizionario contenente tempo di arrivo e stato finale di ogni drone
-	droneInfo = dict.fromkeys([x for x in range(1,n+1)], ()) 
 	os.system("./System -overrideFile=newValues.txt >> LogOverride.txt")
 	#extract the stop time of the simulation
 	vars = omc.sendExpression("readSimulationResult(\"System_res.mat\",{time})")
 	omc.sendExpression("getErrorString()")
 	stopTime = int(vars[-1][-1]) 
 
-	print(str(omc.sendExpression("val(const.N," + str(stopTime) + ", \"System_res.mat\")")))
+	ndrone = int(omc.sendExpression("val(const.N," + str(stopTime) + ", \"System_res.mat\")"))
+	droneInfo = dict.fromkeys([x for x in range(1,ndrone+1)], ()) 
+
 	#extract collision occurance
 	tDD = omc.sendExpression("val(colMan.tDD," + str(stopTime) + ", \"System_res.mat\")") #Collisioni droni
 	tDC = omc.sendExpression("val(colMan.tDC," + str(stopTime) + ", \"System_res.mat\")") #Collisioni droni-intrusi
 	tDR = omc.sendExpression("val(colMan.tDR," + str(stopTime) + ", \"System_res.mat\")") #Collisioni droni-missili
 	tDSC = omc.sendExpression("val(colMan.tDSC," + str(stopTime) + ", \"System_res.mat\")") #Collisioni droni-ostacoli statici
-	for j in range(1,n+1):
+	for j in range(1,ndrone+1):
 		arrivalTime = omc.sendExpression("val(sucMo.arrivalTime[" + str(j) + "]," + str(stopTime) + ", \"System_res.mat\")")
 		droneArrived = omc.sendExpression("val(sucMo.arrived[" + str(j) + "]," + str(stopTime) + ", \"System_res.mat\")")
 		droneInfo[j] = (droneArrived, arrivalTime)
@@ -182,7 +186,7 @@ def manageSimulation():
 						print("\n\n")
 
 
-(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(7,1,1,1,noFault,100)
+(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(10,1,1,1,noFault,100)
 
 # #lista collisioni per ogni iterazione
 # collDD, collDC, collDR, collDSC = [], [], [], []

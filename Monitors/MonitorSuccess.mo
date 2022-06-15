@@ -1,36 +1,38 @@
 block MonitorSuccess "Monitora il numero di droni arrivati a destinazione e il loro tempo di arrivo"
 
     parameter Real T = 1 "Tempo di aggiornamento controllo monitor";
-
+    
+    K const;
+    
     //Posizione droni
-	InputReal x[K.N], y[K.N], z[K.N];
+	InputReal x[const.N], y[const.N], z[const.N];
     
     //Destinazione droni
-    InputReal destX[K.N], destY[K.N], destZ[K.N];
+    InputReal destX[const.N], destY[const.N], destZ[const.N];
 
     //Batteria droni
-    InputReal batterySensDischarge[K.N], batteryPSODischarge[K.N];
+    InputReal batterySensDischarge[const.N], batteryPSODischarge[const.N];
 
     //Stato del drone
-    InputBool droneDead[K.N];
+    InputBool droneDead[const.N];
 
     //Tempo di arrivo dei droni. Se -1, drone morto
-    OutputReal arrivalTime[K.N];
+    OutputReal arrivalTime[const.N];
 
     //Identifica se i droni sono arrivati o meno a destinazione
-    OutputBool arrived[K.N];
+    OutputBool arrived[const.N];
 
     Real battery;
     Boolean timeToEnd;
 
 
 initial equation
-    arrivalTime = fill(0, K.N);
-    arrived = fill(false,K.N);
+    arrivalTime = fill(0, const.N);
+    arrived = fill(false,const.N);
     timeToEnd = false;
 algorithm
     when sample(0,T) then
-        for i in 1:K.N loop
+        for i in 1:const.N loop
             battery := batterySensDischarge[i] - batteryPSODischarge[i];
             if(battery > 0 and (not droneDead[i])) then
                 arrived[i] := if(not arrived[i]) then checkArrived(x[i],y[i],z[i],destX[i],destY[i],destZ[i]) else true;
@@ -44,7 +46,7 @@ algorithm
         end for;    
         
         timeToEnd := true;
-        for i in 1:K.N loop
+        for i in 1:const.N loop
             if((not arrived[i]) and arrivalTime[i] >= 0) then
                 timeToEnd := false;
             end if;
@@ -65,6 +67,9 @@ function checkArrived
 
     OutputBool arrived;
 
+    protected 
+        K const;
+
 algorithm
-    arrived := if(euclideanDistance(x,y,z,destX,destY,destZ) <= K.arrivalThreshold) then true else false;
+    arrived := if(euclideanDistance(x,y,z,destX,destY,destZ) <= const.arrivalThreshold) then true else false;
 end checkArrived;

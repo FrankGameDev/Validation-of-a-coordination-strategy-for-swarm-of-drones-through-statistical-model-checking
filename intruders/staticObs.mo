@@ -1,28 +1,28 @@
 block StaticObs "modella gli oggetti in movimento che ostacolano i droni"
-
+	K const;
 	parameter Real T = 1000000;
 
 	//Posizione sull'asse x
-	OutputReal x[K.nStatObs];
+	OutputReal x[const.nStatObs];
 
 	//Posizione sull'asse y
-	OutputReal y[K.nStatObs];
+	OutputReal y[const.nStatObs];
 	
 	//Posizione sull'asse z
-	OutputReal z[K.nStatObs];
+	OutputReal z[const.nStatObs];
 
 initial equation
 	
-	x = zeros(K.nStatObs);
-	y = zeros(K.nStatObs);
-	z = zeros(K.nStatObs);
+	x = zeros(const.nStatObs);
+	y = zeros(const.nStatObs);
+	z = zeros(const.nStatObs);
 
 algorithm
 	when sample(0,T) then
-		for i in 1:K.nStatObs loop
-			x[i] := myrandom() * K.flyZone[1];
-			y[i] := myrandom() * K.flyZone[1];
-			z[i] := myrandom() * K.flyZone[1];
+		for i in 1:const.nStatObs loop
+			x[i] := myrandom() * const.flyZone[1];
+			y[i] := myrandom() * const.flyZone[1];
+			z[i] := myrandom() * const.flyZone[1];
 		end for;
 	end when;
 end StaticObs;
