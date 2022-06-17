@@ -97,16 +97,17 @@ noFault = [[1, 0, 0, 0],[1, 0, 0, 0],[1, 0, 0, 0],[1, 0, 0, 0]]
 faultMatrix = [[0.7, 0.1, 0.1, 0.1],[0.6, 0.4, 0, 0],[0.5, 0, 0.5, 0],[0.7, 0, 0, 0.3]]
 
 
+#Simula il sistema con i parametri inseriti come argomenti della funzione, restituendo i KPI
 def startSimulation(n, intr, miss, statObs, fault, flyZone):
 
 	os.system("rm LogOverride.txt")
 
 	#Overwrite parameters
 	with open("newValues.txt", 'wt') as f:
-		f.write("const.N="+str(n)+"\n")
-		f.write("const.nIntr="+str(intr)+"\n")
-		f.write("const.nRocket="+str(miss)+"\n")
-		f.write("const.nStatObs="+str(statObs)+"\n")
+		f.write("*.const.N="+str(n)+"\n")
+		f.write("*.const.nIntr="+str(intr)+"\n")
+		f.write("*.const.nRocket="+str(miss)+"\n")
+		f.write("*.const.nStatObs="+str(statObs)+"\n")
 		for i in range(len(fault)):
 			for j in range(len(fault[i])):
 				f.write("fault.transMatrix["+str(i+1)+","+str(j+1)+"]="+str(fault[i][j])+"\n")
@@ -115,7 +116,6 @@ def startSimulation(n, intr, miss, statObs, fault, flyZone):
 		f.flush()
 		os.fsync(f)
 
-	#Dizionario contenente tempo di arrivo e stato finale di ogni drone
 	os.system("./System -overrideFile=newValues.txt >> LogOverride.txt")
 	#extract the stop time of the simulation
 	vars = omc.sendExpression("readSimulationResult(\"System_res.mat\",{time})")
@@ -123,6 +123,7 @@ def startSimulation(n, intr, miss, statObs, fault, flyZone):
 	stopTime = int(vars[-1][-1]) 
 
 	ndrone = int(omc.sendExpression("val(const.N," + str(stopTime) + ", \"System_res.mat\")"))
+	#Dizionario contenente tempo di arrivo e stato finale di ogni drone
 	droneInfo = dict.fromkeys([x for x in range(1,ndrone+1)], ()) 
 
 	#extract collision occurance
@@ -166,48 +167,77 @@ def manageSimulation():
 				for stat in staticObs:
 					for zone in flyZone:
 						print("simulazione con: (" + str(d) +","+ str(intr) +","+ str(miss) +","+ str(stat) +","+ str(zone) +")\n")
-						ebsDD, ebsDO = EBStop(), EBStop()
+						#lista collisioni per ogni iterazione
+						collDD, collDC, collDR, collDSC = [], [], [], []
+
+						#Lista totale collisioni ostacoli per ogni iterazione
+						totalCollisionObs = list()
+
+						ebsDD, ebsDO, ebsArrived = EBStop(), EBStop(), EBStop()
+
+						arrivedDrone = list()
+
 						#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
-						stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, False
+						stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, True
 						index = 0
-						while(not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime)):
-							(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(d,intr,miss,stat,noFault,zone)
+						while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime))):
+							(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(7,1,1,1,noFault,100)
 							collDD.append(tmpDD)
 							collDC.append(tmpDC)
 							collDR.append(tmpDR)
 							collDSC.append(tmpDSC)
 							totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-							stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD), index)
-							stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs), index)
+							cont = 0
+							for x in droneInf.keys():
+								if(droneInf[x][0] > 0.0): cont +=1
+							arrivedDrone.append(cont)
+							print("droni arrivati all'iterazione " + str(index) + " = "  + str(arrivedDrone[-1])+"\n")
+							print("collisioni dd: " ,collDD, "\nobs total: " , totalCollisionObs , "\n")
+							if(index > 0):
+								stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
+								stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
+								stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
+							print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
+								" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n stoppingDD: " + str(stoppingDD) + " stoppingDO: " + str(stoppingDO) + 
+								" stoppingArrived: " + str(stoppingDArrived) + "\n")
 							index+=1
-						stopping = {False,False,False,False}
-						while(not all(stopping)):
-							startSimulation(d,intr,miss,stat,faultMatrix,zone)
-						print("\n\n")
+						print(index)				
 
 
-(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(10,1,1,1,noFault,100)
+# (tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(10,1,1,1,noFault,100)
 
-# #lista collisioni per ogni iterazione
-# collDD, collDC, collDR, collDSC = [], [], [], []
+#lista collisioni per ogni iterazione
+collDD, collDC, collDR, collDSC = [], [], [], []
 
-# #Lista totale collisioni ostacoli per ogni iterazione
-# totalCollisionObs = list()
+#Lista totale collisioni ostacoli per ogni iterazione
+totalCollisionObs = list()
 
-# ebsDD, ebsDO = EBStop(), EBStop()
-# #Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
-# stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, False
-# index = 0
-# while(not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime)):
-# 	(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(5,1,1,1,noFault,100)
-# 	collDD.append(tmpDD)
-# 	collDC.append(tmpDC)
-# 	collDR.append(tmpDR)
-# 	collDSC.append(tmpDSC)
-# 	totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-# 	stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD), index)
-# 	stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs), index)
-# 	print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
-# 		" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n")
-# 	index+=1
-# print(index)
+ebsDD, ebsDO, ebsArrived = EBStop(), EBStop(), EBStop()
+
+arrivedDrone = list()
+
+#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
+stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, True
+index = 0
+while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime))):
+	(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(7,1,1,1,noFault,100)
+	collDD.append(tmpDD)
+	collDC.append(tmpDC)
+	collDR.append(tmpDR)
+	collDSC.append(tmpDSC)
+	totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
+	cont = 0
+	for x in droneInf.keys():
+		if(droneInf[x][0] > 0.0): cont +=1
+	arrivedDrone.append(cont)
+	print("droni arrivati all'iterazione " + str(index) + " = "  + str(arrivedDrone[-1])+"\n")
+	print("collisioni dd: " ,collDD, "\nobs total: " , totalCollisionObs , "\n")
+	if(index > 0):
+		stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
+		stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
+		stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
+	print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
+		" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n stoppingDD: " + str(stoppingDD) + " stoppingDO: " + str(stoppingDO) + 
+		" stoppingArrived: " + str(stoppingDArrived) + "\n")
+	index+=1
+print(index)

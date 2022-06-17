@@ -2,7 +2,7 @@ record K
 
 //Costanti simulazione
 
-parameter Integer N = 5; //Number of uavs
+parameter Integer N = 10; //Number of uavs
 
 parameter Integer nIntr = 5; //Number of intruders
 
