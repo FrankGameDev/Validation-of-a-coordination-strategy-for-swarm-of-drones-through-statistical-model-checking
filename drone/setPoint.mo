@@ -3,7 +3,7 @@ block SetPoint
 
 	parameter Real T = 180"tempo di aggiornamento del punto di arrivo";
 
-	Real rand[3];
+	parameter Real rand[3];
 
 	InputReal battery[const.N];
 	//Posizioni di partenza dei droni
@@ -13,6 +13,8 @@ block SetPoint
 	OutputReal sety[const.N];
 	OutputReal setz[const.N];
 
+initial equation
+rand = fill(100,3);
 	
 algorithm
 	//Setto punto di arrivo
@@ -38,16 +40,16 @@ end when;
 
 //arrivo in un punto prestabilito
 when sample(0,T) then
-	rand := {myrandom(),myrandom(),myrandom()};
+	// rand := {myrandom(),myrandom(),myrandom()};
 	for i in 1:const.N loop
 		if(battery[i] < (const.N*15)/100) then
 			setx[i] := startX[i];
 			sety[i] := startY[i];
 			setz[i] := startZ[i];
 		else
-			setx[i] := rand[1] * const.flyZone[1];
-			sety[i] := rand[2] * const.flyZone[2];	
-			setz[i] := rand[3] * const.flyZone[3];
+			setx[i] := rand[1];
+			sety[i] := rand[2];	
+			setz[i] := rand[3];
 			if(setx[i] < const.minDestDistance) then
 				setx[i] := setx[i] + const.minDestDistance;
 			end if;

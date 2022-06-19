@@ -4,6 +4,7 @@
 // Your code goes here
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 double myrandom()
 {

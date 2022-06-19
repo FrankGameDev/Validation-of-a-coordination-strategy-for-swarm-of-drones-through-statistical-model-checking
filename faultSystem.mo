@@ -18,10 +18,10 @@ In caso di:
 										0.5, 0, 0.5, 0;
 										0.7, 0, 0, 0.3]; */
 									
-	parameter Real transMatrix[4,4] = [1, 0, 0, 0;
-										1, 0, 0, 0;
-										1, 0, 0, 0;
-										1, 0, 0, 0];
+	parameter Real transMatrix[4,4] = {{1, 0, 0, 0},
+										{1, 0, 0, 0},
+										{1, 0, 0, 0},
+										{1, 0, 0, 0}};
 
 	//probabilità calcolatà randomicamente
 	Real prob;

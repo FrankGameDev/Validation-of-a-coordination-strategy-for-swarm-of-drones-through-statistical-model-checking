@@ -9,3 +9,4 @@ external "C" result = myrandom();
 
 
 end myrandom;
+

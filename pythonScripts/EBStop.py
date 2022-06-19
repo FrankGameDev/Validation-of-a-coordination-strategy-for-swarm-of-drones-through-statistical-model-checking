@@ -11,7 +11,7 @@ class EBStop:
     def __init__(self):
         self.LB = 0
         self.UB = math.inf
-        self.delta, self.epsilon = 0.1,0.1
+        self.delta, self.epsilon = 0.01,0.01
         self.beta = 1.1
         self.p = 1.1
         self.k = 1
