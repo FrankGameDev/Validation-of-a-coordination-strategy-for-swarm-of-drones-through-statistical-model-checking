@@ -15,3 +15,4 @@ Simulazione 10_10_10_8_si_100. Tempo di esecuzione: 968.5377554893494; Iterazion
 Simulazione 10_10_10_8_si_150. Tempo di esecuzione: 1100.4326341152191; Iterazioni EBS: 44;
 Simulazione 10_10_10_8_si_200. Tempo di esecuzione: 1170.0442762374878; Iterazioni EBS: 44;
 Simulazione 20_10_10_8_si_100. Tempo di esecuzione: 3922.777145385742; Iterazioni EBS: 44;
+Simulazione 20_10_10_8_si_150. Tempo di esecuzione: 3881.036442041397; Iterazioni EBS: 44;
