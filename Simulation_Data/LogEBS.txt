@@ -1,0 +1,17 @@
+Tempo computazionale per ogni scenario attraverso EBS
+Simulazione 4_10_10_8_no_100. Tempo di esecuzione: 132.77068281173706; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_no_150. Tempo di esecuzione: 139.42016506195068; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_no_200. Tempo di esecuzione: 130.5145127773285; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_no_100. Tempo di esecuzione: 821.4265494346619; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_no_150. Tempo di esecuzione: 742.6328463554382; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_no_200. Tempo di esecuzione: 792.2236800193787; Iterazioni EBS: 44;
+Simulazione 20_10_10_8_no_100. Tempo di esecuzione: 2658.7404296398163; Iterazioni EBS: 44;
+Simulazione 20_10_10_8_no_150. Tempo di esecuzione: 2910.0786583423615; Iterazioni EBS: 44;
+Simulazione 20_10_10_8_no_200. Tempo di esecuzione: 3278.0818819999695; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_si_100. Tempo di esecuzione: 192.24070763587952; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_si_150. Tempo di esecuzione: 184.6613335609436; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_si_200. Tempo di esecuzione: 200.14027762413025; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_si_100. Tempo di esecuzione: 968.5377554893494; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_si_150. Tempo di esecuzione: 1100.4326341152191; Iterazioni EBS: 44;
+Simulazione 10_10_10_8_si_200. Tempo di esecuzione: 1170.0442762374878; Iterazioni EBS: 44;
+Simulazione 20_10_10_8_si_100. Tempo di esecuzione: 3922.777145385742; Iterazioni EBS: 44;
