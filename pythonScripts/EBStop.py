@@ -11,7 +11,7 @@ class EBStop:
     def __init__(self):
         self.LB = 0
         self.UB = math.inf
-        self.delta, self.epsilon = 0.01,0.01
+        self.delta, self.epsilon = 0.1,0.1
         self.beta = 1.1
         self.p = 1.1
         self.k = 1
@@ -52,7 +52,7 @@ class EBStop:
         sum = [math.pow(elements[i] - sumXt,2) for i in range(len(elements))]
         deviation = math.sqrt(1/t * (np.sum(sum)))
         c = (deviation*math.sqrt(2*x/t)) + (3*R*x)/t
-        print("Confronto valori ebstop: ", self.LB, math.fabs(sumXt) - c, self.UB, math.fabs(sumXt) + c)
+        # print("Confronto valori ebstop: ", self.LB, math.fabs(sumXt) - c, self.UB, math.fabs(sumXt) + c)
         self.LB = max(self.LB, math.fabs(sumXt) - c)
         self.UB = min(self.UB, math.fabs(sumXt) + c)
         return ((1+self.epsilon)*self.LB >= (1-self.epsilon)*self.UB)

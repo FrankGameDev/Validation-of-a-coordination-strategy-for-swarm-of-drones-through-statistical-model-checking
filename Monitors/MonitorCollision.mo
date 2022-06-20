@@ -1,6 +1,6 @@
 block CollisionManagement"Controlla se i droni collidono con oggetti nell'area di volo"
 	K const;
-	parameter Real T = 1; //Refresh controllo collisione
+	parameter Real T = 1.5; //Refresh controllo collisione
 
 	//input Vector3D drones[const.N];
 
@@ -103,7 +103,7 @@ function checkPosition
 	OutputBool col;
 
 algorithm
-	col := if(euclideanDistance(x,y,z,x2,y2,z2) < 2) then true else false;
+	col := if(euclideanDistance(x,y,z,x2,y2,z2) < 1.5) then true else false;
 end checkPosition;
 
 

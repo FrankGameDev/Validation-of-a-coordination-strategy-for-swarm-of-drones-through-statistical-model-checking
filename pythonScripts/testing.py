@@ -4,9 +4,8 @@ import os.path
 from EBStop import EBStop 
 import numpy as np
 from OMPython import OMCSessionZMQ
-from random import uniform,seed
 import math
-
+import json
 
 os.system("rm -f ./System")      # .... to be on the safe side
 
@@ -81,22 +80,16 @@ omc.sendExpression("getErrorString()")
 omc.sendExpression("loadFile(\"system.mo\")")
 omc.sendExpression("getErrorString()")
 
-# omc.sendExpression("buildModel(System, stopTime=180)")
-# omc.sendExpression("getErrorString()")
-
 startTime = time.time()
-num_pass = 0
-num_fail = 0
-
-drones = [4,10,20]
-intruders = [0,5]
-missile = [0,5]
-staticObs = [0,5]
-flyZone = [100,150,200]
-
 noFault = "{{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0}}"
 
-faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
+#Scrive il file contenente le informazioni sotto forma di json
+def writeData(name,collDD, collDO, arrived, dTime):
+	diz = {"collDD": collDD, "collDO": collDO, "arrived": arrived, "arrivalTime":dTime}
+	with open("Simulation_Data/SimulationData_" + str(name) + ".json", "wt") as f:
+		json.dump(diz, f)
+		f.flush()
+		f.close()
 
 #Modifica i parametri della simulazione e compila 
 def parameterSweep(n, intr, miss, statObs, fault, flyZone):
@@ -151,115 +144,85 @@ def startSimulation(flyZone):
 		droneInfo[j] = (droneArrived, arrivalTime)
 
 	os.system("rm -f System_res.mat")      # .... to be on the safe side
-		
-	print(droneInfo, tDD) 
-		
-	print("Execution time = ", (time.time()-startTime))
+				
 	os.system("rm -f newValues.txt")      # .... to be on the safe side
 	return (tDD, tDC, tDR, tDSC, droneInfo) 
 
-
-#Usare un algoritmo EBSTOP per determinare tempo di stop
+#Esegue simulazioni del sistema con ogni tipo di scenario
 def getSimulationData():
+
+	os.system("mkdir -p Simulation_Data")
+
 	drones = [4,10,20]
-	intruders = [0,5]
-	missile = [0,5]
-	staticObs = [0,5]
+	intruders = 10
+	missile = 10
+	staticObs = 8
 	flyZone = [100,150,200]
 	noFault = "{{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0}}"
 	faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
 
-	for d in drones:
-		for intr in intruders:
-			for miss in missile:
-				for stat in staticObs:
-					for zone in flyZone:
-						print("simulazione con: (" + str(d) +","+ str(intr) +","+ str(miss) +","+ str(stat) +","+ str(zone) +")\n")
-						#lista collisioni per ogni iterazione
-						collDD, collDC, collDR, collDSC = [], [], [], []
+	nf = 0
+	nomeF = "no"
+	for fault in ([noFault, faultMatrix]):
+		print(fault)
+		if(nf>0): nomeF = "si"
+		for d in drones:
+			for zone in flyZone:
+				startTime = time.time()
 
-						#Lista totale collisioni ostacoli per ogni iterazione
-						totalCollisionObs = list()
+				print("simulazione con: (" + str(d) +" droni, area di volo: "+ str(zone) +")\n")
+				#lista collisioni per ogni iterazione 
+				collDD, collDC, collDR, collDSC = [], [], [], []
 
-						ebsDD, ebsDO, ebsArrived, ebsTime = EBStop(), EBStop(), EBStop(), EBStop()
+				#Lista totale collisioni ostacoli per ogni iterazione
+				totalCollisionObs = list()
 
-						arrivedDrone, arrivalTime = list(), list()
+				ebsDD, ebsDO, ebsArrived, ebsTime = EBStop(), EBStop(), EBStop(), EBStop()
 
-						#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
-						stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, False
-						index = 0
-						parameterSweep(4,1,1,1,noFault,100)
-						while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime))):
-							(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation()
-							collDD.append(tmpDD)
-							collDC.append(tmpDC)
-							collDR.append(tmpDR)
-							collDSC.append(tmpDSC)
-							totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-							cont = 0
-							tmpList = list()
-							#Salvo numero di droni arrivati
-							for x in droneInf.keys():
-								if(droneInf[x][0] > 0.0): cont +=1
-								if(droneInf[x][1] > 0.0): tmpList.append(droneInf[x][1])
-							arrivedDrone.append(cont)
-							#Memorizzo tempo di arrivo medio
-							arrivalTime.append(np.sum(tmpList)/len(tmpList))
-							print("Tempo di arrivo medio: "+ str(arrivalTime[-1])+ "\n")
-							print("droni arrivati all'iterazione " + str(index) + " = "  + str(arrivedDrone[-1])+"\n")
-							print("collisioni dd: " ,collDD, "\nobs total: " , totalCollisionObs , "\n")
-							if(index > 0):
-								stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
-								stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
-								stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
-								stoppingTime = True if(stoppingTime) else ebsTime.find_stop_value(arrivalTime, max(arrivalTime) - min(arrivalTime))
-							print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
-								" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n stoppingDD: " + str(stoppingDD) + " stoppingDO: " + str(stoppingDO) + 
-								" stoppingArrived: " + str(stoppingDArrived) + " stoppingTime: "+ str(stoppingTime) +"\n")
-							index+=1
-							print(index) 	
+				arrivedDrone, arrivalTime = list(), list()
 
+				droneArrivalTime = dict.fromkeys([i for i in range(1,d+1)],[])
 
-#lista collisioni per ogni iterazione
-collDD, collDC, collDR, collDSC = [], [], [], []
+				#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
+				stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, False
+				index = 0
+				parameterSweep(d,intruders,missile,staticObs,fault,zone)
+				while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime))):
+					(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(zone)
+					collDD.append(tmpDD)
+					collDC.append(tmpDC)
+					collDR.append(tmpDR)
+					collDSC.append(tmpDSC)
+					totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
+					cont = 0
+					tmpList = list()
+					#Salvo numero di droni arrivati
+					for x in droneInf.keys():
+						if(droneInf[x][0] > 0.0): #se il drone è arrivato
+							cont += 1
+							droneArrivalTime[x].append(droneInf[x][1])
+							tmpList.append(droneInf[x][1])
 
-#Lista totale collisioni ostacoli per ogni iterazione
-totalCollisionObs = list()
+					arrivedDrone.append(cont)
+					#Memorizzo tempo di arrivo medio
+					arrivalTime.append(np.sum(tmpList)/len(tmpList))
+					# print("Tempo di arrivo medio: "+ str(arrivalTime[-1])+ "\n")
+					# print("droni arrivati all'iterazione " + str(index) + " = "  + str(arrivedDrone[-1])+"\n")
+					# print("collisioni dd: " ,collDD, "\nobs total: " , totalCollisionObs , "\n")
+					if(index > 0):
+						stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
+						stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
+						stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
+						stoppingTime = True if(stoppingTime) else ebsTime.find_stop_value(arrivalTime, max(arrivalTime) - min(arrivalTime))
+					# print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
+					# 	" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n stoppingDD: " + str(stoppingDD) + " stoppingDO: " + str(stoppingDO) + 
+					# 	" stoppingArrived: " + str(stoppingDArrived) + " stoppingTime: "+ str(stoppingTime) +"\n")
+					index+=1
+					print(index) 
+				print("Tempo di esecuzione = ", (time.time() - startTime))
+				writeData(str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
+						"_" + str(zone), collDD, totalCollisionObs, arrivedDrone, droneArrivalTime)
+		nf+=1
 
-ebsDD, ebsDO, ebsArrived, ebsTime = EBStop(), EBStop(), EBStop(), EBStop()
-
-arrivedDrone, arrivalTime = list(), list()
-
-#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
-stoppingDD, stoppingDO, stoppingDArrived, stoppingTime = False, False, False, False
-index = 0
-parameterSweep(4,1,1,1,noFault,150)
-while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime))):
-	(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf) = startSimulation(150)
-	collDD.append(tmpDD)
-	collDC.append(tmpDC)
-	collDR.append(tmpDR)
-	collDSC.append(tmpDSC)
-	totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-	cont = 0
-	tmpList = list()
-	#Salvo numero di droni arrivati
-	for x in droneInf.keys():
-		if(droneInf[x][0] > 0.0): cont +=1
-		if(droneInf[x][1] > 0.0): tmpList.append(droneInf[x][1])
-	arrivedDrone.append(cont)
-	#Memorizzo tempo di arrivo medio
-	arrivalTime.append(np.sum(tmpList)/len(tmpList))
-	print("Tempo di arrivo medio: "+ str(arrivalTime[-1])+ "\n")
-	print("droni arrivati all'iterazione " + str(index) + " = "  + str(arrivedDrone[-1])+"\n")
-	print("collisioni dd: " ,collDD, "\nobs total: " , totalCollisionObs , "\n")
-	if(index > 2):
-		stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
-		stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
-		stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
-		stoppingTime = True if(stoppingTime) else ebsTime.find_stop_value(arrivalTime, max(arrivalTime) - min(arrivalTime))
-	print("informazioni iterazione num " + str(index) + ": Collisioni tra droni --> " + str(tmpDD) + "\t"+
-		" Collisioni DtoO --> " + str(totalCollisionObs[-1]) +"\n stoppingDD: " + str(stoppingDD) + " stoppingDO: " + str(stoppingDO) + 
-		" stoppingArrived: " + str(stoppingDArrived) + " stoppingTime: "+ str(stoppingTime) +"\n")
-	index+=1
-	print(index) 
+getSimulationData()
+print("Execution time = ", (time.time()-startTime))
