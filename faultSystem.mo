@@ -9,7 +9,7 @@ In caso di:
 */
 	K const;
 
-	parameter Real T = 7.5 "Tempo di aggiornamento probabilità fault";	
+	parameter Real T = 2.5 "Tempo di aggiornamento probabilità fault";	
 
 /* 	//Matrice che identifica la probabilità di transizione
 	//Riga 1 = funzionante; Riga 2 = sensoristica; Riga 3 = manovra; Riga 4 = comunicazione
@@ -25,7 +25,7 @@ In caso di:
 
 	//probabilità calcolatà randomicamente
 	Real prob;
-	
+
 	//stato del drone. Viene restituito al drone stesso per valutare la sua situazione
 	OutputInt state[const.N];
 	

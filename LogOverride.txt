@@ -1,86 +1,442 @@
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (4, 16)
+Collisione tra droni (15, 18)
+Collisione tra droni (5, 11)
+Collisione tra droni (12, 20)
+Collisione tra droni (1, 10)
+Collisione tra droni (6, 17)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 26.000000
+stdout            | info    | Simulation call terminate() at time 99.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (4, 17)
+Collisione tra droni (2, 11)
+Collisione tra droni (15, 20)
+Collisione tra droni (6, 16)
+Collisione tra droni (7, 12)
+Collisione tra droni (9, 14)
+Collisione tra droni (3, 13)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 30.000000
+stdout            | info    | Simulation call terminate() at time 88.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (14, 15)
+Collisione tra droni (6, 17)
+Collisione tra droni (7, 19)
+Collisione tra droni (3, 9)
+Collisione tra droni (5, 8)
+Collisione tra droni (4, 11)
+Collisione tra droni (2, 12)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 26.000000
+stdout            | info    | Simulation call terminate() at time 48.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 25.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-Collisione tra droni (3, 6)
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 38.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 31.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-Collisione tra droni (8, 9)
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 31.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-Collisione tra droni (7, 8)
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 21.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-Collisione tra droni (1, 3)
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 64.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 34.000000
-|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
-LOG_SUCCESS       | info    | The simulation finished successfully.
-LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
-Collisione tra droni (7, 8)
-Collisione tra droni (4, 6)
+Collisione tra droni (14, 16)
+Collisione tra droni (2, 5)
+Collisione tra droni (2, 18)
+Collisione tra droni (13, 15)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
 stdout            | info    | Simulation call terminate() at time 47.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (18, 19)
+Collisione tra droni (6, 8)
+Collisione tra droni (6, 16)
+Collisione tra droni (3, 17)
+Collisione tra droni (1, 5)
+Collisione tra droni (9, 10)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 22.000000
+stdout            | info    | Simulation call terminate() at time 94.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (1, 2)
+Collisione tra droni (19, 20)
+Collisione tra droni (4, 18)
+Collisione tra droni (7, 16)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 70.000000
+stdout            | info    | Simulation call terminate() at time 72.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (9, 15)
+Collisione tra droni (3, 14)
+Collisione tra droni (8, 17)
+Collisione tra droni (10, 11)
+Collisione tra droni (7, 18)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 33.000000
+stdout            | info    | Simulation call terminate() at time 58.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (12, 13)
+Collisione tra droni (8, 9)
+Collisione tra droni (7, 15)
+Collisione tra droni (4, 6)
+Collisione tra droni (2, 14)
+Collisione tra droni (19, 20)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 20.000000
+stdout            | info    | Simulation call terminate() at time 54.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.
 LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (12, 13)
+Collisione tra droni (3, 9)
+Collisione tra droni (5, 19)
+Collisione tra droni (2, 20)
+Collisione tra droni (6, 7)
+Collisione tra droni (15, 16)
 [/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
-stdout            | info    | Simulation call terminate() at time 24.000000
+stdout            | info    | Simulation call terminate() at time 119.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (7, 13)
+Collisione tra droni (18, 20)
+Collisione tra droni (3, 16)
+Collisione tra droni (2, 12)
+Collisione tra droni (1, 11)
+Collisione tra droni (1, 19)
+Collisione tra droni (9, 10)
+Collisione tra droni (9, 14)
+Collisione tra droni (8, 15)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 127.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (3, 15)
+Collisione tra droni (12, 13)
+Collisione tra droni (1, 14)
+Collisione tra droni (2, 11)
+Collisione tra droni (8, 17)
+Collisione tra droni (4, 20)
+Collisione tra droni (7, 10)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 71.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (2, 15)
+Collisione tra droni (2, 18)
+Collisione tra droni (4, 12)
+Collisione tra droni (3, 11)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 52.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (13, 19)
+Collisione tra droni (14, 17)
+Collisione tra droni (9, 11)
+Collisione tra droni (7, 15)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 51.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (17, 18)
+Collisione tra droni (3, 5)
+Collisione tra droni (1, 4)
+Collisione tra droni (1, 8)
+Collisione tra droni (10, 11)
+Collisione tra droni (10, 12)
+Collisione tra droni (10, 19)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 71.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (15, 19)
+Collisione tra droni (16, 18)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 38.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (9, 12)
+Collisione tra droni (10, 14)
+Collisione tra droni (16, 17)
+Collisione tra droni (7, 11)
+Collisione tra droni (1, 5)
+Collisione tra droni (15, 18)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 69.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra drone e missile(5, 1)
+Collisione tra droni (7, 8)
+Collisione tra droni (7, 11)
+Collisione tra droni (2, 6)
+Collisione tra droni (1, 12)
+Collisione tra droni (3, 4)
+Collisione tra droni (17, 20)
+Collisione tra droni (15, 19)
+Collisione tra droni (13, 18)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 102.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (1, 9)
+Collisione tra droni (3, 7)
+Collisione tra droni (5, 11)
+Collisione tra droni (6, 13)
+Collisione tra droni (6, 18)
+Collisione tra droni (4, 17)
+Collisione tra droni (12, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 86.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (15, 17)
+Collisione tra droni (3, 19)
+Collisione tra droni (10, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 104.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (18, 20)
+Collisione tra droni (9, 12)
+Collisione tra droni (3, 11)
+Collisione tra droni (7, 8)
+Collisione tra droni (4, 15)
+Collisione tra droni (10, 14)
+Collisione tra droni (17, 19)
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (13, 14)
+Collisione tra droni (5, 10)
+Collisione tra droni (16, 18)
+Collisione tra droni (8, 9)
+Collisione tra droni (6, 7)
+Collisione tra droni (1, 3)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 50.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (7, 10)
+Collisione tra droni (12, 20)
+Collisione tra droni (5, 6)
+Collisione tra droni (11, 19)
+Collisione tra droni (3, 4)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 49.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (7, 8)
+Collisione tra droni (12, 13)
+Collisione tra droni (2, 10)
+Collisione tra droni (6, 9)
+Collisione tra droni (6, 17)
+Collisione tra droni (14, 16)
+Collisione tra droni (3, 4)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 63.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (3, 4)
+Collisione tra droni (10, 15)
+Collisione tra droni (11, 19)
+Collisione tra droni (2, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 57.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (18, 19)
+Collisione tra droni (10, 13)
+Collisione tra droni (8, 11)
+Collisione tra droni (6, 20)
+Collisione tra droni (4, 9)
+Collisione tra droni (5, 14)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 58.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (10, 11)
+Collisione tra droni (13, 16)
+Collisione tra droni (13, 18)
+Collisione tra droni (4, 17)
+Collisione tra droni (3, 12)
+Collisione tra droni (2, 6)
+Collisione tra droni (5, 14)
+Collisione tra droni (8, 15)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 137.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (5, 6)
+Collisione tra droni (11, 13)
+Collisione tra droni (18, 19)
+Collisione tra droni (9, 16)
+Collisione tra droni (8, 15)
+Collisione tra droni (1, 4)
+Collisione tra droni (7, 14)
+Collisione tra droni (7, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 129.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (14, 15)
+Collisione tra droni (14, 17)
+Collisione tra droni (1, 7)
+Collisione tra droni (1, 16)
+Collisione tra droni (6, 18)
+Collisione tra droni (11, 12)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 41.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra drone e missile(4, 9)
+Collisione tra droni (5, 7)
+Collisione tra droni (12, 13)
+Collisione tra droni (6, 14)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 47.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (5, 8)
+Collisione tra droni (9, 14)
+Collisione tra droni (13, 17)
+Collisione tra droni (1, 4)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 76.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (4, 5)
+Collisione tra droni (9, 10)
+Collisione tra droni (12, 13)
+Collisione tra droni (6, 8)
+Collisione tra droni (3, 16)
+Collisione tra droni (1, 2)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 38.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (3, 16)
+Collisione tra droni (2, 17)
+Collisione tra droni (1, 18)
+Collisione tra droni (7, 20)
+Collisione tra droni (10, 12)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 96.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (16, 18)
+Collisione tra droni (2, 13)
+Collisione tra droni (4, 8)
+Collisione tra droni (4, 9)
+Collisione tra droni (11, 17)
+Collisione tra droni (5, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 79.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (7, 8)
+Collisione tra droni (10, 11)
+Collisione tra droni (14, 18)
+Collisione tra droni (15, 16)
+Collisione tra droni (6, 19)
+Collisione tra droni (5, 13)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 56.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (5, 15)
+Collisione tra droni (2, 8)
+Collisione tra droni (1, 6)
+Collisione tra droni (4, 10)
+Collisione tra droni (13, 17)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 44.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (3, 10)
+Collisione tra droni (1, 13)
+Collisione tra droni (2, 18)
+Collisione tra droni (4, 12)
+Collisione tra droni (4, 16)
+Collisione tra droni (9, 17)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 69.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (8, 9)
+Collisione tra droni (14, 20)
+Collisione tra droni (1, 11)
+Collisione tra droni (10, 18)
+Collisione tra droni (4, 17)
+Collisione tra droni (7, 19)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 76.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (11, 12)
+Collisione tra droni (3, 10)
+Collisione tra droni (3, 19)
+Collisione tra droni (4, 5)
+Collisione tra droni (6, 16)
+Collisione tra droni (1, 13)
+Collisione tra droni (17, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 154.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (1, 5)
+Collisione tra droni (19, 20)
+Collisione tra droni (8, 10)
+Collisione tra droni (12, 18)
+Collisione tra droni (7, 17)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 76.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (16, 18)
+Collisione tra droni (19, 20)
+Collisione tra droni (6, 9)
+Collisione tra droni (6, 11)
+Collisione tra droni (6, 12)
+Collisione tra droni (6, 13)
+Collisione tra droni (14, 15)
+Collisione tra droni (3, 5)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 84.000000
+|                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
+LOG_SUCCESS       | info    | The simulation finished successfully.
+LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.
+Collisione tra droni (12, 13)
+Collisione tra droni (1, 17)
+Collisione tra droni (4, 18)
+Collisione tra droni (3, 6)
+Collisione tra droni (5, 10)
+Collisione tra droni (5, 20)
+[/home/francesco/Scrivania/Drones/Monitors/MonitorSuccess.mo:54:28-54:116:writable]
+stdout            | info    | Simulation call terminate() at time 137.000000
 |                 | |       | Message : Tutti i droni hanno raggiunto la destinazione oppure hanno avuto collisioni
 LOG_SUCCESS       | info    | The simulation finished successfully.

@@ -1,18 +1,22 @@
+Eseguita il giorno 20/06 alle ore 11:30
+
 Tempo computazionale per ogni scenario attraverso EBS
-Simulazione 4_10_10_8_no_100. Tempo di esecuzione: 132.77068281173706; Iterazioni EBS: 44;
-Simulazione 4_10_10_8_no_150. Tempo di esecuzione: 139.42016506195068; Iterazioni EBS: 44;
-Simulazione 4_10_10_8_no_200. Tempo di esecuzione: 130.5145127773285; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_no_100. Tempo di esecuzione: 821.4265494346619; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_no_150. Tempo di esecuzione: 742.6328463554382; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_no_200. Tempo di esecuzione: 792.2236800193787; Iterazioni EBS: 44;
-Simulazione 20_10_10_8_no_100. Tempo di esecuzione: 2658.7404296398163; Iterazioni EBS: 44;
-Simulazione 20_10_10_8_no_150. Tempo di esecuzione: 2910.0786583423615; Iterazioni EBS: 44;
-Simulazione 20_10_10_8_no_200. Tempo di esecuzione: 3278.0818819999695; Iterazioni EBS: 44;
-Simulazione 4_10_10_8_si_100. Tempo di esecuzione: 192.24070763587952; Iterazioni EBS: 44;
-Simulazione 4_10_10_8_si_150. Tempo di esecuzione: 184.6613335609436; Iterazioni EBS: 44;
-Simulazione 4_10_10_8_si_200. Tempo di esecuzione: 200.14027762413025; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_si_100. Tempo di esecuzione: 968.5377554893494; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_si_150. Tempo di esecuzione: 1100.4326341152191; Iterazioni EBS: 44;
-Simulazione 10_10_10_8_si_200. Tempo di esecuzione: 1170.0442762374878; Iterazioni EBS: 44;
-Simulazione 20_10_10_8_si_100. Tempo di esecuzione: 3922.777145385742; Iterazioni EBS: 44;
-Simulazione 20_10_10_8_si_150. Tempo di esecuzione: 3881.036442041397; Iterazioni EBS: 44;
+Simulazione 4_10_10_8_no_100. Tempo di esecuzione: 144.0538613796234; Iterazioni EBS: 41;
+Simulazione 4_10_10_8_no_150. Tempo di esecuzione: 48.36803317070007; Iterazioni EBS: 9;
+Simulazione 4_10_10_8_no_200. Tempo di esecuzione: 52.39702486991882; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_no_100. Tempo di esecuzione: 227.9650399684906; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_no_150. Tempo di esecuzione: 182.1387813091278; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_no_200. Tempo di esecuzione: 852.1530730724335; Iterazioni EBS: 41;
+Simulazione 20_10_10_8_no_100. Tempo di esecuzione: 2979.0146951675415; Iterazioni EBS: 41;
+Simulazione 20_10_10_8_no_150. Tempo di esecuzione: 1076.4562757015228; Iterazioni EBS: 13;
+Simulazione 20_10_10_8_no_200. Tempo di esecuzione: 3985.631954431534; Iterazioni EBS: 41;
+Simulazione 4_10_10_8_si_100. Tempo di esecuzione: 31.882587671279907; Iterazioni EBS: 4;
+Simulazione 4_10_10_8_si_150. Tempo di esecuzione: 49.06781816482544; Iterazioni EBS: 7;
+Simulazione 4_10_10_8_si_200. Tempo di esecuzione: 63.46246600151062; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_si_100. Tempo di esecuzione: 219.48631119728088; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_si_150. Tempo di esecuzione: 218.1112093925476; Iterazioni EBS: 9;
+Simulazione 10_10_10_8_si_200. Tempo di esecuzione: 1152.4336783885956; Iterazioni EBS: 41;
+Simulazione 20_10_10_8_si_100. Tempo di esecuzione: 3329.205265522003; Iterazioni EBS: 41;
+Simulazione 20_10_10_8_si_150. Tempo di esecuzione: 708.1948156356812; Iterazioni EBS: 9;
+Simulazione 20_10_10_8_si_200. Tempo di esecuzione: 3697.8894517421722; Iterazioni EBS: 41;
+Tempo di esecuzione totale = 19017.983362436295;

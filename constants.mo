@@ -2,13 +2,13 @@ record K
 
 //Costanti simulazione
 
-parameter Integer N = 10; //Number of uavs
+parameter Integer N = 20; //Number of uavs
 
 parameter Integer nIntr = 10; //Number of intruders
 
 parameter Integer nRocket = 10; //Number of missile
 
-parameter Integer nStatObs = 7; //Number of static obstacle
+parameter Integer nStatObs = 8; //Number of static obstacle
 
 parameter Real g = 9.81; //accellerazione gravitazionale(m/s^2)
 
@@ -21,7 +21,7 @@ parameter Real minDestDistance = 30;
 parameter Real arrivalThreshold = 5;
 
 //Dimensione area di volo
-parameter Real flyZone[3] = {150,150,150};
+parameter Real flyZone[3] = {100,100,100};
 
 //--------------------------------------------
 
