@@ -119,12 +119,9 @@ def startSimulation(flyZone):
 		f.write("p.rand[3]="+str(randZ)+"\n")
 		f.flush()
 		os.fsync(f)
-	
-	process = psutil.Process(os.getpid())
-	mem_usage = 0
+
 
 	os.system("./System -overrideFile=newValues.txt >> LogOverride.txt")
-	mem_usage = process.memory_info().rss  # in bytes 
 	#extract the stop time of the simulation
 	vars = omc.sendExpression("readSimulationResult(\"System_res.mat\",{time})")
 	omc.sendExpression("getErrorString()")
@@ -154,18 +151,124 @@ def startSimulation(flyZone):
 	droneFault = dict.fromkeys([x for x in range(1,ndrone+1)], [])
 	for d in range(len(droneFault.keys())):
 		droneFault[d+1] = faultSequence[d]
-
+	print(tDD, tDC, tDR, tDSC)
 
 	os.system("rm -f System_res.mat")      # .... to be on the safe side
 	os.system("rm -f newValues.txt")      # .... to be on the safe side
-	return (tDD, tDC, tDR, tDSC, droneInfo, droneFault, mem_usage) 
+	return (tDD, tDC, tDR, tDSC, droneInfo, droneFault) 
 
-#Esegue simulazioni del sistema con ogni tipo di scenario
-def getSimulationData():
-	with open("Simulation_Data/LogEBS_" + str(time.time()) + ".txt", "wt") as f:
-		f.write("Tempo computazionale per ogni scenario attraverso EBS\n")
+#Esegue le simulazioni di uno scenario attraverso EBGStop
+def simulate_with_ebgstop(d, zone, fault, nomeF):
+
+	intruders = 10
+	missile = 10
+	staticObs = 30
+
+	#Azzero la percentuale di utilizzo della ram totale
+	total_mem_usage = 0
+
+	startTime = time.time()
+
+	print("simulazione con: (" + str(d) +" droni, area di volo: "+ str(zone) +")\n")
+	#lista collisioni per ogni iterazione 
+	collDD, collDC, collDR, collDSC = [], [], [], []
+
+	#Lista totale collisioni ostacoli per ogni iterazione
+	totalCollisionObs = list()
+
+	ebsDD, ebsDO, ebsArrived, ebsTime, ebsFault = EBStop(), EBStop(), EBStop(), EBStop(), EBStop()
+
+	arrivedDrone, arrivalTime = list(), list()
+	tmptime = [[] for _ in range(d)]
+
+	droneFaultOverTime = dict() 
+
+	faultAverage = []
+
+	#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
+	stoppingDD, stoppingDO, stoppingDArrived, stoppingTime, stoppingFault = False, False, False, False, False
+	valDD, valDO, valArrived, valTime, valFault = 0,0,0,0,0 
+	index = 0
+	process = psutil.Process(os.getpid())
+	mem = process.memory_percent()
+	print("ram%: ", mem)
+	parameterSweep(d,intruders,missile,staticObs,fault,zone)
+	while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime and stoppingFault))):
+		(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf, droneFault) = startSimulation(zone)	
+		collDD.append(tmpDD)
+		collDC.append(tmpDC)
+		collDR.append(tmpDR)
+		collDSC.append(tmpDSC)
+		totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
+		print(totalCollisionObs)
+		cont = 0
+		#tmpList salva temporaneamente i tempi di arrivo dei droni, così da farne la media per l'iterazione corrente
+		tmpList = list()
+		droneIndex = 1
+		print(index)
+		#Salvo numero di droni arrivati
+		for x in droneInf.keys():
+			if(droneInf[x][0] > 0.0): #se il drone è arrivato
+				cont += 1
+			if(droneInf[x][1] > -1.0):
+				tmpList.append(droneInf[x][1])
+				tmptime[droneIndex-1].append(droneInf[x][1])
+			droneIndex += 1
+		arrivedDrone.append(cont)
+		#Memorizzo tempo di arrivo medio
+		if(len(tmpList) >  0): arrivalTime.append(np.sum(tmpList)/len(tmpList))
+		#calcolo media fault presente nella i-esima simulazione, omettendo il caso di fault=1(ossia quando non sono presenti)
+		sommaFault = 0
+		for dd in droneFault:
+			for faults in droneFault[dd]:
+				if(faults != 1.0): sommaFault += 1
+		faultAverage.append(sommaFault)
+		#Eseguo i vari EBGStop
+		if(index > 0):
+			stoppingDD,tmpvalDD = ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
+			print("stoppingDD:",stoppingDD, valDD)
+			stoppingDO,tmpDO =  ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
+			print("stoppingDO:",stoppingDO,valDO)
+			stoppingDArrived, tmpArrived = ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
+			print("stoppingArrived:",stoppingDArrived, valArrived)
+			stoppingTime, tmpvalTime = ebsTime.find_stop_value(arrivalTime, max(arrivalTime) - min(arrivalTime))
+			print("stoppingTime:", stoppingTime, valTime)
+			stoppingFault, tmpFault = ebsFault.find_stop_value(faultAverage, max(faultAverage) - min(faultAverage))
+			print("stoppingFault:",stoppingFault, valFault)
+			valDD = tmpvalDD if(not math.isnan(tmpvalDD)) else valDD
+			valDO = tmpDO if(not math.isnan(tmpDO)) else valDO
+			valArrived = tmpArrived if(not math.isnan(tmpArrived)) else valArrived
+			valTime = tmpvalTime if(not math.isnan(tmpvalTime)) else valTime
+			valFault = tmpFault if(not math.isnan(tmpFault)) else valFault
+		droneFaultOverTime.update({index:droneFault})
+		index+=1
+	print("Tempo di esecuzione = ", (time.time() - startTime))
+	#completo il dizionario contenente i tempi di arrivo dei droni
+	droneArrivalTime = dict.fromkeys([i for i in range(1,d+1)],[])
+	for i in range(len(droneArrivalTime.keys())):
+		droneArrivalTime[i+1] = tmptime[i]
+
+	# Scrivo i risultati all'interno di un file json
+	writeData(str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
+			"_" + str(zone), collDD, totalCollisionObs, arrivedDrone, droneArrivalTime, droneFaultOverTime)
+
+	# Salvo i valori attesi restituiti da ebgstop
+	writeData(str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
+			"_" + str(zone) + "_EBSVALUES", valDD, valDO, valArrived, valTime, valFault)
+
+	# Salvo in un file il tempo di simulazione, il numero di simulazioni e il percentuale di uso della ram per lo scenario simulato
+	with open("Simulation_Data/LogEBS.txt", "a") as f:
+		f.write("Simulazione " +str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
+			"_" + str(zone)+ ". Tempo di esecuzione: " + str(time.time()-startTime) + "; % RAM media: "+ str(mem) +"; Iterazioni EBS: " + str(index) + ";\n")
 		f.flush()
 		os.fsync(f)
+
+#Esegue simulazioni del sistema per ogni scenario
+def get_simulation_data():
+	# with open("Simulation_Data/LogEBS_" + str(time.time()) + ".txt", "wt") as f:
+	# 	f.write("Tempo computazionale per ogni scenario attraverso EBS\n")
+	# 	f.flush()
+	# 	os.fsync(f)
 
 	drones = [4,10,20]
 	intruders = 10
@@ -175,101 +278,18 @@ def getSimulationData():
 	noFault = "{{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0}}"
 	faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
 
-
+	#Variabile temporanea per assegnazione nome file
 	nf = 0
 	nomeF = "no"
-	for fault in ([noFault, faultMatrix]):
+	for fault in ([noFault,faultMatrix]):
 		print(fault)
 		if(nf>0): nomeF = "si"
 		for d in drones:
 			for zone in flyZone:
-				#Azzero la percentuale di utilizzo della ram totale
-				total_mem_usage = 0
-
-				startTime = time.time()
-
-				print("simulazione con: (" + str(d) +" droni, area di volo: "+ str(zone) +")\n")
-				#lista collisioni per ogni iterazione 
-				collDD, collDC, collDR, collDSC = [], [], [], []
-
-				#Lista totale collisioni ostacoli per ogni iterazione
-				totalCollisionObs = list()
-
-				ebsDD, ebsDO, ebsArrived, ebsTime, ebsFault = EBStop(), EBStop(), EBStop(), EBStop(), EBStop()
-
-				arrivedDrone, arrivalTime = list(), list()
-				tmptime = [[] for _ in range(d)]
-
-				droneFaultOverTime = dict() 
-
-				faultAverage = []
-
-				#Otterranno l'output dell'algoritmo di stopping, così da determinare l'interruzione della simulazione
-				stoppingDD, stoppingDO, stoppingDArrived, stoppingTime, stoppingFault = False, False, False, False, False
-				index = 0
-				parameterSweep(d,intruders,missile,staticObs,fault,zone)
-				while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime and stoppingFault))):
-					(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf, droneFault, mem_usage) = startSimulation(zone)
-					collDD.append(tmpDD)
-					collDC.append(tmpDC)
-					collDR.append(tmpDR)
-					collDSC.append(tmpDSC)
-					totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-					cont = 0
-					tmpList = list()
-					droneIndex = 1
-					#Salvo numero di droni arrivati
-					for x in droneInf.keys():
-						if(droneInf[x][0] > 0.0): #se il drone è arrivato
-							cont += 1
-							tmpList.append(droneInf[x][1])
-							tmptime[droneIndex-1].append(droneInf[x][1])
-						droneIndex += 1
-					arrivedDrone.append(cont)
-					#Memorizzo tempo di arrivo medio
-					arrivalTime.append(np.sum(tmpList)/len(tmpList))
-
-					#calcolo media fault presente nella i-esima simulazione, omettendo il caso di fault=1(ossia quando non sono presenti)
-					sommaFault = 0
-					for dd in droneFault:
-						for faults in droneFault[dd]:
-							if(faults != 1.0): sommaFault += 1
-					faultAverage.append(sommaFault)
-					if(index > 0):
-						print("stoppingDD:",stoppingDD)
-						stoppingDD = True if(stoppingDD) else ebsDD.find_stop_value(collDD, max(collDD) - min(collDD))
-						print("stoppingDO:",stoppingDO)
-						stoppingDO = True if(stoppingDO) else ebsDO.find_stop_value(totalCollisionObs, max(totalCollisionObs) - min(totalCollisionObs))
-						print("stoppingArrived:",stoppingDArrived)
-						stoppingDArrived = True if(stoppingDArrived) else ebsArrived.find_stop_value(arrivedDrone, max(arrivedDrone) - min(arrivedDrone))
-						print("stoppingTime:", stoppingTime)
-						stoppingTime = True if(stoppingTime) else ebsTime.find_stop_value(arrivalTime, max(arrivalTime) - min(arrivalTime))
-						print("stoppingFault:",stoppingFault)
-						stoppingFault = True if(stoppingFault) else ebsFault.find_stop_value(faultAverage, max(faultAverage) - min(faultAverage))
-					droneFaultOverTime.update({index:droneFault})
-					index+=1
-					print(index)
-					total_mem_usage += mem_usage 
-				print("Tempo di esecuzione = ", (time.time() - startTime))
-				droneArrivalTime = dict.fromkeys([i for i in range(1,d+1)],[])
-				for i in range(len(droneArrivalTime.keys())):
-					droneArrivalTime[i+1] = tmptime[i]
-				print(droneArrivalTime)
-
-				# Scrivo i risultati all'interno di un file json
-				writeData(str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
-						"_" + str(zone), collDD, totalCollisionObs, arrivedDrone, droneArrivalTime, droneFaultOverTime)
-				
-				# Salvo in un file il tempo di simulazione di ogni ebs
-				with open("Simulation_Data/LogEBS.txt", "a") as f:
-					f.write("Simulazione " +str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
-						"_" + str(zone)+ ". Tempo di esecuzione: " + str(time.time()-startTime) + "; % RAM media: "+ str(total_mem_usage / index) +"; Iterazioni EBS: " + str(index) + ";\n")
-					f.flush()
-					os.fsync(f)
-
+				simulate_with_ebgstop(d,zone,fault,nomeF)
 		nf+=1
 
-getSimulationData()
+get_simulation_data()
 with open("Simulation_Data/LogEBS.txt", "a") as f:
 	f.write("Tempo di esecuzione totale = " + str(time.time()-startTime)+";\n")
 	f.flush()

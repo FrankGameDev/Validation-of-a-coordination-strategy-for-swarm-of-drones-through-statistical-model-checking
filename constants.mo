@@ -2,7 +2,7 @@ record K
 
 //Costanti simulazione
 
-parameter Integer N = 20; //Number of uavs
+parameter Integer N = 10; //Number of uavs
 
 parameter Integer nIntr = 10; //Number of intruders
 
@@ -31,7 +31,7 @@ parameter Real flyZone[3] = {100,100,100};
 parameter Real m = 0.895;
 
 //Velocità massima di volo(m/s)
-parameter Real maxSpeed = 15.0;
+parameter Real maxSpeed = 5;
 
 //Distanza da mantenere tra ogni drone
 parameter Real dDistance = 25; 
