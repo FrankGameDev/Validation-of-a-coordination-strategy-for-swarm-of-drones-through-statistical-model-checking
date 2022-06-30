@@ -270,7 +270,7 @@ def get_simulation_data():
 	# 	f.flush()
 	# 	os.fsync(f)
 
-	drones = [4,10,20]
+	drones = [20]
 	intruders = 10
 	missile = 10
 	staticObs = 8
@@ -279,9 +279,9 @@ def get_simulation_data():
 	faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
 
 	#Variabile temporanea per assegnazione nome file
-	nf = 0
+	nf = 1
 	nomeF = "no"
-	for fault in ([noFault,faultMatrix]):
+	for fault in ([faultMatrix]):
 		print(fault)
 		if(nf>0): nomeF = "si"
 		for d in drones:

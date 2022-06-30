@@ -1,26 +1,5 @@
 Eseguita il giorno 20/06 alle ore 11:30
 
-Tempo computazionale per ogni scenario attraverso EBS
-Simulazione 4_10_10_8_no_100. Tempo di esecuzione: 144.0538613796234; Iterazioni EBS: 41;
-Simulazione 4_10_10_8_no_150. Tempo di esecuzione: 48.36803317070007; Iterazioni EBS: 9;
-Simulazione 4_10_10_8_no_200. Tempo di esecuzione: 52.39702486991882; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_no_100. Tempo di esecuzione: 227.9650399684906; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_no_150. Tempo di esecuzione: 182.1387813091278; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_no_200. Tempo di esecuzione: 852.1530730724335; Iterazioni EBS: 41;
-Simulazione 20_10_10_8_no_100. Tempo di esecuzione: 2979.0146951675415; Iterazioni EBS: 41;
-Simulazione 20_10_10_8_no_150. Tempo di esecuzione: 1076.4562757015228; Iterazioni EBS: 13;
-Simulazione 20_10_10_8_no_200. Tempo di esecuzione: 3985.631954431534; Iterazioni EBS: 41;
-Simulazione 4_10_10_8_si_100. Tempo di esecuzione: 31.882587671279907; Iterazioni EBS: 4;
-Simulazione 4_10_10_8_si_150. Tempo di esecuzione: 49.06781816482544; Iterazioni EBS: 7;
-Simulazione 4_10_10_8_si_200. Tempo di esecuzione: 63.46246600151062; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_si_100. Tempo di esecuzione: 219.48631119728088; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_si_150. Tempo di esecuzione: 218.1112093925476; Iterazioni EBS: 9;
-Simulazione 10_10_10_8_si_200. Tempo di esecuzione: 1152.4336783885956; Iterazioni EBS: 41;
-Simulazione 20_10_10_8_si_100. Tempo di esecuzione: 3329.205265522003; Iterazioni EBS: 41;
-Simulazione 20_10_10_8_si_150. Tempo di esecuzione: 708.1948156356812; Iterazioni EBS: 9;
-Simulazione 20_10_10_8_si_200. Tempo di esecuzione: 3697.8894517421722; Iterazioni EBS: 41;
-Tempo di esecuzione totale = 19017.983362436295;
-
 Simulazione 4_10_10_30_no_100. Tempo di esecuzione: 25.505073070526123; % RAM media: 0.5629342649976937; Iterazioni EBS: 2;
 Simulazione 4_10_10_30_no_150. Tempo di esecuzione: 1374.9173913002014; % RAM media: 0.5706690659715962; Iterazioni EBS: 492;
 Simulazione 4_10_10_30_no_200. Tempo di esecuzione: 1261.753762960434; % RAM media: 0.6363011271766214; Iterazioni EBS: 353;
@@ -36,3 +15,7 @@ Simulazione 4_10_10_30_si_200. Tempo di esecuzione: 1817.6088483333588; % RAM me
 Simulazione 10_10_10_30_si_100. Tempo di esecuzione: 8221.515976905823; % RAM media: 0.6355617712011749; Iterazioni EBS: 321;
 Simulazione 10_10_10_30_si_150. Tempo di esecuzione: 4139.3723838329315; % RAM media: 0.7254788325227907; Iterazioni EBS: 158;
 Simulazione 10_10_10_30_si_200. Tempo di esecuzione: 6605.543795108795; % RAM media: 0.6815155887520069; Iterazioni EBS: 251;
+Simulazione 20_10_10_30_si_100. Tempo di esecuzione: 282.9417402744293; % RAM media: 0.5636173885348508; Iterazioni EBS: 2;
+Simulazione 20_10_10_30_si_150. Tempo di esecuzione: 6589.000965356827; % RAM media: 0.5832387809712305; Iterazioni EBS: 56;
+Simulazione 20_10_10_30_si_200. Tempo di esecuzione: 19606.81756877899; % RAM media: 0.6969859835009683; Iterazioni EBS: 169;
+Tempo di esecuzione totale = 58122.25 --> 16.15 ore;
