@@ -17,67 +17,67 @@ omc.sendExpression("cd()")
 omc.sendExpression("loadModel(Modelica)")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"connectors.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/connectors.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"constants.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/constants.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"randgen.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/randgen.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"extFunction.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/extFunction.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"drone/drone.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/drone/drone.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"Monitors/MonitorSuccess.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/Monitors/MonitorSuccess.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"Monitors/MonitorCollision.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/Monitors/MonitorCollision.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"algorithms/flockingModule.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/algorithms/flockingModule.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"algorithms/psoController.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/algorithms/psoController.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"algorithms/collisionAvoidance.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/algorithms/collisionAvoidance.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"drone/controller.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/drone/controller.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"drone/setPoint.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/drone/setPoint.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"faultSystem.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/faultSystem.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/intruders.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/intruders.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/intrudersController.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/intrudersController.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/intrudersPoint.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/intrudersPoint.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/rockets.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/rockets.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/rocketController.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/rocketController.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/rocketPoint.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/rocketPoint.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"intruders/staticObs.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/intruders/staticObs.mo\")")
 omc.sendExpression("getErrorString()")
 
-omc.sendExpression("loadFile(\"system.mo\")")
+omc.sendExpression("loadFile(\"/home/francesco/Scrivania/Drones/Modelica/system.mo\")")
 omc.sendExpression("getErrorString()")
 
 startTime = time.time()
@@ -87,7 +87,7 @@ noFault = "{{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0},{1, 0, 0, 0}}"
 def writeData(name,collDD, collDO, arrived, dTime, droneF = {}):
 	if(droneF == {}): diz = {"collDD": collDD, "collDO": collDO, "arrived": arrived, "arrivalTime":dTime}
 	else: diz = {"collDD": collDD, "collDO": collDO, "arrived": arrived, "arrivalTime":dTime, "droneFault":droneF}
-	with open("Simulation_Data/SimulationData_" + str(name) + ".json", "wt") as f:
+	with open("/home/francesco/Scrivania/Drones/Simulation_Data/SimulationData_" + str(name) + ".json", "wt") as f:
 		json.dump(diz, f)
 		f.flush()
 		f.close()
@@ -258,7 +258,7 @@ def simulate_with_ebgstop(d, zone, fault, nomeF):
 			"_" + str(zone) + "_EBSVALUES", valDD, valDO, valArrived, valTime, valFault)
 
 	# Salvo in un file il tempo di simulazione, il numero di simulazioni e il percentuale di uso della ram per lo scenario simulato
-	with open("Simulation_Data/LogEBS.txt", "a") as f:
+	with open("/home/francesco/Scrivania/Drones/Simulation_Data/LogEBS.txt", "a") as f:
 		f.write("Simulazione " +str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
 			"_" + str(zone)+ ". Tempo di esecuzione: " + str(time.time()-startTime) +"; RAM in mb: "+ str(mem_mb) +"; % RAM media: "+ str(mem) +"; Iterazioni EBS: " + str(index) + ";\n")
 		f.flush()
@@ -280,19 +280,18 @@ def get_simulation_data():
 	faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
 
 	#Variabile temporanea per assegnazione nome file
-	# nf = 1
-	# nomeF = "no"
-	# for fault in ([faultMatrix]):
-	# 	print(fault)
-	# 	if(nf>0): nomeF = "si"
-	# 	for d in drones:
-	# 		for zone in flyZone:
-	# 			simulate_with_ebgstop(d,zone,fault,nomeF)
-	# 	nf+=1
-	simulate_with_ebgstop(20, 200, noFault, "no")
+	nf = 0
+	nomeF = "no"
+	for fault in ([faultMatrix]):
+		print(fault)
+		if(nf>0): nomeF = "si"
+		for d in drones:
+			for zone in flyZone:
+				simulate_with_ebgstop(d,zone,fault,nomeF)
+		nf+=1
 
 get_simulation_data()
-with open("Simulation_Data/LogEBS.txt", "a") as f:
+with open("/home/francesco/Scrivania/Drones/Simulation_Data/LogEBS.txt", "a") as f:
 	f.write("Tempo di esecuzione totale = " + str(time.time()-startTime)+";\n")
 	f.flush()
 	os.fsync(f)
