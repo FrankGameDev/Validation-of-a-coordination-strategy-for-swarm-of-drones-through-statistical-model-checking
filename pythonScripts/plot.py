@@ -167,7 +167,7 @@ def plot_faults(titolo, xlabel, ylabel, l1,l2,l3):
     plt.bar(br3, l3, color ='b', width = barWidth,
             edgecolor ='black', label ='20 droni')
     plt.grid(color = "grey", linestyle ="-", linewidth = 0.5, alpha = 0.2)
-    plt.legend(labels = ["100 m", "150 m", "200 m"],loc = "upper left")
+    plt.legend(labels = ["100 m cubi", "150 m cubi", "200 m cubi"],loc = "upper left")
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.xticks([r + barWidth for r in range(len(l1))], scenari)

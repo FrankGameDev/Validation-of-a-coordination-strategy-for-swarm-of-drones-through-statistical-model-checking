@@ -1,4 +1,4 @@
-Eseguita il giorno 20/06 alle ore 11:30
+
 
 Simulazione 4_10_10_30_no_100. Tempo di esecuzione: 25.505073070526123; % RAM media: 0.5629342649976937; Iterazioni EBS: 2;
 Simulazione 4_10_10_30_no_150. Tempo di esecuzione: 1374.9173913002014; % RAM media: 0.5706690659715962; Iterazioni EBS: 492;
@@ -19,3 +19,14 @@ Simulazione 20_10_10_30_si_100. Tempo di esecuzione: 282.9417402744293; % RAM me
 Simulazione 20_10_10_30_si_150. Tempo di esecuzione: 6589.000965356827; % RAM media: 0.5832387809712305; Iterazioni EBS: 56;
 Simulazione 20_10_10_30_si_200. Tempo di esecuzione: 19606.81756877899; % RAM media: 0.6969859835009683; Iterazioni EBS: 169;
 Tempo di esecuzione totale = 58122.25 --> 16.15 ore;
+
+Simulazione 4_10_10_30_no_100. Tempo di esecuzione: 7545.349342346191; RAM in mb: 38.4921875; % RAM media: 0.560432466864018; Iterazioni EBS: 2823;
+Simulazione 4_10_10_30_no_150. Tempo di esecuzione: 1616.7511174678802; RAM in mb: 51.67578125; % RAM media: 0.7523808711329506; Iterazioni EBS: 517;
+Simulazione 4_10_10_30_no_200. Tempo di esecuzione: 2308.598418712616; RAM in mb: 51.7734375; % RAM media: 0.7538027111645723; Iterazioni EBS: 624;
+Simulazione 10_10_10_30_no_100. Tempo di esecuzione: 6265.880706071854; RAM in mb: 50.5; % RAM media: 0.7352619171522251; Iterazioni EBS: 634;
+Simulazione 10_10_10_30_no_150. Tempo di esecuzione: 9671.596219539642; RAM in mb: 50.0703125; % RAM media: 0.7290058210130895; Iterazioni EBS: 996;
+Simulazione 10_10_10_30_no_200. Tempo di esecuzione: 8111.099695682526; RAM in mb: 49.36328125; % RAM media: 0.7187116991841481; Iterazioni EBS: 843;
+Simulazione 20_10_10_30_no_100. Tempo di esecuzione: 15677.399505138397; RAM in mb: 51.0703125; % RAM media: 0.7435654629368958; Iterazioni EBS: 218;
+Simulazione 20_10_10_30_no_150. Tempo di esecuzione: 15864.253611326218; RAM in mb: 51.41015625; % RAM media: 0.7485134662469395; Iterazioni EBS: 187;
+Simulazione 20_10_10_30_si_100. Tempo di esecuzione: 11846.13658118248; RAM in mb: 38.4765625; % RAM media: 0.5602049724589586; Iterazioni EBS: 128;
+Simulazione 20_10_10_30_si_150. Tempo di esecuzione: 17205.011143922806; RAM in mb: 49.8515625; % RAM media: 0.7258208993422568; Iterazioni EBS: 187;

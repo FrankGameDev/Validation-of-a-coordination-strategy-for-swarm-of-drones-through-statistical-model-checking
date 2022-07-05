@@ -151,7 +151,7 @@ def startSimulation(flyZone):
 	droneFault = dict.fromkeys([x for x in range(1,ndrone+1)], [])
 	for d in range(len(droneFault.keys())):
 		droneFault[d+1] = faultSequence[d]
-	print(tDD, tDC, tDR, tDSC)
+	# print(tDD, tDC, tDR, tDSC)
 
 	os.system("rm -f System_res.mat")      # .... to be on the safe side
 	os.system("rm -f newValues.txt")      # .... to be on the safe side
@@ -191,7 +191,8 @@ def simulate_with_ebgstop(d, zone, fault, nomeF):
 	index = 0
 	process = psutil.Process(os.getpid())
 	mem = process.memory_percent()
-	print("ram%: ", mem)
+	mem_mb = process.memory_info().rss / 1024 ** 2
+	print("ram%: ", mem, "ram mb: ", mem_mb)
 	parameterSweep(d,intruders,missile,staticObs,fault,zone)
 	while((not(stoppingDD and stoppingDO and stoppingDArrived and stoppingTime and stoppingFault))):
 		(tmpDD, tmpDC, tmpDR, tmpDSC, droneInf, droneFault) = startSimulation(zone)	
@@ -200,7 +201,7 @@ def simulate_with_ebgstop(d, zone, fault, nomeF):
 		collDR.append(tmpDR)
 		collDSC.append(tmpDSC)
 		totalCollisionObs.append(collDC[-1] + collDR[-1] + collDSC[-1])
-		print(totalCollisionObs)
+		# print(totalCollisionObs)
 		cont = 0
 		#tmpList salva temporaneamente i tempi di arrivo dei droni, così da farne la media per l'iterazione corrente
 		tmpList = list()
@@ -259,7 +260,7 @@ def simulate_with_ebgstop(d, zone, fault, nomeF):
 	# Salvo in un file il tempo di simulazione, il numero di simulazioni e il percentuale di uso della ram per lo scenario simulato
 	with open("Simulation_Data/LogEBS.txt", "a") as f:
 		f.write("Simulazione " +str(d) + "_" + str(intruders) + "_" +  str(missile) + "_" + str(staticObs) + "_" + str(nomeF) +
-			"_" + str(zone)+ ". Tempo di esecuzione: " + str(time.time()-startTime) + "; % RAM media: "+ str(mem) +"; Iterazioni EBS: " + str(index) + ";\n")
+			"_" + str(zone)+ ". Tempo di esecuzione: " + str(time.time()-startTime) +"; RAM in mb: "+ str(mem_mb) +"; % RAM media: "+ str(mem) +"; Iterazioni EBS: " + str(index) + ";\n")
 		f.flush()
 		os.fsync(f)
 
@@ -279,15 +280,16 @@ def get_simulation_data():
 	faultMatrix = "{{0.7, 0.1, 0.1, 0.1},{0.6, 0.4, 0, 0},{0.5, 0, 0.5, 0},{0.7, 0, 0, 0.3}}"
 
 	#Variabile temporanea per assegnazione nome file
-	nf = 1
-	nomeF = "no"
-	for fault in ([faultMatrix]):
-		print(fault)
-		if(nf>0): nomeF = "si"
-		for d in drones:
-			for zone in flyZone:
-				simulate_with_ebgstop(d,zone,fault,nomeF)
-		nf+=1
+	# nf = 1
+	# nomeF = "no"
+	# for fault in ([faultMatrix]):
+	# 	print(fault)
+	# 	if(nf>0): nomeF = "si"
+	# 	for d in drones:
+	# 		for zone in flyZone:
+	# 			simulate_with_ebgstop(d,zone,fault,nomeF)
+	# 	nf+=1
+	simulate_with_ebgstop(20, 200, noFault, "no")
 
 get_simulation_data()
 with open("Simulation_Data/LogEBS.txt", "a") as f:

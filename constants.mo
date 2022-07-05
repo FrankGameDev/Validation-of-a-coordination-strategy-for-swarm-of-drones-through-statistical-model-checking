@@ -31,7 +31,7 @@ parameter Real minDestDistance = flyZone[1]/2;
 parameter Real m = 0.895;
 
 //Velocità massima di volo(m/s)
-parameter Real maxSpeed = 5;
+parameter Real maxSpeed = 15;
 
 //Distanza da mantenere tra ogni drone
 parameter Real dDistance = 25; 
